@@ -1,0 +1,40 @@
+# -*- makefile -*-
+# Configuration file for the Pax module. This file works just like the
+# Setup file in Python's Modules directory. If you edit anything save it
+# as `Setup'.
+#
+# Note: leave the backslashes ('\') intact.
+
+*shared*
+
+paxmodule paxmodule.c tkwinobject.c gcobject.c cmapobject.c \
+	pixmapobject.c regionobject.c fontobject.c imageobject.c \
+	borderobject.c clipmask.c paxutil.c \
+# *** Uncomment if you don't want to use shared memory images
+#	-DPAX_NO_XSHM \
+# *** Uncomment and edit to reflect where your X11 header files are:
+#	-I/usr/X11/include \
+# *** Uncomment and edit to reflect where your Tcl/Tk headers are:
+ 	-I/usr/include \
+# *** Uncomment and edit to reflect where your Tcl/Tk libraries are:
+ 	-L/usr/lib \
+# *** Uncomment and edit to reflect your Tcl/Tk and Cairo versions:
+	-ltk8.4 -ltcl8.4 \
+# *** Uncomment and edit to reflect where your X11 libraries are:
+	-L/usr/X11R6/lib \
+# *** Always uncomment this; X11 libraries to link with:
+	-lX11 -lXext
+
+paxtkinter paxtkinter.c \
+# *** Uncomment and edit to reflect where your X11 header files are:
+#	-I/usr/X11/include \
+# *** Uncomment and edit to reflect where your Tcl/Tk headers are:
+ 	-I/usr/include \
+# *** Uncomment and edit to reflect where your Tcl/Tk libraries are:
+ 	-L/usr/lib \
+# *** Uncomment and edit to reflect your Tcl/Tk versions:
+	-ltk8.4 -ltcl8.4 \
+# *** Uncomment and edit to reflect where your X11 libraries are:
+	-L/usr/X11R6/lib \
+# *** Always uncomment this; X11 libraries to link with:
+	-lX11
