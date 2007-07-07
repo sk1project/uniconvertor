@@ -103,10 +103,6 @@ CURRENT_STEP="Modules"
 
 cd ../Modules
 
-myIMAGING_HEADER=`echo $RE_PREFIX/include/PIL|sed 's/\//\\\ \//g'|sed 's/ \//\//g'`
-
-sed 's/_MY_TCL_HEADERS_/'"$myTCL_HEADERS"'/g' Setup.in |sed 's/_MY_TCL_LIBS_/'"$myTCL_LIBS"'/g' |sed 's/_MY_IMAGING_HEADER_/'"$myIMAGING_HEADER"'/g' > Setup.in.pre; rm -f Setup.in; mv Setup.in.pre Setup.in
-
 # cat ../../patches/Modules/Setup.config > Setup.config
 
 sed 's/_MY_INSTALL_DIR_/'"$myEPREFIX"'/g' Makefile.pre.in |sed 's/_MY_INSTALL_PREFIX_/'"$myEPREFIX"'/g'> Makefile.pre; rm -f Makefile.pre.in;mv Makefile.pre Makefile.pre.in
