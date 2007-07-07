@@ -8,22 +8,22 @@
 *shared*
 
 # Directory where the Pax header files can be found
-PAX_DIR = ../pax-0.6.0
+#PAX_DIR = ../pax-0.6.0
 
 # Directory where the streamfilter header files can be found
 FILTER_DIR = ../Filter
 
 _sketchmodule _sketchmodule.c \
 	skpoint.c sktrafo.c skrect.c skfm.c \
-	curvefunc.c curveobject.c curvelow.c curvemisc.c curvedraw.c \
-	skaux.c skimage.c skcolor.c skdither.c  \
-	-I$(PAX_DIR) \
+	curvefunc.c curveobject.c curvelow.c curvemisc.c \
+	skaux.c skimage.c skcolor.c \
+#	-I$(PAX_DIR) \
 # *** Edit to reflect where the file Imaging.h of the Imaging library is:
-	-I‎/usr/include/python2.4  \
+	-I‎/usr/include/python2.4  
 # *** Uncomment and edit to reflect where your Tcl/Tk libraries are:
- 	-L/usr/lib \
+# 	-L/usr/lib \
 # *** X libraries (should be correct for Linux)
-	-L/usr/X11R6/lib -lX11 -lm 
+#	-L/usr/X11R6/lib -lX11 -lm 
 
 _type1module _type1module.c 
 

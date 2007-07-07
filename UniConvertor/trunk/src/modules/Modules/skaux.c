@@ -17,11 +17,11 @@
  */
 
 #include <math.h>
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
+// #include <X11/Xlib.h>
+// #include <X11/Xutil.h>
 
 #include <Python.h>
-#include <gcobject.h>
+// #include <gcobject.h>
 /*#include "bezier_low.h"*/
 #include "curvelow.h"
 #include "skrect.h"
@@ -29,67 +29,67 @@
 #include "_sketchmodule.h"
 
 
-PyObject *
-SKAux_DrawGrid(PyObject * self, PyObject * arg)
-{
-    double	xwidth, ywidth;
-    double	orig_x, orig_y;
-    PaxGCObject *gc_object;
-    int		nx, ny;
-    int		ix, iy;
-    XPoint	* points, *current;
+// PyObject *
+// SKAux_DrawGrid(PyObject * self, PyObject * arg)
+// {
+//     double	xwidth, ywidth;
+//     double	orig_x, orig_y;
+//     PaxGCObject *gc_object;
+//     int		nx, ny;
+//     int		ix, iy;
+//     XPoint	* points, *current;
+// 
+//     if (!PyArg_ParseTuple(arg, "O!ddddii", Pax_GCType, &gc_object, &orig_x,
+// 			  &orig_y, &xwidth, &ywidth, &nx, &ny))
+// 	return NULL;
+// 
+//     points = malloc(sizeof(XPoint) * nx * ny);
+// 
+//     current = points;
+//     for (ix = 0; ix < nx; ix++)
+//     {
+// 	for (iy = 0; iy < ny; iy++)
+// 	{
+// 	    current->x = (int)rint(orig_x + xwidth * ix);
+// 	    current->y = (int)rint(orig_y + ywidth * iy);
+// 	    current++;
+// 	}
+//     }
+//     XDrawPoints(gc_object->display, gc_object->drawable,
+// 		gc_object->gc, points, nx * ny, CoordModeOrigin);
+//     free(points);
+// 
+//     Py_INCREF(Py_None);
+//     return Py_None;
+// }
 
-    if (!PyArg_ParseTuple(arg, "O!ddddii", Pax_GCType, &gc_object, &orig_x,
-			  &orig_y, &xwidth, &ywidth, &nx, &ny))
-	return NULL;
 
-    points = malloc(sizeof(XPoint) * nx * ny);
-
-    current = points;
-    for (ix = 0; ix < nx; ix++)
-    {
-	for (iy = 0; iy < ny; iy++)
-	{
-	    current->x = (int)rint(orig_x + xwidth * ix);
-	    current->y = (int)rint(orig_y + ywidth * iy);
-	    current++;
-	}
-    }
-    XDrawPoints(gc_object->display, gc_object->drawable,
-		gc_object->gc, points, nx * ny, CoordModeOrigin);
-    free(points);
-
-    Py_INCREF(Py_None);
-    return Py_None;
-}
-
-
-PyObject *
-SKAux_GetPixel(PyObject * self, PyObject * arg)
-{
-    XImage  * image;
-    PaxGCObject *gc_object;
-    int		x, y;
-    int		retval;
-
-    if (!PyArg_ParseTuple(arg, "Oii", &gc_object, &x, &y))
-	return NULL;
-
-    image = XGetImage(gc_object->display, gc_object->drawable,
-		      x, y, 1, 1, 0xFFFFFFFF, ZPixmap);
-    if (!image)
-    {
-	fprintf(stderr, "Warning! skaux.GetPixel: image == NULL");
-	retval = 0;
-    }
-    else
-    {
-	retval = XGetPixel(image, 0, 0);
-	XDestroyImage(image);
-    }
-
-    return PyInt_FromLong(retval);
-}
+// PyObject *
+// SKAux_GetPixel(PyObject * self, PyObject * arg)
+// {
+//     XImage  * image;
+//     PaxGCObject *gc_object;
+//     int		x, y;
+//     int		retval;
+// 
+//     if (!PyArg_ParseTuple(arg, "Oii", &gc_object, &x, &y))
+// 	return NULL;
+// 
+//     image = XGetImage(gc_object->display, gc_object->drawable,
+// 		      x, y, 1, 1, 0xFFFFFFFF, ZPixmap);
+//     if (!image)
+//     {
+// 	fprintf(stderr, "Warning! skaux.GetPixel: image == NULL");
+// 	retval = 0;
+//     }
+//     else
+//     {
+// 	retval = XGetPixel(image, 0, 0);
+// 	XDestroyImage(image);
+//     }
+// 
+//     return PyInt_FromLong(retval);
+// }
 
     
 /*
@@ -99,25 +99,25 @@ SKAux_GetPixel(PyObject * self, PyObject * arg)
 PyObject *
 SKAux_DrawBezier(PyObject * self, PyObject * arg)
 {
-    PaxGCObject *gc_object;
-    int		x[4],
-		y[4];
-    XPoint	points[BEZIER_FILL_LENGTH];
-    int		count;
-    
-    if (!PyArg_ParseTuple(arg, "Oiiiiiiii",
-			  &gc_object,
-			  &x[0], &y[0], &x[1], &y[1],
-			  &x[2], &y[2], &x[3],&y[3]))
+// //     PaxGCObject *gc_object;
+// //     int		x[4],
+// // 		y[4];
+// //     XPoint	points[BEZIER_FILL_LENGTH];
+// //     int		count;
+// //     
+// //     if (!PyArg_ParseTuple(arg, "Oiiiiiiii",
+// // 			  &gc_object,
+// // 			  &x[0], &y[0], &x[1], &y[1],
+// // 			  &x[2], &y[2], &x[3],&y[3]))
 	return NULL;
-
-    count = bezier_fill_points(points, x, y);
-    XDrawLines(gc_object->display, gc_object->drawable,
-	       gc_object->gc,
-	       points, count, CoordModeOrigin);
-    
-    Py_INCREF(Py_None);
-    return Py_None;
+// // 
+// //     count = bezier_fill_points(points, x, y);
+// //     XDrawLines(gc_object->display, gc_object->drawable,
+// // 	       gc_object->gc,
+// // 	       points, count, CoordModeOrigin);
+//     
+//     Py_INCREF(Py_None);
+//     return Py_None;
 }
 
 /*

@@ -19,11 +19,11 @@
 #ifndef _SKETCH_H
 #define _SKETCH_H
 
-#include <paxmodule.h>
-
-extern PyObject * Pax_GCType;
-extern PyObject * Pax_ImageType;
-extern Pax_Functions * pax_functions;
+// #include <paxmodule.h>
+// 
+// extern PyObject * Pax_GCType;
+// extern PyObject * Pax_ImageType;
+// extern Pax_Functions * pax_functions;
 
 
 #endif /* _SKETCH_H */

@@ -74,7 +74,7 @@
 # === Bootstrap variables (edited through "make boot") ===
 
 # The prefix used by "make inclinstall libainstall" of core python
-installdir=	_MY_INSTALL_DIR_
+installdir=	
 
 # The exec_prefix used by the same
 exec_installdir=$(installdir)
@@ -129,7 +129,7 @@ LINKFORSHARED=	@LINKFORSHARED@
 #@SET_CCC@
 
 # Install prefix for architecture-independent files
-prefix=	_MY_INSTALL_PREFIX_	
+prefix=		
 
 # Install prefix for architecture-dependent files
 exec_prefix=	$(prefix)
