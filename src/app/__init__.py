@@ -10,7 +10,7 @@
 import os, sys, string
 from app.utils import output 
 
-#print output.yellow('\nsK1 starts...\n')
+
 
 _pkgdir = __path__[0]
 
