@@ -13,7 +13,7 @@
 from string import atoi
 
 from app.events.warn import warn, INTERNAL, USER
-from app._sketch import RGBColor, XVisual
+from app._sketch import RGBColor#, XVisual
 from app import config, _
 import app
 
