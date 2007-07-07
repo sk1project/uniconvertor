@@ -29,7 +29,7 @@
 #include "skrect.h"
 #include "sktrafo.h"
 #include "curveobject.h"
-#include "curvedraw.h"
+// #include "curvedraw.h"
 #include "curvelow.h"
 #include "curvemisc.h"
 
@@ -2040,7 +2040,7 @@ static struct memberlist curve_memberlist[] = {
 /* for maximum performance, this list should contain the methods called
    most frequently at the beginning */
 static struct PyMethodDef curve_methods[] = {
-    {"draw_transformed",(PyCFunction)SKCurve_PyDrawTransformed,	1},
+//     {"draw_transformed",(PyCFunction)SKCurve_PyDrawTransformed,	1},
     {"hit_point",	(PyCFunction)curve_hit_point,		1},
     
     {"accurate_rect",	(PyCFunction)curve_accurate_rect,	1},
