@@ -8,7 +8,7 @@
 # For more info see COPYRIGHTS file in sK1 root directory.
 
 '''
-USAGE: uniconvertor.sh [INPUT FILE] [OUTPUT FILE]
+USAGE: uniconv [INPUT FILE] [OUTPUT FILE]
 
 Converts one vector graphics format to another using sK1 engine.
 
@@ -32,13 +32,13 @@ Converts one vector graphics format to another using sK1 engine.
      SK  - Sketch/Skencil files
      SK1 - sK1 vector graphics files
 
-Example: uniconvertor.sh drawing.cdr drawing.svg\n
+Example: uniconv drawing.cdr drawing.svg\n
 '''
 
 
 import sys, os
 
-if sys.argv[1]=='--help':
+if len(sys.argv)<2 or sys.argv[1]=='--help':
 	print __doc__
 	sys.exit(0)
 if not os.path.isfile(sys.argv[1]):
