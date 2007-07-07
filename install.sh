@@ -1,8 +1,7 @@
 #!/bin/sh
 
 #The following devel packages should be installed:
-# libtk8.4
-# libtcl8.4
+# python
 # python-imaging
 
 # ---------------------------------------------------------------------------
@@ -30,19 +29,19 @@ echo
 # INSTALLATION PATH
 # ---------------------------------------------------------------------------
 
-INSTALL_PATH=/usr/local/lib
+INSTALL_PATH=/usr/local
 
 # ---------------------------------------------------------------------------
 # ENVIROMENT VARIABLES
 # ---------------------------------------------------------------------------
 
-EPREFIX=$INSTALL_PATH/UniConvertor
+EPREFIX=$INSTALL_PATH/lib/UniConvertor
 PREFIX=$EPREFIX
 
 myEPREFIX=
 
 # ---------------------------------------------------------------------------
-# PREPARE sK1 INSTALLATION
+# Prepare UniConvertor installation
 # ---------------------------------------------------------------------------
 echo "Clearing possible previous UniConvertor installation..."
 rm -rf $PREFIX
@@ -94,36 +93,10 @@ check
 #------------install-------------
 cp streamfilter.so ../../modules/streamfilter.so
 
-echo
-echo ---------------------------------------------------------------------------
-echo pax-0.6.0 Build
-echo ---------------------------------------------------------------------------
-echo
-CURRENT_STEP="pax-0.6.0 module"
-cd ../pax-0.6.0
-rm -rf *.o
-
-sed 's/_MY_INSTALL_DIR_/'"$myEPREFIX"'/g' Makefile.pre.in |sed 's/_MY_INSTALL_PREFIX_/'"$myEPREFIX"'/g'> Makefile.pre; rm -f Makefile.pre.in;mv Makefile.pre Makefile.pre.in
-
-myTCL_HEADERS=`echo $RE_PREFIX/include|sed 's/\//\\\ \//g'|sed 's/ \//\//g'`
-myTCL_LIBS=`echo $RE_PREFIX/lib|sed 's/\//\\\ \//g'|sed 's/ \//\//g'`
-
-sed 's/_MY_TCL_HEADERS_/'"$myTCL_HEADERS"'/g' Setup.in |sed 's/_MY_TCL_LIBS_/'"$myTCL_LIBS"'/g'> Setup.in.pre; rm -f Setup.in; mv Setup.in.pre Setup.in
-
-OPERATION="make -f"
-make -f Makefile.pre.in Makefile VERSION=2.4 installdir=/usr
-check
-OPERATION="make"
-make
-check
-#------------install-------------
-cp paxtkinter.so ../../modules/paxtkinter.so
-cp paxmodule.so ../../modules/paxmodule.so
-
 
 echo
 echo ---------------------------------------------------------------------------
-echo PS Modules
+echo Objects Modules
 echo ---------------------------------------------------------------------------
 echo
 CURRENT_STEP="Modules"
@@ -153,32 +126,14 @@ cp pstokenize.so ../../modules/pstokenize.so
 
 cd ..;cd ..
 mv modules $PREFIX/app/modules;rm -rf build
-# START=$PREFIX/sk1.sh
-# 
-# echo "#!/bin/sh">>$START
-# echo "#This script is automatically created by sK1 build">>$START
-# echo "">>$START
-# echo "export LD_LIBRARY_PATH="$LD_LIBRARY_PATH>>$START
-# echo "export PATH=$RE_PREFIX/bin:\$PATH">>$START
-# echo "">>$START
-# echo "echo \"sK1 starts...\"">>$START
-# echo "python $PREFIX/main.py \$1">>$START
-# 
-# chmod +x $START
-# 
-# START=$PREFIX/uniconvertor.sh
-# 
-# echo "#!/bin/sh">>$START
-# echo "#This script is automatically created by sK1 build">>$START
-# echo "">>$START
-# echo "export LD_LIBRARY_PATH="$LD_LIBRARY_PATH>>$START
-# echo "export PATH=$RE_PREFIX/bin:\$PATH">>$START
-# echo "">>$START
-# echo "python $PREFIX/conv.py \$1 \$2">>$START
-# 
-# chmod +x $START
+
+START=$PREFIX/uniconvertor.py
+chmod +x $START
+ln -s $START $INSTALL_PATH/bin/uniconv
 
 echo
 echo ---------------------------------------------------------------------------
-echo UniConvertor build completed! To launch UniConvertor use $PREFIX/uniconvertor.py script
+echo UniConvertor buildand installation are completed! 
+echo To launch UniConvertor use "<uniconv> command"
+echo  or $PREFIX/uniconvertor.py script
 echo ---------------------------------------------------------------------------
