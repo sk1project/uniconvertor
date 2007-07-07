@@ -5,9 +5,13 @@
 # This library is covered by GNU Library General Public License.
 # For more info see COPYRIGHTS file in sK1 root directory.
 import os, app
-from lcms import cmsOpenProfileFromFile,cmsCreateTransform,cmsDoTransform, \
-	 cmsDeleteTransform,cmsCloseProfile,TYPE_RGB_8,TYPE_CMYK_8, \
-	 INTENT_PERCEPTUAL,cmsFLAGS_NOTPRECALC,COLORB, INTENT_RELATIVE_COLORIMETRIC
+
+try:
+	from lcms import cmsOpenProfileFromFile,cmsCreateTransform,cmsDoTransform, \
+		cmsDeleteTransform,cmsCloseProfile,TYPE_RGB_8,TYPE_CMYK_8, \
+		INTENT_PERCEPTUAL,cmsFLAGS_NOTPRECALC,COLORB, INTENT_RELATIVE_COLORIMETRIC
+except:
+	app.config.preferences.use_cms=0
 	
 class ColorManager:
 	rgb_monitor=None
@@ -20,7 +24,8 @@ class ColorManager:
 	hMONITOR=None
 	
 	def __init__(self):
-		self.refresh_profiles()
+		if app.config.preferences.use_cms:
+			self.refresh_profiles()
 		
 	def refresh_profiles(self):
 		if app.config.preferences.user_rgb_profile and os.path.isfile(app.config.preferences.user_rgb_profile):
