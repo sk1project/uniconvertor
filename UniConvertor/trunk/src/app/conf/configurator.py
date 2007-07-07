@@ -39,7 +39,6 @@ class Configurator:
 		self.plugins_dir = os.path.join(self.sk_dir,'app/plugins/Objects/')  # Subdirectory for plugins
 		self.plugin_path.append(self.plugins_dir)
 		self.plugin_path.append(self.filters_dir)
-		self.plugin_path.append(self.user_plugins)
 
 		self.user_preferences_file = os.path.join(self.user_config_dir, 'preferences.xml')
 		
