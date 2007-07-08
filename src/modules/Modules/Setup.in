@@ -7,16 +7,13 @@
 
 *shared*
 
-
 # Directory where the streamfilter header files can be found
 FILTER_DIR = ../Filter
 
 _sketchmodule _sketchmodule.c \
 	skpoint.c sktrafo.c skrect.c skfm.c \
 	curvefunc.c curveobject.c curvelow.c curvemisc.c \
-	skaux.c skimage.c skcolor.c \
-# *** Edit to reflect where the file Imaging.h of the Imaging library is:
-	-I‎/usr/include/PIL
+	skaux.c skimage.c skcolor.c 
 
 _type1module _type1module.c 
 

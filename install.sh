@@ -1,8 +1,8 @@
 #!/bin/sh
 
-#The following devel packages should be installed:
-# python
-# python-imaging
+#To build UniConvertor python devel package should be installed.
+#To run UniConvertor you need Python, Python Image Library
+#and pylcms (optional for color managment).
 
 # ---------------------------------------------------------------------------
 # Check subroutine
@@ -37,8 +37,6 @@ INSTALL_PATH=/usr/local
 
 EPREFIX=$INSTALL_PATH/lib/UniConvertor
 PREFIX=$EPREFIX
-
-myEPREFIX=
 
 # ---------------------------------------------------------------------------
 # Prepare UniConvertor installation
@@ -81,8 +79,6 @@ echo
 CURRENT_STEP="Filter module"
 cd Filter
 
-sed 's/_MY_INSTALL_DIR_/'"$myEPREFIX"'/g' Makefile.pre.in |sed 's/_MY_INSTALL_PREFIX_/'"$myEPREFIX"'/g'> Makefile.pre; rm -f Makefile.pre.in;mv Makefile.pre Makefile.pre.in
-
 ls
 OPERATION="make -f"
 make -f Makefile.pre.in Makefile VERSION=2.4 installdir=/usr
@@ -102,10 +98,6 @@ echo
 CURRENT_STEP="Modules"
 
 cd ../Modules
-
-# cat ../../patches/Modules/Setup.config > Setup.config
-
-sed 's/_MY_INSTALL_DIR_/'"$myEPREFIX"'/g' Makefile.pre.in |sed 's/_MY_INSTALL_PREFIX_/'"$myEPREFIX"'/g'> Makefile.pre; rm -f Makefile.pre.in;mv Makefile.pre Makefile.pre.in
 
 OPERATION="make -f"
 make -f Makefile.pre.in Makefile VERSION=2.4 installdir=/usr
@@ -129,7 +121,7 @@ ln -s $START $INSTALL_PATH/bin/uniconv
 
 echo
 echo ---------------------------------------------------------------------------
-echo UniConvertor buildand installation are completed! 
+echo UniConvertor build and installation are completed! 
 echo To launch UniConvertor use "<uniconv> command"
 echo  or $PREFIX/uniconvertor.py script
 echo ---------------------------------------------------------------------------

@@ -128,7 +128,7 @@ add_int(PyObject * dict, int i, char * name)
 void
 init_sketch()
 {
-    PyObject * d, *m, *r, *pax;
+    PyObject * d, *m, *r;
 
     m = Py_InitModule("_sketch", curve_functions);
     d = PyModule_GetDict(m);

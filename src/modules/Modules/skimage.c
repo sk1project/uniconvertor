@@ -24,7 +24,7 @@
 // #include <X11/Xlib.h>
 // #include <X11/Xutil.h>
 
-#include <Imaging.h>
+#include "Imaging.h"
 // #include <imageobject.h>
 // #include <regionobject.h>
 
