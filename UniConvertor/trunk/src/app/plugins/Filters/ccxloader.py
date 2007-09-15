@@ -1920,10 +1920,6 @@ class CDRXfile:
 				else:
 					self.file_content=self.file_content+chunk.fourcc+struct.pack('<I',rawsize)+chunk.data
 		self.file_content='RIFF'+struct.pack('<I',4+len(self.file_content))+'CDRX'+self.file_content
-		
-		result = open('/home/igor/result.cdr', 'wb')
-		result.write(self.file_content)
-		result.close()
 	
 	def seek(self, point):
 		self.point=point
