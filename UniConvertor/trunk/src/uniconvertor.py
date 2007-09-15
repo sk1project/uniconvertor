@@ -15,6 +15,7 @@ Converts one vector graphics format to another using sK1 engine.
  Allowed input formats:
      AI  - Adobe Illustrator files (postscript based)
      CDR - CorelDRAW Graphics files (7-X3 versions)
+     CCX - Corel Compressed Exchange files
      CMX - Corel Presentation Exchange files (CMX1 format)
      SVG - Scalable Vector Graphics files
      FIG - XFig files
