@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2007 by Igor E. Novikov
+# Copyright (C) 2007 by Igor E. Novikov, Valek Fillipov
 #
-# This library is covered by GNU Library General Public License.
+# This library is covered by GNU General Public License v2.0.
 # For more info see COPYRIGHTS file in sK1 root directory.
 
 ###Sketch Config
 #type = Import
 #class_name = 'CDRLoader'
-#rx_magic = '(?s)RIFF....CDR'
+#rx_magic = '(?s)RIFF....CDR[789ABCD]'
 #tk_file_type = ('CorelDRAW Graphics', '.cdr')
 #format_name = 'CDR'
 #unload = 1
@@ -19,7 +19,7 @@
 
 
 import sys, types, struct, zlib, math
-#from math import pi
+
 from struct import unpack, calcsize
 
 from streamfilter import BinaryInput
@@ -582,10 +582,8 @@ class CDRLoader(GenericLoader):
 	def import_curves(self):
 		for obj in self.info.paths_heap:
 			if obj==1:
-				#pass
 				self.begin_group()
 			elif obj==0:
-				#pass
 				self.end_group()
 			else:
 				style = self.style
