@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 # Copyright (C) 2007 by Igor E. Novikov
-# Copyright (C) 1997, 1998, 1999, 2000, 2002, 2006 by Bernhard Herzog
 #
 # This library is covered by GNU Library General Public License.
 # For more info see COPYRIGHTS file in sK1 root directory.
@@ -15,6 +14,7 @@ Converts one vector graphics format to another using sK1 engine.
  Allowed input formats:
      AI  - Adobe Illustrator files (postscript based)
      CDR - CorelDRAW Graphics files (7-X3 versions)
+     CDT - CorelDRAW templates files (7-X3 versions)
      CCX - Corel Compressed Exchange files
      CMX - Corel Presentation Exchange files (CMX1 format)
      SVG - Scalable Vector Graphics files

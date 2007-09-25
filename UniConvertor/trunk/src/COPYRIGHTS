@@ -1,11 +1,9 @@
-sK1 - A Python&Tcl/Tk -based vector graphics editor for prepress
-Copyright (C) 2003-2006 by Igor Novikov
-
-sK1 uses Sketch engine:
-Copyright (C) 1998, 1999, 2000, 2002, 2003 by Bernhard Herzog
+UniConvertor - A Python-based universal verctor graphics translator
+Copyright (C) 2007 by Igor Novikov, Valek Fillipov
 
 This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU Library General Public
+modify it under the terms of GNU Library General Public
+License and some files under terms of GNU General Public
 License as published by the Free Software Foundation; either
 version 2 of the License, or (at your option) any later version.
 
