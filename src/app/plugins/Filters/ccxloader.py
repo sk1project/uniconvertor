@@ -132,7 +132,6 @@ def read_chunk_header(file):
 		sub_type = file.read(4)
 		if len(sub_type) < 4:
 			raise RiffEOF
-		print sub_type, length
 	else:
 		sub_type = ''
 	return ChunkHeader(filepos, chunk_type, length, sub_type)
@@ -243,7 +242,7 @@ class CCXFile:
 		self.bitmapindex = [None,]
 		self.embeddedindex = [None,]
 		self.arrowindex = [None,]
-		self.verbosity = 1
+		self.verbosity = 0
 		self.angle_factor = 1
 		self.pages = []
 
@@ -687,7 +686,6 @@ class CCXFile:
 	def process_chunks(self):
 		chunkdict = {}
 		for chunk in self.chunks:
-			print 'dict: '+chunk.sub_type+' '+chunk.chunk_type
 			if chunk.sub_type:
 				chunkdict[chunk.sub_type] = chunk
 			elif chunk.chunk_type == 'page':
@@ -710,9 +708,7 @@ class CCXFile:
 
 	def Load(self):
 		self.read_header()
-		print 'header read'
 		self.chunks = self.read_subchunks(self.riff_header)
-		print 'subchunks read'
 		self.process_chunks()
 
 	def NumPages(self):
@@ -1834,7 +1830,6 @@ class CCXLoader(GenericLoader):
 
 	def Load(self):
 		try:
-			print 'filename:', self.filename
 			self.file=CDRXfile(self.filename)
 			cmx = CCXFile(self, self.file)
 			cmx.Load()
@@ -1920,7 +1915,7 @@ class CDRXfile:
 				else:
 					self.file_content=self.file_content+chunk.fourcc+struct.pack('<I',rawsize)+chunk.data
 		self.file_content='RIFF'+struct.pack('<I',4+len(self.file_content))+'CDRX'+self.file_content
-	
+		
 	def seek(self, point):
 		self.point=point
 	
