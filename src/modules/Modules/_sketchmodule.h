@@ -1,4 +1,5 @@
 /* Sketch - A Python-based interactive drawing program
+ * Copyright (C) 2006 by Igor E.Novikov
  * Copyright (C) 1998 by Bernhard Herzog
  *
  * This library is free software; you can redistribute it and/or
@@ -19,11 +20,15 @@
 #ifndef _SKETCH_H
 #define _SKETCH_H
 
+// #include <cairo-xlib.h>
+// #include <cairo.h>
 // #include <paxmodule.h>
 // 
 // extern PyObject * Pax_GCType;
 // extern PyObject * Pax_ImageType;
 // extern Pax_Functions * pax_functions;
+
+
 
 
 #endif /* _SKETCH_H */

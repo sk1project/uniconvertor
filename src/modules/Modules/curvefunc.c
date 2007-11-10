@@ -23,7 +23,7 @@
 
 #include "sktrafo.h"
 #include "curveobject.h"
-// #include "curvedraw.h"
+
 #include "curvefunc.h"
 #include "curvelow.h"
 

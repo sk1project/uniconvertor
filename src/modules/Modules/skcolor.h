@@ -33,10 +33,6 @@ extern PyTypeObject SKColorType;
 
 PyObject * SKColor_FromRGB(double red, double green, double blue);
 
-// #include <X11/Xlib.h>
-// #include <X11/Xutil.h>
-
-// struct SKVisualObject_s;
 
 typedef union
 {
@@ -45,60 +41,16 @@ typedef union
 }  SKDitherInfo;
 
 
-// typedef PyObject * (*SKVisual_GetPixel)(struct SKVisualObject_s * self,
-// 					SKColorObject * color);
-// typedef void (*SKVisual_FreeExtra)(struct SKVisualObject_s * self);
 
-// typedef struct SKVisualObject_s {
-//     PyObject_HEAD
-//     Display * display;
-//     XVisualInfo * visualinfo;
-//         
-//     SKVisual_GetPixel	get_pixel;
-//     SKVisual_FreeExtra	free_extra;
-// 
-//     double gamma;
-//     double gamma_inv;	/* 1 / gamma */
-// 
-//     /* XXX: the data for different visual types should be a union (?) */
-//     
-//     /* true color */
-//     long red_bits[256];
-//     long green_bits[256];
-//     long blue_bits[256];
-//     int red_index;
-//     int green_index;
-//     int blue_index;
-// 
-//     /* pseudo color */
-//     int shades_r;
-//     int shades_g;
-//     int shades_b;
-//     int shades_gray;
-//     int cube_size;
-//     long pseudocolor_table[256];
-//     SKDitherInfo * dither_red;
-//     SKDitherInfo * dither_green;
-//     SKDitherInfo * dither_blue;
-//     SKDitherInfo * dither_gray;
-//     unsigned char ***dither_matrix;
-//     XImage * tile;
-//     GC	tilegc;
-// } SKVisualObject;
 
 extern PyTypeObject SKVisualType;
 #define SKVisual_Check(v)		((v)->ob_type == &SKVisualType)
 
-/* in skdither.c */
-// void skvisual_init_dither(SKVisualObject * self);
 
 /* Python functions */
 
-// PyObject * skcolor_xvisual(PyObject * self, PyObject * args);
 PyObject * skcolor_rgbcolor(PyObject * self, PyObject * args);
 PyObject * skcolor_num_allocated(PyObject * self, PyObject * args);
-
-
 
 
 #endif /* SKCOLOR_H */

@@ -1,5 +1,5 @@
 /* Sketch - A Python-based interactive drawing program
- * Copyright (C) 1998, 1999, 2001 by Bernhard Herzog
+ * Copyright (C) 1998, 1999, 2000, 2001, 2006 by Bernhard Herzog
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -27,6 +27,8 @@
  */
 
 #include <ctype.h>
+#include <locale.h>
+#include <string.h>
 #include <Python.h>
 
 typedef struct {
@@ -208,7 +210,19 @@ sklex(PyObject ** lval, SKLineInfo * buffer)
 		p += 1;
 	    if (*p == '.' || *p == 'e' || *p == 'E')
 	    {
-		double result = strtod(buffer->buffer - 1, &(buffer->buffer));
+		char * old_locale;
+		double result;
+
+		/* Change LC_NUMERIC locale to "C" around the strtod
+		 * call so that it parses the number correctly. */
+		old_locale = strdup(setlocale(LC_NUMERIC, NULL));
+		setlocale(LC_NUMERIC, "C");
+
+		result = strtod(buffer->buffer - 1, &(buffer->buffer));
+
+		setlocale(LC_NUMERIC, old_locale);
+		free(old_locale);
+
 		*lval = PyFloat_FromDouble(result);
 		return FLOAT;
 	    }

@@ -22,8 +22,6 @@
 #include <Python.h>
 
 
-PyObject * SKAux_DrawGrid(PyObject * self, PyObject * arg);
-PyObject * SKAux_GetPixel(PyObject * self, PyObject * arg);
 PyObject * SKAux_DrawBezier(PyObject * self, PyObject * args);
 PyObject * SKAux_TransformRectangle(PyObject * self, PyObject * args);
 PyObject * SKAux_IdIndex(PyObject * self, PyObject * args);

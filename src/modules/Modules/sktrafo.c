@@ -1,5 +1,5 @@
 /* Sketch - A Python-based interactive drawing program
- * Copyright (C) 1997, 1998, 2000, 2002 by Bernhard Herzog
+ * Copyright (C) 1997, 1998, 2000, 2002, 2006 by Bernhard Herzog
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -61,7 +61,7 @@ SKTrafo_FromDouble(double m11, double m21, double m12, double m22,
 {
     SKTrafoObject * self;
 
-    self = PyObject_NEW(SKTrafoObject, &SKTrafoType);
+    self = PyObject_New(SKTrafoObject, &SKTrafoType);
     if (self == NULL)
 	return NULL;
 
@@ -82,7 +82,7 @@ SKTrafo_FromDouble(double m11, double m21, double m12, double m22,
 static void
 sktrafo_dealloc(SKTrafoObject * self)
 {
-    PyMem_DEL(self);
+    PyObject_Del(self);
 #if SKTRAFO_COUNT_ALLOC
     allocated--;
 #endif
