@@ -20,19 +20,16 @@
 #define SKIMAGE_H
 
 #include <Python.h>
-// #include <pixmapobject.h>
 
 PyObject * skimage_write_ps_hex(PyObject * self, PyObject * args);
-// PyObject * fill_conical_gradient(PyObject * self, PyObject * args);
-// PyObject * fill_radial_gradient(PyObject * self, PyObject * args);
-// PyObject * fill_axial_gradient(PyObject * self, PyObject * args);
-// PyObject * fill_transformed_tile(PyObject * self, PyObject * args);
-// PyObject * fill_hsv_z(PyObject * self, PyObject * args);
-// PyObject * fill_hsv_xy(PyObject * self, PyObject * args);
-// PyObject * fill_rgb_z(PyObject * self, PyObject * args);
-// PyObject * fill_rgb_xy(PyObject * self, PyObject * args);
-// PyObject * transform_to_ximage(PyObject * self, PyObject * args);
-// PyObject * copy_image_to_ximage(PyObject * self, PyObject * args);
+PyObject * fill_conical_gradient(PyObject * self, PyObject * args);
+PyObject * fill_radial_gradient(PyObject * self, PyObject * args);
+PyObject * fill_axial_gradient(PyObject * self, PyObject * args);
+PyObject * fill_transformed_tile(PyObject * self, PyObject * args);
+PyObject * fill_hsv_z(PyObject * self, PyObject * args);
+PyObject * fill_hsv_xy(PyObject * self, PyObject * args);
+PyObject * fill_rgb_z(PyObject * self, PyObject * args);
+PyObject * fill_rgb_xy(PyObject * self, PyObject * args);
 
 
 #endif

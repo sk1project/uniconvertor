@@ -1,5 +1,5 @@
 /* Sketch - A Python-based interactive drawing program
- * Copyright (C) 1997, 1998, 2002 by Bernhard Herzog
+ * Copyright (C) 1997, 1998, 2002, 2006 by Bernhard Herzog
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -75,7 +75,7 @@ SKFontMetric_New()
 {
     SKFontMetric * self;
 
-    self = PyObject_NEW(SKFontMetric, &SKFontMetricType);
+    self = PyObject_New(SKFontMetric, &SKFontMetricType);
     if (self == NULL)
 	return NULL;
 
@@ -85,7 +85,7 @@ SKFontMetric_New()
 static void
 skfm_dealloc(SKFontMetric * self)
 {
-    PyMem_DEL(self);
+    PyObject_Del(self);
 }
 
 

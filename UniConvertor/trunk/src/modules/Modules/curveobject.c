@@ -1,5 +1,5 @@
 /* Sketch - A Python-based interactive drawing program
- * Copyright (C) 1997, 1998, 1999, 2000, 2001, 2002, 2003 by Bernhard Herzog
+ * Copyright (C) 1997 -- 2006 by Bernhard Herzog
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -19,6 +19,8 @@
 /* a poly bezier object */
 
 #include <math.h>
+#include <string.h>
+#include <locale.h>
 
 #include <Python.h>
 #include <structmember.h>
@@ -29,7 +31,7 @@
 #include "skrect.h"
 #include "sktrafo.h"
 #include "curveobject.h"
-// #include "curvedraw.h"
+
 #include "curvelow.h"
 #include "curvemisc.h"
 
@@ -107,7 +109,7 @@ SKCurve_New(int length)
     SKCurveObject * self;
     int i;
 
-    self = PyObject_NEW(SKCurveObject, &SKCurveType);
+    self = PyObject_New(SKCurveObject, &SKCurveType);
     if (self == NULL)
 	return NULL;
 
@@ -117,7 +119,7 @@ SKCurve_New(int length)
     self->segments = malloc(length * sizeof(CurveSegment));
     if (!self->segments)
     {
-	PyMem_DEL(self);
+	PyObject_Del(self);
 	return PyErr_NoMemory();
     }
     self->allocated = length;
@@ -218,7 +220,7 @@ static void
 curve_dealloc(SKCurveObject * self)
 {
     free(self->segments);
-    PyMem_DEL(self);
+    PyObject_Del(self);
     paths_allocated--;
 }
 
@@ -1449,6 +1451,10 @@ static int
 curve_parse_string_append(SKCurveObject * self, const char * string)
 {
     CurveSegment segment;
+    char * old_locale;
+
+    old_locale = strdup(setlocale(LC_NUMERIC, NULL));
+    setlocale(LC_NUMERIC, "C");
     
     if (string[1] == 'c')
     {
@@ -1460,7 +1466,7 @@ curve_parse_string_append(SKCurveObject * self, const char * string)
 		   &x1, &y1, &x2, &y2, &x, &y, &cont) != 7)
 	{
 	    PyErr_SetString(PyExc_ValueError, "cannot parse string");
-	    return 0;
+	    goto fail;
 	}
 
 	segment.cont = cont;
@@ -1469,7 +1475,7 @@ curve_parse_string_append(SKCurveObject * self, const char * string)
 	segment.x2 = x2;	segment.y2 = y2;
 	
 	if (!SKCurve_AppendSegment(self, &segment))
-	    return 0;
+	    goto fail;
     }
     else if (string[1] == 's')
     {
@@ -1480,23 +1486,28 @@ curve_parse_string_append(SKCurveObject * self, const char * string)
 	if (sscanf(string, "bs%*[ (]%lf,%lf,%d", &x, &y, &cont) != 3)
 	{
 	    PyErr_SetString(PyExc_ValueError, "cannot parse string");
-	    return 0;
+	    goto fail;
 	}
 
 	segment.cont = cont;
 	segment.x = x;		segment.y = y;
 
 	if (!SKCurve_AppendSegment(self, &segment))
-	    return 0;
+	    goto fail;
     }
     else
     {
 	PyErr_SetString(PyExc_ValueError,
 			"string must begin with 'bc' or 'bs'");
-	return 0;
+	goto fail;
     }
 
     return 1;
+
+fail:
+    setlocale(LC_NUMERIC, old_locale);
+    free(old_locale);
+    return 0;
 }
 
 static PyObject *
@@ -1528,7 +1539,7 @@ curve_append_from_file(SKCurveObject * self, PyObject * args)
     PyObject * line = NULL;
     const char *buf;
 
-    if (!PyArg_ParseTuple(args, "O!", &PyFile_Type, &pyfile))
+    if (!PyArg_ParseTuple(args, "O", &pyfile))
 	return NULL;
 
     while ((line = PyFile_GetLine(pyfile, 0)) && (PyString_Size(line) != 0))

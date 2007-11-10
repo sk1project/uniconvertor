@@ -1,5 +1,5 @@
 /* Sketch - A Python-based interactive drawing program
- * Copyright (C) 1996, 1997, 1998, 2001, 2002 by Bernhard Herzog
+ * Copyright (C) 1996, 1997, 1998, 2001, 2002, 2006 by Bernhard Herzog
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -45,7 +45,7 @@ SKPoint_FromXY(SKCoord x, SKCoord y)
 {
     SKPointObject * self;
 
-    self = PyObject_NEW(SKPointObject, &SKPointType);
+    self = PyObject_New(SKPointObject, &SKPointType);
     if (self == NULL)
 	return NULL;
 
@@ -62,7 +62,7 @@ SKPoint_FromXY(SKCoord x, SKCoord y)
 static void
 skpoint_dealloc(SKPointObject * self)
 {
-    PyMem_DEL(self);
+    PyObject_Del(self);
 #if SKPOINT_COUNT_ALLOC
     allocated -= 1;
 #endif

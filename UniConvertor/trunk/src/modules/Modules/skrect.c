@@ -1,5 +1,5 @@
 /* Sketch - A Python-based interactive drawing program
- * Copyright (C) 1997, 1998, 1999, 2001, 2002 by Bernhard Herzog
+ * Copyright (C) 1997, 1998, 1999, 2001, 2002, 2006 by Bernhard Herzog
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -61,7 +61,7 @@ static SKRectObject *
 fill_free_list(void)
 {
     SKRectObject *p, *q;
-    p = PyMem_NEW(SKRectObject, N_RECTOBJECTS);
+    p = PyMem_Malloc(sizeof(SKRectObject) * N_RECTOBJECTS);
     if (p == NULL)
 	return (SKRectObject *)PyErr_NoMemory();
     q = p + N_RECTOBJECTS;
@@ -89,7 +89,7 @@ SKRect_FromDouble(double left, double bottom, double right, double top)
     self->ob_type = &SKRectType;
     _Py_NewReference(self);
 #else
-    self = PyObject_NEW(SKRectObject, &SKRectType);
+    self = PyObject_New(SKRectObject, &SKRectType);
     if (self == NULL)
 	return NULL;
 #endif
@@ -114,7 +114,7 @@ skrect_dealloc(SKRectObject * self)
     self->ob_type = (PyTypeObject*)free_list;
     free_list = self;
 #else
-    PyMem_DEL(self);
+    PyObject_Del(self);
 #endif
 #if SKRECT_COUNT_ALLOC
     allocated--;

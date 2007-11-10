@@ -1,5 +1,5 @@
 /* Sketch - A Python-based interactive drawing program
- * Copyright (C) 1998, 1999, 2000, 2001 by Bernhard Herzog
+ * Copyright (C) 1998, 1999, 2000, 2001, 2003, 2006 by Bernhard Herzog
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,6 +20,7 @@
  * Functions to tokenize PostScript-files.
  */
 
+#include <locale.h>
 #include <Python.h>
 #include <structmember.h>
 #include <filterobj.h>
@@ -461,7 +462,17 @@ read_name_or_number(PSTokenizerObject * self, int * token, int isname)
 	    p += 1;
 	if (char_types[(int)*p] & FLOATCHAR)
 	{
-	    double result = strtod(start, &numend);
+	    char * old_locale;
+	    double result;
+
+	    /* Change LC_NUMERIC locale to "C" around the strtod
+	     * call so that it parses the number correctly. */
+	    old_locale = strdup(setlocale(LC_NUMERIC, NULL));
+	    setlocale(LC_NUMERIC, "C");
+	    result = strtod(start, &numend);
+	    setlocale(LC_NUMERIC, old_locale);
+	    free(old_locale);
+
 	    if (numend == buf)
 	    {
 		Py_DECREF(value);
@@ -674,7 +685,7 @@ PSTokenizer_FromStream(FilterObject * filter)
 {
     PSTokenizerObject * self;
 
-    self = PyObject_NEW(PSTokenizerObject, &PSTokenizerType);
+    self = PyObject_New(PSTokenizerObject, &PSTokenizerType);
     if (!self)
 	return NULL;
 
@@ -691,7 +702,7 @@ static void
 pstokenizer_dealloc(PSTokenizerObject * self)
 {
     Py_DECREF(self->source);
-    PyMem_DEL(self);
+    PyObject_Del(self);
 }
 
 static PyObject *

@@ -1,5 +1,6 @@
 /* Sketch - A Python-based interactive drawing program
- * Copyright (C) 1997, 1998, 1999 by Bernhard Herzog
+ * Copyright (C) 2006 by Igor E.Novikov
+ * Copyright (C) 1997, 1998, 1999, 2006 by Bernhard Herzog
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -27,13 +28,13 @@
 #include "skfm.h"
 #include "curvefunc.h"
 #include "curveobject.h"
-// #include "curvedraw.h"
+
 #include "skimage.h"
 #include "skcolor.h"
 #include "skaux.h"
 #include "_sketchmodule.h"
 
-// #include <pixmapobject.h>
+
 
 
 static PyMethodDef curve_functions[] = {
@@ -61,10 +62,8 @@ static PyMethodDef curve_functions[] = {
     {"CreateFontMetric",	SKFM_PyCreateMetric,		1},
     
     /* Curve functions */
-//     {"draw_multipath",		SKCurve_PyDrawMultipath,	1},
     {"test_transformed",	SKCurve_PyTestTransformed,	1},
     {"blend_paths",		SKCurve_PyBlendPaths,		1},
-//     {"multicurve_region",	SKCurve_PyMultipathRegion,	1},
     {"CreatePath",		SKCurve_PyCreatePath,		1},
     {"approx_arc",		SKCurve_PyApproxArc,		1},
     {"RectanglePath",		SKCurve_PyRectanglePath,	1},
@@ -72,27 +71,14 @@ static PyMethodDef curve_functions[] = {
     {"num_allocated",		_SKCurve_NumAllocated,		1},
 
     /* image functions */
-//     {"copy_image_to_ximage",	copy_image_to_ximage,		1},
-//     {"transform_to_ximage",	transform_to_ximage,		1},
-//     {"fill_rgb_xy",		fill_rgb_xy,			1},
-//     {"fill_rgb_z",		fill_rgb_z,			1},
-//     {"fill_hsv_xy",		fill_hsv_xy,			1},
-//     {"fill_hsv_z",		fill_hsv_z,			1},
-//     {"fill_axial_gradient",	fill_axial_gradient,		1},
-//     {"fill_radial_gradient",	fill_radial_gradient,		1},
-//     {"fill_conical_gradient",	fill_conical_gradient,		1},
-//     {"fill_transformed_tile",	fill_transformed_tile,		1},
     {"write_ps_hex",		skimage_write_ps_hex,		1},
 
     /* color functions */
     {"RGBColor",		skcolor_rgbcolor,		1},
     {"colors_allocated",	skcolor_num_allocated,		1},
-//     {"XVisual",			skcolor_xvisual,		1},
 
     /* skaux */
     {"DrawBezier",		SKAux_DrawBezier,		1},
-//     {"GetPixel",		SKAux_GetPixel,			1},
-//     {"DrawGrid",		SKAux_DrawGrid,			1},
     {"TransformRectangle",	SKAux_TransformRectangle,	1},
     {"IdIndex",			SKAux_IdIndex,			1},
     {"xlfd_char_range",		xlfd_char_range,		1},
@@ -102,12 +88,6 @@ static PyMethodDef curve_functions[] = {
     {NULL,		NULL} 
 };
 
-/*
- */
-
-// PyObject * Pax_GCType = NULL;
-// PyObject * Pax_ImageType = NULL;
-// Pax_Functions * pax_functions = NULL;
 
 /*
  *	Init module
@@ -126,9 +106,9 @@ add_int(PyObject * dict, int i, char * name)
 }
 
 void
-init_sketch()
+init_sketch(void)
 {
-    PyObject * d, *m, *r;
+    PyObject * d, *m, *r, *pax;
 
     m = Py_InitModule("_sketch", curve_functions);
     d = PyModule_GetDict(m);
@@ -165,7 +145,6 @@ init_sketch()
     PyDict_SetItemString(d, "PointType", (PyObject*)&SKPointType);
     PyDict_SetItemString(d, "TrafoType", (PyObject*)&SKTrafoType);
     PyDict_SetItemString(d, "CurveType", (PyObject*)&SKCurveType);
-//     PyDict_SetItemString(d, "ColorType", (PyObject*)&SKColorType);
 
     /* Curve specific initialization */
 #define ADD_INT(name) add_int(d, name, #name)
@@ -182,20 +161,4 @@ init_sketch()
 
     _SKCurve_InitCurveObject();
 
-    /* import some objects from pax */
-//     pax = PyImport_ImportModule("pax");
-//     if (pax)
-//     {
-// 	Pax_GCType = PyObject_GetAttrString(pax, "PaxGCType");
-// 	if (!Pax_GCType)
-// 	    return;
-// 	Pax_ImageType = PyObject_GetAttrString(pax, "PaxImageType");
-// 	if (!Pax_ImageType)
-// 	    return;
-// 	r = PyObject_GetAttrString(pax, "Pax_Functions");
-// 	if (!r)
-// 	    return;
-// 	pax_functions = (Pax_Functions*)PyCObject_AsVoidPtr(r);
-// 	Py_DECREF(r);
-//     }
 }
