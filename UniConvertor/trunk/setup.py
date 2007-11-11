@@ -62,7 +62,7 @@ if __name__ == "__main__":
 	pstokenize_module = Extension('uniconvertor.app.modules.pstokenize',
 			define_macros = [('MAJOR_VERSION', '1'),
 						('MINOR_VERSION', '0')],
-			sources = [pstokenize_src+'pstokenize.c'])
+			sources = [pstokenize_src+'pstokenize.c', pstokenize_src+'pschartab.c'])
 			
  	skmod_src=src_path+'modules/skmod/'				
 	skmod_module = Extension('uniconvertor.app.modules._sketchmodule',
