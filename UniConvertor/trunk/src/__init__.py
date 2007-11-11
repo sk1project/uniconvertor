@@ -4,7 +4,7 @@
 # Copyright (C) 2007 by Igor E. Novikov
 #
 # This library is covered by GNU Library General Public License.
-# For more info see COPYRIGHTS file in sK1 root directory.
+# For more info see COPYRIGHTS file in root directory.
 
 '''
 USAGE: uniconv [INPUT FILE] [OUTPUT FILE]
@@ -36,7 +36,6 @@ Converts one vector graphics format to another using sK1 engine.
 Example: uniconv drawing.cdr drawing.svg\n
 '''
 
-
 import sys, os
 
 if len(sys.argv)<2 or sys.argv[1]=='--help':
@@ -44,11 +43,18 @@ if len(sys.argv)<2 or sys.argv[1]=='--help':
 	sys.exit(0)
 if not os.path.isfile(sys.argv[1]):
 	print '\nERROR: %s file is not found!\n' % sys.argv[1]
+	print __doc__
 	sys.exit(1)
 if len(sys.argv) != 3:
 	print '\nERROR: incorrect arguments!\n'
 	print __doc__
 	sys.exit(1)
+
+print sys.argv[0], sys.argv[1], sys.argv[2]
+
+_pkgdir = __path__[0]
+if os.path.isdir(appdir):
+	sys.path.insert(1, _pkgdir)
 
 from app.io import load
 from app.plugins import plugins
