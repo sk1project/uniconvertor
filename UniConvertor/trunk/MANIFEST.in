@@ -14,6 +14,7 @@ recursive-include src/modules/skmod *.h
 recursive-include src/modules/skread *.h
 recursive-include src/modules/pstokenize *.h
 recursive-include src/modules/type1mod *.h
+recursive-include src/app/plugins/Filters *.py
 
 
 
