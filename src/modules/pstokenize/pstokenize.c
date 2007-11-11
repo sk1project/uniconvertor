@@ -23,7 +23,7 @@
 #include <locale.h>
 #include <Python.h>
 #include <structmember.h>
-#include <filterobj.h>
+#include "filterobj.h"
 
 #include "pschartab.c"
 
