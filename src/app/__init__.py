@@ -8,8 +8,6 @@
 
 
 import os, sys, string
-from app.utils import output 
-
 
 
 _pkgdir = __path__[0]
