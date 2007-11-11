@@ -1,0 +1,20 @@
+include MANIFEST.in
+include README
+include src/GNU_GPL_v2 src/GNU_LGPL_v2 src/COPYRIGHTS
+include src/uniconv
+include src/modules/filter/README
+include src/app/modules/descr.txt
+recursive-include src/share *.*
+recursive-include src/share/icc *.*
+recursive-include src/share/fonts *.*
+recursive-include src/share/ps_templates *.*
+recursive-include src/share/ps_templates *.*
+recursive-include src/modules/filter *.h
+recursive-include src/modules/skmod *.h
+recursive-include src/modules/skread *.h
+recursive-include src/modules/pstokenize *.h
+recursive-include src/modules/type1mod *.h
+
+
+
+
