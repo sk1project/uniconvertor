@@ -50,11 +50,8 @@ if len(sys.argv) != 3:
 	print __doc__
 	sys.exit(1)
 
-print sys.argv[0], sys.argv[1], sys.argv[2]
-
 _pkgdir = __path__[0]
-if os.path.isdir(appdir):
-	sys.path.insert(1, _pkgdir)
+sys.path.insert(1, _pkgdir)
 
 from app.io import load
 from app.plugins import plugins
@@ -64,6 +61,7 @@ app.init_lib()
 
 doc = load.load_drawing(sys.argv[1])
 extension = os.path.splitext(sys.argv[2])[1]
+plugins.load_plugin_configuration()
 fileformat = plugins.guess_export_plugin(extension)
 if fileformat:
 	saver = plugins.find_export_plugin(fileformat)

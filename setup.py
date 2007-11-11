@@ -19,6 +19,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
 #
 # Usage: 
+#  to build package:   python setup.py build
 #  to install package:   python setup.py install
 #  to create source distribution:   python setup.py sdist
 #  to create binary RPM distribution:  python setup.py bdist_rpm

@@ -163,32 +163,12 @@ from Graphics.text import SimpleText, SimpleTextCreator, PathText
 def init_lib():
 	from app.plugins import plugins
 # 	config.load_user_preferences()
+	plugins.load_plugin_configuration()
 	Issue(None, const.INITIALIZE)
 
 def init_ui():
-	## workaround for a threaded _tkinter in Python 1.5.2
-	#if sys.version[:5] >= '1.5.2':
-		#import paxtkinter
-		#sys.modules['_tkinter'] = paxtkinter
-
-	#init_lib()
-
-	## import the standard scripts
-	#for name in config.preferences.standard_scripts:
-		#__import__(name)
 	pass
 
 def init_modules_from_widget(root):
-	#import pax
-	#import UI.skpixmaps, Graphics.graphics
-	#import UI.tkext, Graphics.color
-	#UI.tkext.InitFromTkapp(root.tk)
-	#if hasattr(root.tk, 'interpaddr'):
-		#tkwin = pax.name_to_window('.', root.tk.interpaddr())
-	#else:
-		#tkwin = pax.name_to_window('.', root.tk)
-	#Graphics.color.InitFromWidget(tkwin, root)
-	#Graphics.graphics.InitFromWidget(tkwin)
-	#UI.skpixmaps.InitFromWidget(tkwin)
 	pass
 
