@@ -36,8 +36,8 @@ class Configurator:
 		
 		self.plugin_path = []  # Directories where sK1 searches for plugins. The expanded plugin_dir is appended to this
 		self.filters_dir = os.path.join(self.sk_dir,'app/plugins/Filters/')  # Subdirectory for i/o filters
-		self.plugins_dir = os.path.join(self.sk_dir,'app/plugins/Objects/')  # Subdirectory for plugins
-		self.plugin_path.append(self.plugins_dir)
+		#self.plugins_dir = os.path.join(self.sk_dir,'app/plugins/Objects/')  # Subdirectory for plugins
+		#self.plugin_path.append(self.plugins_dir)
 		self.plugin_path.append(self.filters_dir)
 
 		self.user_preferences_file = os.path.join(self.user_config_dir, 'preferences.xml')
@@ -52,7 +52,7 @@ class Configurator:
 			self.preferences.active_theme = 'Plastik'
 
 		#===============DEPRECATED VARIABLES===============
-		self.font_path = [os.path.join(self.user_fonts,'type1'), self.user_config_dir]  # Directories where pfa/pfb files are located. The expanded fontmetric_dir is appended to this.
+		self.font_path = [self.user_config_dir]  # Directories where pfa/pfb files are located. The expanded fontmetric_dir is appended to this.
 		self.sketch_dir = base_dir  # The directory where sketch and its modules are found. Set automagically from __init__.py of the Sketch package
 		self.fontmetric_dir = self.user_fonts  # Subdirectory for the font metrics. On startup it is expanded to an absolute pathname.
 		self.postscript_prolog = os.path.join(self.sk_dir, 'share/ps_templates/sk1-proc.ps')  # PostScript Prolog.
@@ -97,7 +97,7 @@ class Configurator:
 	def check_sk_dir(self):		
 		#print 'sK1 directories test...         ',
 		result = True		
-		dirs = (self.sk_share_dir, self.sk_icc, self.sk_fonts, self.sk_ps)
+		dirs = (self.sk_share_dir, self.sk_icc, self.sk_ps)
 		for dir in dirs:
 			if not os.path.isdir(dir): result = False			
 		if not result:
