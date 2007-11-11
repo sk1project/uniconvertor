@@ -1,8 +1,0 @@
-*shared*
-
-# full functionality
-#streamfilter streamfilter.c filterobj.c nullfilter.c linefilter.c subfilefilter.c stringfilter.c hexfilter.c base64filter.c ascii85filter.c zlibfilter.c binfile.c  -DALL_FILTERS -lz
-
-# minimal functionality for UniConvertor:
-streamfilter streamfilter.c filterobj.c linefilter.c subfilefilter.c base64filter.c nullfilter.c stringfilter.c binfile.c hexfilter.c
-
