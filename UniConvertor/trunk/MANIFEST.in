@@ -4,6 +4,7 @@ include src/GNU_GPL_v2 src/GNU_LGPL_v2 src/COPYRIGHTS
 include src/uniconv
 include src/modules/filter/README
 include src/app/modules/descr.txt
+include src/app/VERSION
 recursive-include src/share *.*
 recursive-include src/share/icc *.*
 recursive-include src/share/fonts *.*

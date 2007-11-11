@@ -75,7 +75,7 @@ if __name__ == "__main__":
 			
 	setup (name = 'UniConvertor',
 			version = '1.0',
-			description = 'UniConvertor package',
+			description = 'Universal vector graphics translator',
 			author = 'Igor E. Novikov',
 			author_email = 'igor.e.novikov@gmail.com',
 			maintainer = 'Igor E. Novikov',
@@ -83,8 +83,27 @@ if __name__ == "__main__":
 			url = 'http://sk1project.org',
 			download_url = 'http://sk1project.org/modules.php?name=Products&product=uniconvertor',
 			long_description = '''
-			UniConvertor is a universal vector graphics translator. 
-			It uses sK1 engine to convert one format to another.
+UniConvertor is a universal vector graphics translator. It uses sK1 engine to convert one format to another.
+
+Import filters: 
+  * CorelDRAW ver.7-X3 (CDR/CDT/CCX/CDRX/CMX)
+  * Adobe Illustrator up to 9 ver. (AI postscript based)
+  * Postscript (PS)
+  * Encapsulated Postscript (EPS)
+  * Computer Graphics Metafile (CGM)
+  * Windows Metafile (WMF)
+  * XFIG
+  * Scalable Vector Graphics (SVG)
+  * Skencil/Sketch/sK1 (SK and SK1)
+  * Acorn Draw (AFF)
+
+Export filters: 
+  * AI (Postscript based Adobe Illustrator 5.0 format)
+  * SVG (Scalable Vector Graphics)
+  * SK (Sketch/Skencil format)
+  * SK1 (sK1 format)
+  * CGM (Computer Graphics Metafile)
+  * WMF (Windows Metafile)
 			''',
 		classifiers=[
 			'Development Status :: 6 - Mature',
