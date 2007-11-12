@@ -125,9 +125,6 @@ Export filters:
 			'Programming Language :: C',
 			"Topic :: Multimedia :: Graphics :: Graphics Conversion",
 			],
-			
-			requires=['PIL>=1.1.3'],
-			provides=['uniconvertor 1.0.0'],
 
 			packages = ['uniconvertor',
 				'uniconvertor.app',
