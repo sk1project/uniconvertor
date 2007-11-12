@@ -90,7 +90,7 @@ if __name__ == "__main__":
 			download_url = 'http://sk1project.org/modules.php?name=Products&product=uniconvertor',
 			long_description = '''
 UniConvertor is a universal vector graphics translator. It uses sK1 engine to convert one format to another.
-sK1 Team (http://sk1project.org), copyright (C) 2007 by Igor E. Novikov, Valek Fillipov
+sK1 Team (http://sk1project.org), copyright (C) 2007 by Igor E. Novikov, Valek Filippov
 ------------------------------------------------------------------------------------
 Import filters: 
     * CorelDRAW ver.7-X3 (CDR/CDT/CCX/CDRX/CMX)
