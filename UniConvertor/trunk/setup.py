@@ -19,10 +19,15 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
 #
 # Usage: 
+# --------------------------------------------------------------------------
 #  to build package:   python setup.py build
 #  to install package:   python setup.py install
+# --------------------------------------------------------------------------
 #  to create source distribution:   python setup.py sdist
+# --------------------------------------------------------------------------
 #  to create binary RPM distribution:  python setup.py bdist_rpm
+#
+#  to create deb package just use alien command (i.e. rpm2deb)
 #
 #  help on available distribution formats: python setup.py bdist --help-formats
 #
@@ -74,7 +79,7 @@ if __name__ == "__main__":
 					skmod_src+'curvemisc.c', skmod_src+'skaux.c', skmod_src+'skimage.c', ])
 			
 	setup (name = 'UniConvertor',
-			version = '1.0',
+			version = '1.0.0',
 			description = 'Universal vector graphics translator',
 			author = 'Igor E. Novikov',
 			author_email = 'igor.e.novikov@gmail.com',
@@ -119,7 +124,9 @@ Export filters:
 			'Programming Language :: C',
 			"Topic :: Multimedia :: Graphics :: Graphics Conversion",
 			],
-
+			
+			requires=['PIL>=1.1.3'],
+			provides=['uniconvertor 1.0.0'],
 
 			packages = ['uniconvertor',
 				'uniconvertor.app',
