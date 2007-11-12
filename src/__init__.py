@@ -10,7 +10,7 @@
 USAGE: uniconv [INPUT FILE] [OUTPUT FILE]
 
 Converts one vector graphics format to another using sK1 engine.
-sK1 Team (http://sk1project.org), copyright (C) 2007 by Igor E. Novikov, Valek Fillipov
+sK1 Team (http://sk1project.org), copyright (C) 2007 by Igor E. Novikov, Valek Filippov
 
  Allowed input formats:
      AI  - Adobe Illustrator files (postscript based)
