@@ -11,6 +11,8 @@ How to install:
  (creates .tar.gz archive)
 ========================================
  to create binary RPM distribution:  python setup.py bdist_rpm
+
+to create deb package just use alien command (i.e. rpm2deb)
 ========================================
 
 help on available distribution formats: 
