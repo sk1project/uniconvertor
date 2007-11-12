@@ -85,6 +85,7 @@ if __name__ == "__main__":
 			author_email = 'igor.e.novikov@gmail.com',
 			maintainer = 'Igor E. Novikov',
 			maintainer_email = 'igor.e.novikov@gmail.com',
+			license = 'LGPL v2, GPL v2 (some packages)',
 			url = 'http://sk1project.org',
 			download_url = 'http://sk1project.org/modules.php?name=Products&product=uniconvertor',
 			long_description = '''
