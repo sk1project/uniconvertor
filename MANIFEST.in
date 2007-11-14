@@ -1,5 +1,5 @@
 include MANIFEST.in
-include README
+include README setup.cfg
 include src/GNU_GPL_v2 src/GNU_LGPL_v2 src/COPYRIGHTS
 include src/uniconv
 include src/modules/filter/README
