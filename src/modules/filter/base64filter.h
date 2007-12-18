@@ -1,6 +1,3 @@
-#ifndef BASE64FILTER_H
-#define BASE64FILTER_H
-
 /*
  *  Copyright (C) 1998, 1999 by Bernhard Herzog.
  *
@@ -22,6 +19,11 @@
  *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *  WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+
+#ifndef BASE64FILTER_H
+#define BASE64FILTER_H
+
+
 
 #include "filterobj.h"
 
