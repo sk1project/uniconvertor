@@ -19,6 +19,10 @@
 #ifndef CURVEOBJECT_H
 #define CURVEOBJECT_H
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 #include "skpoint.h"  /* for SKCoord */
 #include "sktrafo.h" 
 
@@ -104,5 +108,8 @@ int _SKCurve_InitCurveObject(void);
 #define SelSegmentFirst	2
 #define SelSegmentLast	3
 
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* CURVEOBJECT_H*/

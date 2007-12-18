@@ -20,6 +20,10 @@
 #ifndef SKRECT_MODULE_H
 #define SKRECT_MODULE_H
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 #include "skpoint.h"
 
 typedef struct {
@@ -51,6 +55,8 @@ PyObject * skrect_intersect(PyObject * self, PyObject * args);
 PyObject * skrect_unionrects(PyObject * self, PyObject * args);
 PyObject * skrect_skrect(PyObject * self, PyObject * args);
 
-
+#if defined(__cplusplus)
+}
+#endif
 
 #endif

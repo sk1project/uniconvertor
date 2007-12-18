@@ -19,6 +19,10 @@
 #ifndef SKPOINT_H
 #define SKPOINT_H
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 #include <Python.h>
 
 /* the type of a coordinate. T_SKCOORD is used for struct member access in
@@ -43,6 +47,8 @@ PyObject * skpoint_allocated(PyObject * self, PyObject * args);
 PyObject * SKPoint_PyPolar(PyObject * self, PyObject * args);
 PyObject * SKPoint_PyPoint(PyObject * self, PyObject * args);
 
-
+#if defined(__cplusplus)
+}
+#endif
 
 #endif

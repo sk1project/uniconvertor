@@ -20,6 +20,10 @@
 #ifndef SKTRAFO_MODULE_H
 #define SKTRAFO_MODULE_H
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 #include "skpoint.h"
 
 typedef struct {
@@ -48,5 +52,8 @@ PyObject * sktrafo_scale(PyObject * self, PyObject * args);
 PyObject * sktrafo_sktrafo(PyObject * self, PyObject * args);
 PyObject * sktrafo_allocated(PyObject * self, PyObject * args);
 
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* SKTRAFO_MODULE_H */

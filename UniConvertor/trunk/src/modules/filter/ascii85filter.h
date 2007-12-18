@@ -1,6 +1,3 @@
-#ifndef ASCII85FILTER_H
-#define ASCII85FILTER_H
-
 /*
  *  Copyright (C) 2000 by Bernhard Herzog.
  *
@@ -22,6 +19,10 @@
  *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *  WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+
+#ifndef ASCII85FILTER_H
+#define ASCII85FILTER_H
+
 
 #include "filterobj.h"
 

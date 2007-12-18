@@ -1,7 +1,9 @@
 #ifndef CURVE_LOW_H
 #define CURVE_LOW_H
 
-
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
 #define BEZIER_DEPTH 5
 #define BEZIER_NUM_STEPS ((2 << (BEZIER_DEPTH + 1)) + 1)
@@ -19,5 +21,9 @@ void bezier_tangent_at(double *x, double *y, double t,
 		       double * result_x, double * result_y);
 
 extern int bezier_basis[4][4];
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif

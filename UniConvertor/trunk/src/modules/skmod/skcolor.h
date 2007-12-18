@@ -20,6 +20,9 @@
 #ifndef SKCOLOR_H
 #define SKCOLOR_H
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
 typedef struct {
     PyObject_HEAD
@@ -52,5 +55,8 @@ extern PyTypeObject SKVisualType;
 PyObject * skcolor_rgbcolor(PyObject * self, PyObject * args);
 PyObject * skcolor_num_allocated(PyObject * self, PyObject * args);
 
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* SKCOLOR_H */

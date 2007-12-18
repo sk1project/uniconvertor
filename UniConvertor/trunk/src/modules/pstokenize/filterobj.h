@@ -1,7 +1,3 @@
-#ifndef FILTEROBJ_H
-#define FILTEROBJ_H
-#include <Python.h>
-
 /*
  *  Copyright (C) 1998, 1999 by Bernhard Herzog.
  *
@@ -23,6 +19,14 @@
  *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *  WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+
+#ifndef FILTEROBJ_H
+#define FILTEROBJ_H
+#include <Python.h>
+
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
 
 typedef size_t (*filter_read_proc)(void *, PyObject * source,
@@ -130,5 +134,9 @@ typedef struct {
 	__Filter_PUTC((filter), (c), ((func)->Filter_Overflow))
 #define Filter_DL_GETC(func, filter)  \
 	__Filter_GETC((filter), ((func)->Filter_Underflow))
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* FILTEROBJ_H */
