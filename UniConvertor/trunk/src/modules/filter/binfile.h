@@ -1,3 +1,6 @@
+#ifndef BINFILE_H
+#define BINFILE_H
+
 /*
  *  Copyright (C) 1998, 1999 by Bernhard Herzog.
  *
@@ -20,13 +23,9 @@
  *  WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#ifndef BINFILE_H
-#define BINFILE_H
-
-
-
 #include "filterobj.h"
 
 PyObject * BinFile_New(PyObject * self, PyObject * args);
+
 
 #endif /* BINFILE_H */

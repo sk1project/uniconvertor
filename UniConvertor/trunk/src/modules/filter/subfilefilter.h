@@ -1,3 +1,6 @@
+#ifndef SUBFILEFILTER_H
+#define SUBFILEFILTER_H
+
 /*
  *  Copyright (C) 1998, 1999 by Bernhard Herzog.
  *
@@ -19,10 +22,6 @@
  *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *  WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-
-#ifndef SUBFILEFILTER_H
-#define SUBFILEFILTER_H
-
 
 #include "filterobj.h"
 

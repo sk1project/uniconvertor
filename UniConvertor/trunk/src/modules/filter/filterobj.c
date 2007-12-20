@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 1998, 1999, 2001 by Bernhard Herzog.
+ *  Copyright (C) 1998, 1999, 2001, 2006 by Bernhard Herzog.
  *
  *			All Rights Reserved
  *
@@ -118,15 +118,15 @@ new_filter(PyObject * stream, const char * name, int flags,
 {
     FilterObject * self;
     
-    self = PyObject_NEW(FilterObject, &FilterType);
+    self = PyObject_New(FilterObject, &FilterType);
     if (!self)
 	return NULL;
 
-    self->buffer = PyMem_NEW(char, FILTER_BUFSIZE + 1);
+    self->buffer = PyMem_Malloc(FILTER_BUFSIZE + 1);
     if (!self->buffer)
     {
     error:
-	PyMem_DEL(self);
+	PyObject_Del(self);
 	PyErr_NoMemory();
 	if (dealloc)
 	    dealloc(client_data);
@@ -136,7 +136,7 @@ new_filter(PyObject * stream, const char * name, int flags,
     self->filtername = PyString_FromString(name);
     if (!self->filtername)
     {
-	PyMem_DEL(self->buffer);
+	PyMem_Free(self->buffer);
 	goto error;
     }
 
@@ -215,8 +215,8 @@ filter_dealloc(FilterObject * self)
 	self->dealloc(self->client_data);
     Py_DECREF(self->filtername);
     Py_DECREF(self->stream);
-    PyMem_DEL(self->buffer);
-    PyMem_DEL(self);
+    PyMem_Free(self->buffer);
+    PyObject_Del(self);
 }
 
 static PyObject *
@@ -960,3 +960,5 @@ PyTypeObject FilterType = {
 	0,				/*tp_as_mapping*/
 	0,				/*tp_hash*/
 };
+
+

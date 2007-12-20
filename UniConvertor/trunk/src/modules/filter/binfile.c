@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 1998, 1999, 2001 by Bernhard Herzog.
+ *  Copyright (C) 1998, 1999, 2001, 2006 by Bernhard Herzog.
  *
  *			All Rights Reserved
  *
@@ -277,7 +277,7 @@ static void
 binfile_dealloc(BinaryInputObject * self)
 {
     Py_DECREF(self->stream);
-    PyMem_DEL(self);
+    PyObject_Del(self);
 }
 
 static PyObject *
@@ -651,7 +651,9 @@ BinFile_FromStream(PyObject * stream, int byte_order, int int_size)
 	return NULL;
     }
 
-    binfile = PyObject_NEW(BinaryInputObject, &BinaryInputType);
+    BinaryInputType.ob_type = &PyType_Type;
+
+    binfile = PyObject_New(BinaryInputObject, &BinaryInputType);
     if (!binfile)
 	return NULL;
 
@@ -670,8 +672,9 @@ BinFile_New(PyObject * self, PyObject * args)
     PyObject * stream;
     int byte_order, int_size;
 
-    BinaryInputType.ob_type = &PyType_Type;
     if (!PyArg_ParseTuple(args, "Oii", &stream, &byte_order, &int_size))
 	return NULL;
     return BinFile_FromStream(stream, byte_order, int_size);
 }
+
+

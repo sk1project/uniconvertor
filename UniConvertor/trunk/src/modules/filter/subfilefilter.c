@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 1998, 1999 by Bernhard Herzog.
+ *  Copyright (C) 1998, 1999, 2006 by Bernhard Herzog.
  *
  *			All Rights Reserved
  *
@@ -90,7 +90,7 @@ dealloc_subfile(void * clientdata)
 {
     SubFileDecodeState * state = (SubFileDecodeState*)clientdata;
     Py_DECREF(state->delim_object);
-    PyMem_DEL(state);
+    PyMem_Free(state);
 }
 
 static void
@@ -119,7 +119,7 @@ Filter_SubFileDecode(PyObject * self, PyObject * args)
     length = PyString_Size(delim_object);
     if (length < 1)
 	return PyErr_Format(PyExc_ValueError, "empty delimiter");
-    state = malloc(sizeof (SubFileDecodeState) + length * sizeof(int));
+    state = PyMem_Malloc(sizeof (SubFileDecodeState) + length * sizeof(int));
     if (!state)
 	return PyErr_NoMemory();
     state->delim_object = delim_object;
