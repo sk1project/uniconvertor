@@ -52,7 +52,7 @@ if __name__ == "__main__":
 	filter_src=src_path+'modules/filter/'	
 	filter_module = Extension('uniconvertor.app.modules.streamfilter',
 			define_macros = [('MAJOR_VERSION', '1'),
-						('MINOR_VERSION', '0')],
+						('MINOR_VERSION', '1')],
 			sources = [filter_src+'streamfilter.c', filter_src+'filterobj.c', filter_src+'linefilter.c', 
 					filter_src+'subfilefilter.c', filter_src+'base64filter.c', filter_src+'nullfilter.c', 
 					filter_src+'stringfilter.c', filter_src+'binfile.c', filter_src+'hexfilter.c'])
@@ -60,32 +60,32 @@ if __name__ == "__main__":
  	type1mod_src=src_path+'modules/type1mod/'				
 	type1mod_module = Extension('uniconvertor.app.modules._type1',
 			define_macros = [('MAJOR_VERSION', '1'),
-						('MINOR_VERSION', '0')],
+						('MINOR_VERSION', '1')],
 			sources = [type1mod_src+'_type1module.c'])
  
  	skread_src=src_path+'modules/skread/'				
 	skread_module = Extension('uniconvertor.app.modules.skread',
 			define_macros = [('MAJOR_VERSION', '1'),
-						('MINOR_VERSION', '0')],
+						('MINOR_VERSION', '1')],
 			sources = [skread_src+'skreadmodule.c'])
 
  	pstokenize_src=src_path+'modules/pstokenize/'				
 	pstokenize_module = Extension('uniconvertor.app.modules.pstokenize',
 			define_macros = [('MAJOR_VERSION', '1'),
-						('MINOR_VERSION', '0')],
+						('MINOR_VERSION', '1')],
 			sources = [pstokenize_src+'pstokenize.c', pstokenize_src+'pschartab.c'])
 			
  	skmod_src=src_path+'modules/skmod/'				
 	skmod_module = Extension('uniconvertor.app.modules._sketch',
 			define_macros = [('MAJOR_VERSION', '1'),
-						('MINOR_VERSION', '0')],
+						('MINOR_VERSION', '1')],
 			sources = [skmod_src+'_sketchmodule.c', skmod_src+'skpoint.c', skmod_src+'skcolor.c', 
 					skmod_src+'sktrafo.c', skmod_src+'skrect.c', skmod_src+'skfm.c', 
 					skmod_src+'curvefunc.c', skmod_src+'curveobject.c', skmod_src+'curvelow.c', 
 					skmod_src+'curvemisc.c', skmod_src+'skaux.c', skmod_src+'skimage.c', ])
 			
 	setup (name = 'UniConvertor',
-			version = '1.0.0',
+			version = '1.1.0',
 			description = 'Universal vector graphics translator',
 			author = 'Igor E. Novikov',
 			author_email = 'igor.e.novikov@gmail.com',
