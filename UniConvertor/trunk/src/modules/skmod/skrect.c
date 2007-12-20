@@ -463,7 +463,7 @@ skrect_getattr(PyObject * self, char * name)
 
 
 PyTypeObject SKRectType = {
-	PyObject_HEAD_INIT(&PyType_Type)
+	PyObject_HEAD_INIT(NULL)
 	0,
 	"skrect",
 	sizeof(SKRectObject),

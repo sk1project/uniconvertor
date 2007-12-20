@@ -762,7 +762,7 @@ pstokenizer_setattr(PyObject * self, char * name, PyObject * v)
 
 
 static PyTypeObject PSTokenizerType = {
-	PyObject_HEAD_INIT(&PyType_Type)
+	PyObject_HEAD_INIT(NULL)
 	0,
 	"pstokenizer",
 	sizeof(PSTokenizerObject),
@@ -817,11 +817,12 @@ add_int(PyObject * dict, int i, char * name)
 	PyErr_Clear();
 }
 
-void
+DL_EXPORT(void)
 initpstokenize(void)
 {
     PyObject * d, *m, *r, *filter;
 
+    PSTokenizerType.ob_type = &PyType_Type;
     m = Py_InitModule("pstokenize", pstokenize_functions);
     d = PyModule_GetDict(m);
 

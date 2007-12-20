@@ -223,8 +223,8 @@ sktrafo_DocToWin(SKTrafoObject * self, PyObject * args)
 
     if (skpoint_extract_xy(arg, &docx, &docy))
     {
-	x = rint(self->m11 * docx + self->m12 * docy + self->v1);
-	y = rint(self->m21 * docx + self->m22 * docy + self->v2);
+	x = ceil(self->m11 * docx + self->m12 * docy + self->v1);
+	y = ceil(self->m21 * docx + self->m22 * docy + self->v2);
 	return Py_BuildValue("ii", x, y);
     }
 
@@ -350,7 +350,7 @@ sktrafo_getattr(PyObject * self, char * name)
 
 
 PyTypeObject SKTrafoType = {
-	PyObject_HEAD_INIT(&PyType_Type)
+	PyObject_HEAD_INIT(NULL)
 	0,
 	"sktrafo",
 	sizeof(SKTrafoObject),
@@ -524,4 +524,3 @@ SKTrafo_DTransformXY(PyObject * self, double x, double y,
 }
 
 #undef SELF
-

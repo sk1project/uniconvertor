@@ -263,7 +263,7 @@ skcolor_getattr(PyObject * self, char * name)
 
 
 PyTypeObject SKColorType = {
-	PyObject_HEAD_INIT(&PyType_Type)
+	PyObject_HEAD_INIT(NULL)
 	0,
 	"skcolor",
 	sizeof(SKColorObject),

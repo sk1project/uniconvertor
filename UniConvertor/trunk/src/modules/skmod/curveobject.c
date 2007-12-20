@@ -2122,7 +2122,7 @@ curve_getattr(PyObject * self, char * name)
 
 
 PyTypeObject SKCurveType = {
-    PyObject_HEAD_INIT(&PyType_Type)
+    PyObject_HEAD_INIT(NULL)
     0,
     "SKCurveObject",
     sizeof(SKCurveObject),

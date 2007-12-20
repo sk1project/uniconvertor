@@ -28,7 +28,6 @@
 extern "C" {
 #endif
 
-
 typedef size_t (*filter_read_proc)(void *, PyObject * source,
 				   char * buffer, size_t length);
 typedef size_t (*filter_write_proc)(void *, PyObject * target,

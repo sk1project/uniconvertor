@@ -538,13 +538,13 @@ fill_axial_gradient(PyObject * self, PyObject * args)
     if (fabs(angle) < ANGLE_EPSILON || fabs(fabs(angle) - PI) < ANGLE_EPSILON)
     {
 	horizontal_axial_gradient(image, gradient, length,
-				  (int)(rint(x0)), (int)(rint(x1)));
+				  (int)(ceil(x0)), (int)(ceil(x1)));
     }
     else if (fabs(angle - PI/2) < ANGLE_EPSILON
 	     || fabs(angle + PI/2) < ANGLE_EPSILON)
     {
 	vertical_axial_gradient(image, gradient, length,
-				(int)(rint(y0)), (int)(rint(y1)));
+				(int)(ceil(y0)), (int)(ceil(y1)));
     }
     else
     {
@@ -850,4 +850,3 @@ skimage_write_ps_hex(PyObject * self, PyObject * args)
     Py_INCREF(Py_None);
     return Py_None;
 }
-
