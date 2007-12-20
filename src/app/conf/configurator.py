@@ -43,10 +43,10 @@ class Configurator:
 		self.user_preferences_file = os.path.join(self.user_config_dir, 'preferences.xml')
 		
 		#print 'Self testing\n=========================================='
-		self.check_sk_dir()
-		self.check_user_config()
+		#self.check_sk_dir()
+		#self.check_user_config()
 		self.preferences = Preferences()
-		self.preferences.load(self.user_preferences_file)
+		#self.preferences.load(self.user_preferences_file)
 		#print '=========================================='
 		if self.restore_theme:
 			self.preferences.active_theme = 'Plastik'
