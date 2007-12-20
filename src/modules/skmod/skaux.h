@@ -21,6 +21,9 @@
 
 #include <Python.h>
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
 
 PyObject * SKAux_DrawBezier(PyObject * self, PyObject * args);
 PyObject * SKAux_TransformRectangle(PyObject * self, PyObject * args);
@@ -28,5 +31,11 @@ PyObject * SKAux_IdIndex(PyObject * self, PyObject * args);
 PyObject * xlfd_char_range(PyObject * self, PyObject * args);
 PyObject * SKCache_PyCreate(PyObject * self, PyObject * args);
 
+extern PyTypeObject SKCacheType;
+#define SKCache_Check(v) ((v)->ob_type == &SKCacheType)
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* SKAUX_H */

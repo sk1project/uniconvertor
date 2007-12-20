@@ -477,7 +477,7 @@ static PySequenceMethods skpoint_as_sequence = {
 
 
 PyTypeObject SKPointType = {
-	PyObject_HEAD_INIT(&PyType_Type)
+	PyObject_HEAD_INIT(NULL)
 	0,
 	"skpoint",
 	sizeof(SKPointObject),

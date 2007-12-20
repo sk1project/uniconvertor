@@ -655,8 +655,9 @@ static PyMethodDef sk_methods[] = {
 };
 
 
-void
+DL_EXPORT(void)
 initskread(void)
 {
     Py_InitModule("skread", sk_methods);
 }
+

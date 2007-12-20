@@ -25,6 +25,7 @@
 #include "_sketchmodule.h"
 
 
+
 /*
  *	Bezier functions. Should be in a separate module ?
  */
@@ -53,13 +54,13 @@ SKAux_TransformRectangle(PyObject * self, PyObject * args)
 	return NULL;
 
     SKTrafo_TransformXY(trafo, rect->left,  rect->top,    &dx, &dy);
-    x[0] = rint(dx);	y[0] = rint(dy);
+    x[0] = ceil(dx);	y[0] = ceil(dy);
     SKTrafo_TransformXY(trafo, rect->right, rect->top,    &dx, &dy);
-    x[1] = rint(dx);	y[1] = rint(dy);
+    x[1] = ceil(dx);	y[1] = ceil(dy);
     SKTrafo_TransformXY(trafo, rect->right, rect->bottom, &dx, &dy);
-    x[2] = rint(dx);	y[2] = rint(dy);
+    x[2] = ceil(dx);	y[2] = ceil(dy);
     SKTrafo_TransformXY(trafo, rect->left,  rect->bottom, &dx, &dy);
-    x[3] = rint(dx);	y[3] = rint(dy);
+    x[3] = ceil(dx);	y[3] = ceil(dy);
 
     if ((x[0] == x[3] && y[0] == y[1])
 	|| (y[0] == y[3] && x[0] == x[1]))
@@ -189,26 +190,6 @@ typedef struct {
     PyObject * dict;
 } SKCacheObject;
 
-extern PyTypeObject SKCacheType;
-
-#define SKCache_Check(v) ((v)->ob_type == &SKCacheType)
-
-static PyObject *
-SKCache_New(void)
-{
-    SKCacheObject * self = PyObject_New(SKCacheObject, &SKCacheType);
-    if (!self)
-	return NULL;
-
-    self->dict = PyDict_New();
-    if (!self->dict)
-    {
-	PyObject_Del(self);
-	return NULL;
-    }
-
-    return (PyObject*)self;
-}
 
 static void
 SKCache_dealloc(SKCacheObject * self)
@@ -261,9 +242,8 @@ static PyMappingMethods SKCache_as_mapping = {
 	(objobjargproc)SKCache_ass_sub, /*mp_ass_subscript*/
 };
 
-
 PyTypeObject SKCacheType = {
-	PyObject_HEAD_INIT(&PyType_Type)
+	PyObject_HEAD_INIT(NULL)
 	0,
 	"SKCache",
 	sizeof(SKCacheObject),
@@ -280,6 +260,23 @@ PyTypeObject SKCacheType = {
 	0,				/*tp_hash*/
 	0,				/* tp_call */
 };
+
+static PyObject *
+SKCache_New(void)
+{
+    SKCacheObject * self = PyObject_New(SKCacheObject, &SKCacheType);
+    if (!self)
+	return NULL;
+
+    self->dict = PyDict_New();
+    if (!self->dict)
+    {
+	PyObject_Del(self);
+	return NULL;
+    }
+
+    return (PyObject*)self;
+}
 
 
 PyObject *

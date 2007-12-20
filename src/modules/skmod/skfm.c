@@ -45,6 +45,7 @@
 
 #include "skpoint.h"
 
+
 /* the metrics for one character */
 struct SKCharMetric_s {
     int width;			/* width */
@@ -63,24 +64,8 @@ struct SKFontMetric_s {
 };
 typedef struct SKFontMetric_s SKFontMetric;
 
-extern DL_IMPORT(PyTypeObject) SKFontMetricType;
-#define SKFontMetric_Check(obj) ((v)->ob_type == &SKFontMetricType)
 
 
-/*
- * Return a new, empty fontmetric object.
- */
-PyObject *
-SKFontMetric_New()
-{
-    SKFontMetric * self;
-
-    self = PyObject_New(SKFontMetric, &SKFontMetricType);
-    if (self == NULL)
-	return NULL;
-
-    return (PyObject*)self;
-}
 
 static void
 skfm_dealloc(SKFontMetric * self)
@@ -278,7 +263,7 @@ skfm_getattr(PyObject * self, char * name)
 }
 
 PyTypeObject SKFontMetricType = {
-	PyObject_HEAD_INIT(&PyType_Type)
+	PyObject_HEAD_INIT(NULL)
 	0,
 	"skfm",
 	sizeof(SKFontMetric),
@@ -295,6 +280,21 @@ PyTypeObject SKFontMetricType = {
 	0,				/*tp_hash*/
 };
 
+
+/*
+ * Return a new, empty fontmetric object.
+ */
+PyObject *
+SKFontMetric_New()
+{
+    SKFontMetric * self;
+
+    self = PyObject_New(SKFontMetric, &SKFontMetricType);
+    if (self == NULL)
+	return NULL;
+
+    return (PyObject*)self;
+}
 
 /* the module functions */
 

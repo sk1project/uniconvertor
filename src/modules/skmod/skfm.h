@@ -21,7 +21,17 @@
 
 #include <Python.h>
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 PyObject * SKFM_PyCreateMetric(PyObject * self, PyObject * args);
 
+extern DL_IMPORT(PyTypeObject) SKFontMetricType;
+#define SKFontMetric_Check(obj) ((v)->ob_type == &SKFontMetricType)
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif

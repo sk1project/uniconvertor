@@ -43,6 +43,12 @@ from distutils.core import setup, Extension
 if __name__ == "__main__":
 	src_path='src/'
 	
+	import os
+	if  os.name == 'nt':
+		script_name='src/uniconv.cmd'
+	else:
+		script_name='src/uniconv'
+	
 	filter_src=src_path+'modules/filter/'	
 	filter_module = Extension('uniconvertor.app.modules.streamfilter',
 			define_macros = [('MAJOR_VERSION', '1'),
@@ -52,13 +58,13 @@ if __name__ == "__main__":
 					filter_src+'stringfilter.c', filter_src+'binfile.c', filter_src+'hexfilter.c'])
  
  	type1mod_src=src_path+'modules/type1mod/'				
-	type1mod_module = Extension('uniconvertor.app.modules._type1module',
+	type1mod_module = Extension('uniconvertor.app.modules._type1',
 			define_macros = [('MAJOR_VERSION', '1'),
 						('MINOR_VERSION', '0')],
 			sources = [type1mod_src+'_type1module.c'])
  
  	skread_src=src_path+'modules/skread/'				
-	skread_module = Extension('uniconvertor.app.modules.skreadmodule',
+	skread_module = Extension('uniconvertor.app.modules.skread',
 			define_macros = [('MAJOR_VERSION', '1'),
 						('MINOR_VERSION', '0')],
 			sources = [skread_src+'skreadmodule.c'])
@@ -70,7 +76,7 @@ if __name__ == "__main__":
 			sources = [pstokenize_src+'pstokenize.c', pstokenize_src+'pschartab.c'])
 			
  	skmod_src=src_path+'modules/skmod/'				
-	skmod_module = Extension('uniconvertor.app.modules._sketchmodule',
+	skmod_module = Extension('uniconvertor.app.modules._sketch',
 			define_macros = [('MAJOR_VERSION', '1'),
 						('MINOR_VERSION', '0')],
 			sources = [skmod_src+'_sketchmodule.c', skmod_src+'skpoint.c', skmod_src+'skcolor.c', 
@@ -89,9 +95,13 @@ if __name__ == "__main__":
 			url = 'http://sk1project.org',
 			download_url = 'http://sk1project.org/modules.php?name=Products&product=uniconvertor',
 			long_description = '''
-UniConvertor is a universal vector graphics translator. It uses sK1 engine to convert one format to another.
-sK1 Team (http://sk1project.org), copyright (C) 2007 by Igor E. Novikov, Valek Filippov
+UniConvertor is a multiplatform universal vector graphics translator.
+It uses sK1 engine to convert one format to another.
+
+sK1 Team (http://sk1project.org),
+copyright (C) 2007 by Igor E. Novikov, Valek Filippov
 ------------------------------------------------------------------------------------
+
 Import filters: 
     * CorelDRAW ver.7-X3 (CDR/CDT/CCX/CDRX/CMX)
     * Adobe Illustrator up to 9 ver. (AI postscript based)
@@ -103,7 +113,9 @@ Import filters:
     * Scalable Vector Graphics (SVG)
     * Skencil/Sketch/sK1 (SK and SK1)
     * Acorn Draw (AFF)
+    
 ------------------------------------------------------------------------------------
+
 Export filters: 
     * AI (Postscript based Adobe Illustrator 5.0 format)
     * SVG (Scalable Vector Graphics)
@@ -111,7 +123,8 @@ Export filters:
     * SK1 (sK1 format)
     * CGM (Computer Graphics Metafile)
     * WMF (Windows Metafile)
-------------------------------------------------------------------------------------  
+    
+------------------------------------------------------------------------------------
 			''',
 		classifiers=[
 			'Development Status :: 6 - Mature',

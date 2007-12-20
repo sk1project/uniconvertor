@@ -608,9 +608,10 @@ binfile_setattr(PyObject * self, char * name, PyObject * v)
     return PyMember_Set((char *)self, binfile_memberlist, name, v);
 }
 
+staticforward PyTypeObject BinaryInputType;
 
-PyTypeObject BinaryInputType = {
-	PyObject_HEAD_INIT(&PyType_Type)
+statichere PyTypeObject BinaryInputType = {
+	PyObject_HEAD_INIT(NULL)
 	0,
 	"binaryinput",
 	sizeof(BinaryInputObject),
@@ -669,9 +670,8 @@ BinFile_New(PyObject * self, PyObject * args)
     PyObject * stream;
     int byte_order, int_size;
 
+    BinaryInputType.ob_type = &PyType_Type;
     if (!PyArg_ParseTuple(args, "Oii", &stream, &byte_order, &int_size))
 	return NULL;
     return BinFile_FromStream(stream, byte_order, int_size);
 }
-
-

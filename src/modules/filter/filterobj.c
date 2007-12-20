@@ -944,7 +944,7 @@ filter_setattr(PyObject * self, char * name, PyObject * v)
 
 
 PyTypeObject FilterType = {
-	PyObject_HEAD_INIT(&PyType_Type)
+	PyObject_HEAD_INIT(NULL)
 	0,
 	"filter",
 	sizeof(FilterObject),
@@ -960,5 +960,3 @@ PyTypeObject FilterType = {
 	0,				/*tp_as_mapping*/
 	0,				/*tp_hash*/
 };
-
-

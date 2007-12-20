@@ -150,7 +150,7 @@ static PyMethodDef type1_methods[] = {
 };
 
 
-void
+DL_EXPORT(void)
 init_type1(void)
 {
     Py_InitModule("_type1", type1_methods);

@@ -77,10 +77,12 @@ static Filter_Functions functions = {
 };
 
 
-void
+DL_EXPORT(void)
 initstreamfilter(void)
 {
     PyObject * d, *m, *v;
+    
+    FilterType.ob_type = &PyType_Type;
 
     m = Py_InitModule("streamfilter", filter_functions);
     d = PyModule_GetDict(m);

@@ -29,5 +29,4 @@
 
 PyObject * BinFile_New(PyObject * self, PyObject * args);
 
-
 #endif /* BINFILE_H */

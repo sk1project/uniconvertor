@@ -105,10 +105,18 @@ add_int(PyObject * dict, int i, char * name)
     }
 }
 
-void
+DL_EXPORT(void)
 init_sketch(void)
 {
-    PyObject * d, *m, *r, *pax;
+    PyObject * d, *m, *r;
+
+    SKCurveType.ob_type = &PyType_Type;
+    SKCacheType.ob_type = &PyType_Type;
+    SKColorType.ob_type = &PyType_Type;
+    SKFontMetricType.ob_type = &PyType_Type;
+    SKPointType.ob_type = &PyType_Type;
+    SKRectType.ob_type = &PyType_Type;
+    SKTrafoType.ob_type = &PyType_Type;
 
     m = Py_InitModule("_sketch", curve_functions);
     d = PyModule_GetDict(m);
@@ -162,3 +170,5 @@ init_sketch(void)
     _SKCurve_InitCurveObject();
 
 }
+
+
