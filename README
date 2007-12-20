@@ -12,7 +12,9 @@ How to install:
 ========================================
  to create binary RPM distribution:  python setup.py bdist_rpm
 
-to create deb package just use alien command (i.e. rpm2deb)
+ to create deb package just use alien command (i.e. rpm2deb)
+========================================
+ to create binary Win32 distribution:  python setup.py bdist_wininst
 ========================================
 
 help on available distribution formats: 
