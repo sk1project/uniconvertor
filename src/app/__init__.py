@@ -9,23 +9,28 @@
 
 import os, sys, string
 
+path_separator='/'
+if os.name=='nt':
+	path_separator='\\'
 
 _pkgdir = __path__[0]
 
-temp=string.split(_pkgdir,'/')
+temp=string.split(_pkgdir,path_separator)
 temp.remove(temp[-1])
-_parentdir=string.join(temp,'/')
+_parentdir=string.join(temp,path_separator)
 
 sKVersion = string.strip(open(os.path.join(_pkgdir, 'VERSION')).read())
 
 for _dir in ('modules', 'Base'):
 	__path__.insert(0, os.path.join(_pkgdir, _dir))
 
-dir = os.path.join(_parentdir, 'app/modules')
+dir = os.path.join(_parentdir, 'app')
+dir = os.path.join(dir, 'modules')
 if os.path.isdir(dir):
 	sys.path.insert(1, dir)
 
-message_dir = os.path.join(sys.path[0], 'Resources/Messages')
+message_dir = os.path.join(sys.path[0], 'Resources')
+message_dir = os.path.join(message_dir, 'Messages')
 try:
 	from intl import gettext, dgettext, bindtextdomain
 	import intl, locale
@@ -171,4 +176,3 @@ def init_ui():
 
 def init_modules_from_widget(root):
 	pass
-
