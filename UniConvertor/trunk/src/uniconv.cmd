@@ -19,4 +19,4 @@
 :: ---------------------------------------------------------------------
 
 
-python -c "import uniconvertor" "%1" "%2"
+@python -c "import uniconvertor" "%1" "%2"
