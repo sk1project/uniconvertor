@@ -333,7 +333,7 @@ class Preferences(connector.Publisher):
 	printer_intent=0
 	monitor_intent=0
 	
-	use_cms=1
+	use_cms=0
 	simulate_printer=0
 	#------------------------------------
 
