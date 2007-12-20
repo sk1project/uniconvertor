@@ -170,8 +170,6 @@ Export filters:
 
 			scripts=[script_name],
 
-			data_files=[('../../../', ['src/uniconv.cmd'])],
-
 			ext_modules = [filter_module, type1mod_module, skread_module, 
 						pstokenize_module, skmod_module])
 			
