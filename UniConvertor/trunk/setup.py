@@ -28,7 +28,9 @@
 #  to create binary RPM distribution:  python setup.py bdist_rpm
 #
 #  to create deb package just use alien command (i.e. rpm2deb)
-#
+# --------------------------------------------------------------------------
+#  to create Win32 distribution:   python setup.py bdist_wininst
+# --------------------------------------------------------------------------
 #  help on available distribution formats: python setup.py bdist --help-formats
 #
 
@@ -166,7 +168,9 @@ Export filters:
 						 'share/icc/*.*', 'share/fonts/*.*', 'share/ps_templates/*.*'], 
 			},
 
-			scripts=['src/uniconv'],
+			scripts=[script_name],
+
+			data_files=[('../../../', ['src/uniconv.cmd'])],
 
 			ext_modules = [filter_module, type1mod_module, skread_module, 
 						pstokenize_module, skmod_module])
