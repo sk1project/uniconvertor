@@ -1,4 +1,4 @@
-/* Generated automatically from /usr/local/lib/sK1/lib/python2.4/config/config.c.in by makesetup. */
+/* Generated automatically from /usr/lib/python2.5/config/config.c.in by makesetup. */
 /* -*- C -*- ***********************************************
 Copyright (c) 2000, BeOpen.com.
 Copyright (c) 1995-2000, Corporation for National Research Initiatives.
@@ -18,9 +18,14 @@ redistribution of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 
 #include "Python.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 extern void initposix(void);
 extern void initerrno(void);
+extern void initpwd(void);
 extern void init_sre(void);
 extern void init_codecs(void);
 extern void initzipimport(void);
@@ -32,11 +37,14 @@ extern void initxxsubtype(void);
 extern void PyMarshal_Init(void);
 extern void initimp(void);
 extern void initgc(void);
+extern void init_ast(void);
+extern void init_types(void);
 
 struct _inittab _PyImport_Inittab[] = {
 
 	{"posix", initposix},
 	{"errno", initerrno},
+	{"pwd", initpwd},
 	{"_sre", init_sre},
 	{"_codecs", init_codecs},
 	{"zipimport", initzipimport},
@@ -51,6 +59,12 @@ struct _inittab _PyImport_Inittab[] = {
 	/* This lives in import.c */
 	{"imp", initimp},
 
+	/* This lives in Python/Python-ast.c */
+	{"_ast", init_ast},
+
+	/* This lives in Python/_types.c */
+	{"_types", init_types},
+
 	/* These entries are here for sys.builtin_module_names */
 	{"__main__", NULL},
 	{"__builtin__", NULL},
@@ -63,3 +77,9 @@ struct _inittab _PyImport_Inittab[] = {
 	/* Sentinel */
 	{0, 0}
 };
+
+
+#ifdef __cplusplus
+}
+#endif
+

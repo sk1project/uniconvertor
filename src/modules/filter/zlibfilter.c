@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 1998, 1999, 2000 by Bernhard Herzog.
+ *  Copyright (C) 1998, 1999, 2000, 2006 by Bernhard Herzog.
  *
  *			All Rights Reserved
  *
@@ -82,7 +82,8 @@ dealloc_zlib(void * clientdata)
 {
     FlateDecodeState * state = (FlateDecodeState*)clientdata;
     inflateEnd(&state->zstr); /* XXX error handling */
-    PyMem_DEL(state);
+    PyMem_Free(state->buffer);
+    PyMem_Free(state);
 }
 
 
@@ -96,13 +97,13 @@ Filter_FlateDecode(PyObject * self, PyObject * args)
     if (!PyArg_ParseTuple(args, "O", &target))
 	return NULL;
 
-    state = PyMem_NEW(FlateDecodeState, 1);
+    state = PyMem_Malloc(sizeof(FlateDecodeState));
     if (!state)
 	return PyErr_NoMemory();
-    state->buffer = PyMem_NEW(char, INBUFSIZE);
+    state->buffer = PyMem_Malloc(INBUFSIZE);
     if (!state->buffer)
     {
-	PyMem_DEL(state);
+	PyMem_Free(state);
 	return PyErr_NoMemory();
     }
 
@@ -132,8 +133,8 @@ Filter_FlateDecode(PyObject * self, PyObject * args)
 			     "FlateDecode: Zlib Error %i: %.200s",
 			     result, state->zstr.msg);  
 	}
-	PyMem_DEL(state->buffer);
-	PyMem_DEL(state);
+	PyMem_Free(state->buffer);
+	PyMem_Free(state);
 	return NULL;
     }
 

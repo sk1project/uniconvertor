@@ -81,7 +81,7 @@ DL_EXPORT(void)
 initstreamfilter(void)
 {
     PyObject * d, *m, *v;
-    
+
     FilterType.ob_type = &PyType_Type;
 
     m = Py_InitModule("streamfilter", filter_functions);
