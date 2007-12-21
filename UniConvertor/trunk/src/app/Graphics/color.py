@@ -47,11 +47,11 @@ def cmyk_to_rgb(c, m, y, k):
 def rgb_to_tk((r, g, b)):
 	return '#%04x%04x%04x' % (65535 * r, 65535 * g, 65535 * b)
 	
-# def rgb2cmyk(r,g,b):
-#       r = 1.0 - min(1.0, c + k)
-#       g = 1.0 - min(1.0, m + k)
-#       b = 1.0 - min(1.0, y + k)
-#       return c, m, y, k
+def rgb2cmyk(r,g,b):
+	r = 1.0 - min(1.0, c + k)
+	g = 1.0 - min(1.0, m + k)
+	b = 1.0 - min(1.0, y + k)
+	return c, m, y, k
 
 def ParseSKColor(model, v1, v2, v3, v4=0, v5=0):
 	if model=='CMYK':
@@ -83,7 +83,10 @@ class RGB_Color:
 		return (rgb.red, rgb.green, rgb.blue, self.alpha)
 	
 	def getCMYK(self):
-		c,m,y,k = app.colormanager.convertRGB(self.red, self.green, self.blue)
+		if app.config.preferences.use_cms:
+			c,m,y,k = app.colormanager.convertRGB(self.red, self.green, self.blue)
+		else:
+			c,m,y,k = rgb2cmyk(self.red, self.green, self.blue)
 		return c,m,y,k
 	
 	def getScreenColor(self):
