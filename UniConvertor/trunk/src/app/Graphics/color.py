@@ -48,10 +48,11 @@ def rgb_to_tk((r, g, b)):
 	return '#%04x%04x%04x' % (65535 * r, 65535 * g, 65535 * b)
 	
 def rgb2cmyk(r,g,b):
-	r = 1.0 - min(1.0, c + k)
-	g = 1.0 - min(1.0, m + k)
-	b = 1.0 - min(1.0, y + k)
-	return c, m, y, k
+	c = 1.0 - r
+	m = 1.0 - g
+	y = 1.0 - b
+	k = min(c, m, y)
+	return c - k, m - k, y - k, k
 
 def ParseSKColor(model, v1, v2, v3, v4=0, v5=0):
 	if model=='CMYK':
