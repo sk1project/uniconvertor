@@ -1,0 +1,21 @@
+UniConvertor is a universal vector graphics translator. 
+It uses sK1 engine to convert one format to another.
+sK1 Team, copyright (C) 2007 by Igor E. Novikov, Valek Filippov
+
+How to install: 
+========================================
+ to install package:   python setup.py install
+ (will be installed into Python site-packages/ directory)
+========================================
+ to create source distribution:   python setup.py sdist
+ (creates .tar.gz archive)
+========================================
+ to create binary RPM distribution:  python setup.py bdist_rpm
+
+ to create deb package just use alien command (i.e. rpm2deb)
+========================================
+ to create binary Win32 distribution:  python setup.py bdist_wininst
+========================================
+
+help on available distribution formats: 
+python setup.py bdist --help-formats
