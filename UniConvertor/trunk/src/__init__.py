@@ -37,21 +37,28 @@ sK1 Team (http://sk1project.org), copyright (C) 2007 by Igor E. Novikov, Valek F
 Example: uniconv drawing.cdr drawing.svg\n
 '''
 
-import sys, os
+import sys, os, string
+
+_pkgdir = __path__[0]
+app_dir = os.path.join(_pkgdir, 'app')
+app_ver = string.strip(open(os.path.join(app_dir, 'VERSION')).read())
 
 if len(sys.argv)<2 or sys.argv[1]=='--help':
+	print '\nUniConvertor',app_ver
 	print __doc__
 	sys.exit(0)
 if not os.path.isfile(sys.argv[1]):
-	print '\nERROR: %s file is not found!\n' % sys.argv[1]
+	print '\nERROR: %s file is not found!' % sys.argv[1]
+	print '\nUniConvertor',app_ver
 	print __doc__
 	sys.exit(1)
 if len(sys.argv) != 3:
-	print '\nERROR: incorrect arguments!\n'
+	print '\nERROR: incorrect arguments!'
+	print '\nUniConvertor',app_ver
 	print __doc__
 	sys.exit(1)
 
-_pkgdir = __path__[0]
+
 sys.path.insert(1, _pkgdir)
 
 from app.io import load
