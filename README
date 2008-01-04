@@ -1,6 +1,8 @@
 UniConvertor is a universal vector graphics translator. 
 It uses sK1 engine to convert one format to another.
-sK1 Team, copyright (C) 2007 by Igor E. Novikov, Valek Filippov
+sK1 Team, copyright (C) 2007-2008 by Igor E. Novikov, Valek Filippov
+
+sK1 is a fork of Sketch/Skencil (1999-2006 (c) Bernhard Herzog)
 
 How to install: 
 ========================================
