@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Setup script for UniConvertor 1.0
+# Setup script for UniConvertor 1.1.1
 #
 # Copyright (C) 2007 Igor E. Novikov
 #
@@ -87,7 +87,7 @@ if __name__ == "__main__":
 					skmod_src+'curvemisc.c', skmod_src+'skaux.c', skmod_src+'skimage.c', ])
 			
 	setup (name = 'UniConvertor',
-			version = '1.1.0',
+			version = '1.1.1',
 			description = 'Universal vector graphics translator',
 			author = 'Igor E. Novikov',
 			author_email = 'igor.e.novikov@gmail.com',
@@ -105,7 +105,7 @@ copyright (C) 2007 by Igor E. Novikov, Valek Filippov
 ------------------------------------------------------------------------------------
 
 Import filters: 
-    * CorelDRAW ver.7-X3 (CDR/CDT/CCX/CDRX/CMX)
+    * CorelDRAW ver.7-X3,X4 (CDR/CDT/CCX/CDRX/CMX)
     * Adobe Illustrator up to 9 ver. (AI postscript based)
     * Postscript (PS)
     * Encapsulated Postscript (EPS)

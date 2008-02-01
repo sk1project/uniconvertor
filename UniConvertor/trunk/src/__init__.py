@@ -14,7 +14,7 @@ sK1 Team (http://sk1project.org), copyright (C) 2007 by Igor E. Novikov, Valek F
 
  Allowed input formats:
      AI  - Adobe Illustrator files (postscript based)
-     CDR - CorelDRAW Graphics files (7-X3 versions)
+     CDR - CorelDRAW Graphics files (7-X3,X4 versions)
      CDT - CorelDRAW templates files (7-X3 versions)
      CCX - Corel Compressed Exchange files
      CMX - Corel Presentation Exchange files (CMX1 format)
