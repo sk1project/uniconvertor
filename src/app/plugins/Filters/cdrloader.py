@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2007 by Igor E. Novikov, Valek Filippov
+# Copyright (C) 2007 by Igor E. Novikov, Valek Fillipov
 #
 # This library is covered by GNU General Public License v2.0.
 # For more info see COPYRIGHTS file in sK1 root directory.
@@ -8,7 +8,7 @@
 ###Sketch Config
 #type = Import
 #class_name = 'CDRLoader'
-#rx_magic = '(?s)RIFF....CDR[789ABCD]'
+#rx_magic = '(?s)RIFF....CDR[789ABCDE]'
 #tk_file_type = ('CorelDRAW Graphics', '.cdr')
 #format_name = 'CDR'
 #unload = 1
@@ -271,7 +271,7 @@ class InfoCollector:
 		cdr_version=self.cdr_version
 		
 		ieeestart = 32
-		if cdr_version == 13:
+		if cdr_version >= 13:
 			ieeestart = 40
 		if cdr_version == 5:
 			ieeestart = 18
@@ -423,7 +423,7 @@ class InfoCollector:
 		lc_offset = 0x6
 		offset = 0x1c	
 			
-		if cdr_version == 13:
+		if cdr_version >= 13:
 			ct_offset = 0x1c
 			lw_offset = 0x1e
 			lc_offset = 0x1a
@@ -472,21 +472,21 @@ class InfoCollector:
 		fild_pal_type = ('Transparent', 'Solid', 'Gradient')
 		colorIndex='%02X'%ord(chunk.data[0]) + '%02X'%ord(chunk.data[1]) + '%02X'%ord(chunk.data[2]) + '%02X'%ord(chunk.data[3])
 		pal = ord(chunk.data[4])
-		if cdr_version == 13:
+		if cdr_version >= 13:
 			pal = ord(chunk.data[0xc])		
 		if	pal < 3:
 			fild_type = fild_pal_type[pal]
 		else:
 			fild_type = 'Unknown (%X)'%pal					
 		clr_offset = 0x8
-		if cdr_version == 13:
+		if cdr_version >= 13:
 			clr_offset = 0x1b
 			
 		if clr_offset < chunk.rawsize:			
 			clrmode = ord(chunk.data[clr_offset])
 			if fild_type == 'Solid':
 				offset = 0x10
-				if cdr_version == 13:
+				if cdr_version >= 13:
 					offset =0x23
 				if clrmode == 9:
 					fill_data[colorIndex]=CreateCMYKColor(0, 0, 0, ord(chunk.data[offset]) /255.0)
@@ -537,10 +537,13 @@ class CDRLoader(GenericLoader):
 		self.filename =filename
 		self.verbosity=False
 		self.info = None
+		self.file=file
 		
 	def Load(self):
 		try:
-			cdr = load_file(self.filename)
+			self.file.seek(0)
+			cdr = RiffChunk()
+			cdr.load(self.file.read())
 			
 			self.document()
 			self.layer('cdr_object', 1, 1, 0, 0, ('RGB',0,0,0))
