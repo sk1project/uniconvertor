@@ -1,20 +1,10 @@
-# Sketch - A Python-based interactive drawing program
+# -*- coding: utf-8 -*-
+
+# Copyright (C) 2007, 2008 by Igor E. Novikov
 # Copyright (C) 1997, 1998, 1999, 2000, 2001, 2002 by Bernhard Herzog
-# Part of the code for Arrow heads and text from Paul Giotta (2002)
 #
-# This library is free software; you can redistribute it and/or
-# modify it under the terms of the GNU Library General Public
-# License as published by the Free Software Foundation; either
-# version 2 of the License, or (at your option) any later version.
-#
-# This library is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# Library General Public License for more details.
-#
-# You should have received a copy of the GNU Library General Public
-# License along with this library; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+# This library is covered by GNU Library General Public License.
+# For more info see COPYRIGHTS file in root directory.
 
 ###Sketch Config
 #type = Export
@@ -260,7 +250,7 @@ class SVGSaver:
 		width = right - left
 		height = top - bottom
 		self.trafo = Trafo(1, 0, 0, -1, -left, top)
-		self.file.write('<svg width="%g" height="%g"' % (width, height))
+		self.file.write('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="%g" height="%g"' % (width, height))
 		#self.file.write(' transform="matrix(%g,%g,%g,%g,%g,%g)">\n' % trafo)
 		self.file.write('>\n')
 
