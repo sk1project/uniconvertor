@@ -484,6 +484,7 @@ class InfoCollector:
 			
 		if clr_offset < chunk.rawsize:			
 			clrmode = ord(chunk.data[clr_offset])
+			print 'clrmode:',clrmode
 			if fild_type == 'Solid':
 				offset = 0x10
 				if cdr_version >= 13:
@@ -498,6 +499,11 @@ class InfoCollector:
 					fill_data[colorIndex]=CreateCMYKColor(ord(chunk.data[offset])/100.0,
 									ord(chunk.data[offset+1])/100.0,
 									ord(chunk.data[offset+2])/100.0, 0/100.0)
+				elif clrmode == 3:
+					fill_data[colorIndex]=CreateCMYKColor(ord(chunk.data[offset])/255.0,
+									ord(chunk.data[offset+1])/255.0,
+									ord(chunk.data[offset+2])/255.0,
+									ord(chunk.data[offset+3])/255.0)					
 				elif clrmode == 2:
 					fill_data[colorIndex]=CreateCMYKColor(ord(chunk.data[offset])/100.0,
 									ord(chunk.data[offset+1])/100.0,
