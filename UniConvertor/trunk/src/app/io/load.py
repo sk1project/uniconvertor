@@ -351,7 +351,7 @@ def load_drawing(filename):
 		name=locale_utils.utf_to_locale(filename)
 		#name=locale_utils.strip_line(name)
 		try:
-			file = open(name, 'r')
+			file = open(name, 'rb')
 		except IOError, value:
 			message = value.strerror
 			raise SketchLoadError(_("Cannot open %(filename)s:\n%(message)s")
