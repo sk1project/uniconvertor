@@ -13,9 +13,9 @@
 from string import atoi
 
 from app.events.warn import warn, INTERNAL, USER
-from app._sketch import RGBColor#, XVisual
+from app._sketch import RGBColor, XVisual
 from app import config, _
-import app
+import app, string
 
 skvisual = None
 CMYK = 'CMYK'
@@ -35,8 +35,24 @@ def XRGBColor(s):
 	return CreateRGBColor(r, g, b)
 
 def CreateCMYKColor(c, m, y, k):
-	#r,g,b = cmyk_to_rgb(c, m, y, k)
 	return CMYK_Color(c, m, y, k)
+
+def CreateSPOTColor(r,g,b,c,m,y,k,name,palette):
+	return SPOT_Color(r,g,b,c,m,y,k, alpha=0, name=name, palette=palette)
+
+def CreateSPOT_RGBColor(r,g,b,name,palette):
+	if app.config.preferences.use_cms:
+		c,m,y,k = app.colormanager.convertRGB(r, g, b)
+	else:
+		c,m,y,k = rgb_to_cmyk(r, g, b)
+	return SPOT_Color(r,g,b,c,m,y,k, alpha=0, name=name, palette=palette)
+
+def CreateSPOT_CMYKColor(c,m,y,k,name,palette):
+	if app.config.preferences.use_cms:
+		r,g,b = app.colormanager.processCMYK(c,m,y,k)
+	else:
+		r,g,b = cmyk_to_rgb(c,m,y,k)
+	return SPOT_Color(r,g,b,c,m,y,k, alpha=0, name=name, palette=palette)
 
 def cmyk_to_rgb(c, m, y, k):
 	r = round(1.0 - min(1.0, c + k), 3)
@@ -46,21 +62,29 @@ def cmyk_to_rgb(c, m, y, k):
 	
 def rgb_to_tk((r, g, b)):
 	return '#%04x%04x%04x' % (65535 * r, 65535 * g, 65535 * b)
-	
-def rgb2cmyk(r,g,b):
+
+def tk_to_rgb(tk):
+	r=int(string.atoi(tk[1:3], 0x10))/ 255.0 
+	g=int(string.atoi(tk[3:5], 0x10))/ 255.0 
+	b=int(string.atoi(tk[5:], 0x10))/ 255.0	
+	return r,g,b
+
+def rgb_to_cmyk(r, g, b):
 	c = 1.0 - r
 	m = 1.0 - g
 	y = 1.0 - b
 	k = min(c, m, y)
 	return c - k, m - k, y - k, k
 
+def ParseSketchColor(v1, v2, v3):
+	return RGB_Color(round(v1, 3), round(v2, 3), round(v3, 3))
+	
 def ParseSKColor(model, v1, v2, v3, v4=0, v5=0):
 	if model=='CMYK':
 		r,g,b = cmyk_to_rgb(v1, v2, v3, v4)
 		return CMYK_Color(v1, v2, v3, v4)
 	if model=='RGB':
-		return RGB_Color(round(v1, 3), round(v2, 3), round(v3, 3))
-	
+		return RGB_Color(round(v1, 3), round(v2, 3), round(v3, 3))	
 
 class RGB_Color:
 	
@@ -87,7 +111,7 @@ class RGB_Color:
 		if app.config.preferences.use_cms:
 			c,m,y,k = app.colormanager.convertRGB(self.red, self.green, self.blue)
 		else:
-			c,m,y,k = rgb2cmyk(self.red, self.green, self.blue)
+			c,m,y,k = rgb_to_cmyk(self.red, self.green, self.blue)
 		return c,m,y,k
 	
 	def getScreenColor(self):
@@ -159,6 +183,58 @@ class CMYK_Color:
 		Y= str(round(self.y, 3))+','
 		K= str(round(self.k, 3))
 		return '("'+self.model+'",'+C+M+Y+K+')'
+	
+class SPOT_Color:
+	
+	def __init__(self, r, g, b, c, m, y, k, alpha=0, name='Not defined', palette='Unknown'):		
+		self.model = 'SPOT'
+		self.r=r
+		self.g=g
+		self.b=b
+		self.c=c
+		self.m=m
+		self.y=y
+		self.k=k
+		self.alpha=alpha
+		self.name=name
+		self.palette = palette
+		
+	def getCMYK(self):
+		return self.c, self.m, self.y, self.k
+	
+	def RGB(self):
+		return self.getScreenColor()
+	
+	def cRGB(self):
+		rgb=self.getScreenColor()
+		return (rgb.red, rgb.green, rgb.blue)
+	
+	def cRGBA(self):
+		rgb=self.getScreenColor()
+		return (rgb.red, rgb.green, rgb.blue, self.alpha)
+	
+	def getScreenColor(self):
+		if app.config.preferences.use_cms:
+			if app.config.preferences.simulate_printer:
+				r,g,b = app.colormanager.processCMYK(c,m,y,k)                       
+				return RGBColor(r, g, b)
+			else:
+				return RGBColor(self.r, self.g, self.b)
+		else:
+			return RGBColor(self.r, self.g, self.b)
+	
+	def toString(self):
+		return self.name + ''
+		
+	def toSave(self):
+		R= str(round(self.r, 3))+','
+		G= str(round(self.g, 3))+','
+		B= str(round(self.b, 3))+','
+		C= str(round(self.c, 3))+','
+		M= str(round(self.m, 3))+','
+		Y= str(round(self.y, 3))+','
+		K= str(round(self.k, 3))
+		return '("'+self.model+'","'+self.palette+'","'+self.name+'",'+R+G+B+C+M+Y+K+')'
 
 #
 #       some standard colors.
