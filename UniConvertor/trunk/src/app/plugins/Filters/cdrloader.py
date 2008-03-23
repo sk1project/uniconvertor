@@ -226,6 +226,7 @@ class InfoCollector:
 	paths_heap=[]
 	current_paths=[]
 	outlineIndex=None
+	default_outl_data=None
 	colorIndex=None
 	loda_type_func = None
 	scale =.0002835
@@ -236,8 +237,10 @@ class InfoCollector:
 		self.loda_type_func = {0xa:self.loda_outl,0x14:self.loda_fild,0x1e:self.loda_coords}	
 		for chunk in self.fill_chunks:
 			self.process_fill(chunk)
+		outl_index=0
 		for chunk in self.outl_chunks:
-			self.process_outline(chunk)		
+			self.process_outline(chunk,outl_index)
+			outl_index+=1		
 		self.obj_chunks.reverse()	
 		for chunk in self.obj_chunks:
 			if chunk:
@@ -413,7 +416,7 @@ class InfoCollector:
 				'%02X'%ord(chunk.data[offset+2])+'%02X'%ord(chunk.data[offset+3])
 
 			
-	def process_outline(self, chunk):
+	def process_outline(self, chunk, usual):
 		cdr_version=self.cdr_version
 		outl = Outline()
 		outl.outlineIndex='%02X'%ord(chunk.data[0]) + '%02X'%ord(chunk.data[1]) + '%02X'%ord(chunk.data[2]) + '%02X'%ord(chunk.data[3])
@@ -451,6 +454,11 @@ class InfoCollector:
 							ord(chunk.data[offset+0x39])/100.0,
 							ord(chunk.data[offset+0x3a])/100.0,
 							ord(chunk.data[offset+0x3b])/100.0)
+		elif clrmode == 3 or clrmode == 0x11:
+			outl.color=CreateCMYKColor(ord(chunk.data[offset+0x38])/255.0,
+							ord(chunk.data[offset+0x39])/255.0,
+							ord(chunk.data[offset+0x3a])/255.0,
+							ord(chunk.data[offset+0x3b])/255.0)
 		elif clrmode == 17:
 			outl.color=CreateCMYKColor(ord(chunk.data[offset+0x38])/255.0,
 							ord(chunk.data[offset+0x39])/255.0,
@@ -461,9 +469,11 @@ class InfoCollector:
 		else:
 			outl.color=None
 			
-		if outl.width==0.0002835:
-			outl.color=None
+#		if outl.width==0.0002835:
+#			outl.color=None
 		self.outl_data[outl.outlineIndex]=outl
+		if not usual:
+			self.default_outl_data=outl
 
 	
 	def process_fill(self, chunk):
@@ -605,7 +615,7 @@ class CDRLoader(GenericLoader):
 					
 				if obj.outlineIndex:
 					if self.info.outl_data.has_key(obj.outlineIndex):
-						if self.info.outl_data[obj.outlineIndex].color and self.info.outl_data[obj.outlineIndex].width>0.2268:
+						if self.info.outl_data[obj.outlineIndex].color:# and self.info.outl_data[obj.outlineIndex].width>0.2268:
 							style.line_pattern = SolidPattern(self.info.outl_data[obj.outlineIndex].color)
 						else:
 							style.line_pattern = EmptyPattern
@@ -615,7 +625,16 @@ class CDRLoader(GenericLoader):
 					else:
 						style.line_pattern = EmptyPattern
 				else:
-					style.line_pattern = EmptyPattern
+					if self.info.default_outl_data:
+						if self.info.default_outl_data.color:
+							style.line_pattern = SolidPattern(self.info.default_outl_data.color)
+						else:
+							style.line_pattern = EmptyPattern
+						style.line_width = self.info.default_outl_data.width
+						style.line_cap = self.info.default_outl_data.caps + 1
+						style.line_join = self.info.default_outl_data.corner						
+					else:
+						style.line_pattern = EmptyPattern
 					
 				self.bezier(tuple(obj.paths))
 
