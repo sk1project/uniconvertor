@@ -484,7 +484,6 @@ class InfoCollector:
 			
 		if clr_offset < chunk.rawsize:			
 			clrmode = ord(chunk.data[clr_offset])
-			print 'clrmode:',clrmode
 			if fild_type == 'Solid':
 				offset = 0x10
 				if cdr_version >= 13:
