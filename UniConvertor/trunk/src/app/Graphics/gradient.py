@@ -82,7 +82,7 @@ class MultiGradient(Gradient):
 		diff = float(pos2 - pos1)
 		cur = 1
 		result = []
-		blend = color1.Blend
+		blend = color1.RGB().Blend
 		for i in range(num):
 			frac = i / max
 			while frac > pos2:
@@ -90,9 +90,9 @@ class MultiGradient(Gradient):
 				cur = cur + 1
 				pos2, color2 = colors[cur]
 				diff = float(pos2 - pos1)
-				blend = color1.Blend
+				blend = color1.RGB().Blend
 			frac = (frac - pos1) / diff
-			result.append(blend(color2, 1 - frac, frac))
+			result.append(blend(color2.RGB(), 1 - frac, frac))
 		return result
 
 	def Colors(self):
