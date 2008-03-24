@@ -1,0 +1,1 @@
+After build this folder will contains native modules.
