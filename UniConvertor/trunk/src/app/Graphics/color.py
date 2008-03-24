@@ -13,7 +13,7 @@
 from string import atoi
 
 from app.events.warn import warn, INTERNAL, USER
-from app._sketch import RGBColor, XVisual
+from app._sketch import RGBColor #, XVisual
 from app import config, _
 import app, string
 
@@ -326,26 +326,26 @@ def fill_colormap(cmap):
 
 _init_from_widget_done = 0
 global_colormap = None
-def InitFromWidget(tkwin, root = None):
-	global _init_from_widget_done, skvisual
-	if _init_from_widget_done:
-		return
-	if root:
-		visual = root.winfo_visual()
-		if visual == 'truecolor':
-			skvisual = XVisual(tkwin.c_display(), tkwin.c_visual())
-			#skvisual.set_gamma(config.preferences.screen_gamma)
-			alloc_function = skvisual.get_pixel
-		if visual == 'pseudocolor' and root.winfo_depth() == 8:
-			global global_colormap
-			cmap = tkwin.colormap()
-			newcmap, idxs = fill_colormap(cmap)
-			if newcmap != cmap:
-				cmap = newcmap
-				tkwin.SetColormap(cmap)
-			shades_r, shades_g, shades_b, shades_gray \
-						= config.preferences.color_cube
-			skvisual = XVisual(tkwin.c_display(), tkwin.c_visual(),
-								(shades_r, shades_g, shades_b, shades_gray, idxs))
-			global_colormap = cmap
-	_init_from_widget_done = 1
+#def InitFromWidget(tkwin, root = None):
+#	global _init_from_widget_done, skvisual
+#	if _init_from_widget_done:
+#		return
+#	if root:
+#		visual = root.winfo_visual()
+#		if visual == 'truecolor':
+#			skvisual = XVisual(tkwin.c_display(), tkwin.c_visual())
+#			#skvisual.set_gamma(config.preferences.screen_gamma)
+#			alloc_function = skvisual.get_pixel
+#		if visual == 'pseudocolor' and root.winfo_depth() == 8:
+#			global global_colormap
+#			cmap = tkwin.colormap()
+#			newcmap, idxs = fill_colormap(cmap)
+#			if newcmap != cmap:
+#				cmap = newcmap
+#				tkwin.SetColormap(cmap)
+#			shades_r, shades_g, shades_b, shades_gray \
+#						= config.preferences.color_cube
+#			skvisual = XVisual(tkwin.c_display(), tkwin.c_visual(),
+#								(shades_r, shades_g, shades_b, shades_gray, idxs))
+#			global_colormap = cmap
+#	_init_from_widget_done = 1
