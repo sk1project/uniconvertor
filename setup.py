@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Setup script for UniConvertor 1.1.1
+# Setup script for UniConvertor
 #
 # Copyright (C) 2007 Igor E. Novikov
 #
@@ -87,7 +87,7 @@ if __name__ == "__main__":
 					skmod_src+'curvemisc.c', skmod_src+'skaux.c', skmod_src+'skimage.c', ])
 			
 	setup (name = 'UniConvertor',
-			version = '1.1.1',
+			version = '1.1.2',
 			description = 'Universal vector graphics translator',
 			author = 'Igor E. Novikov',
 			author_email = 'igor.e.novikov@gmail.com',
