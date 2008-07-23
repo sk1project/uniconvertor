@@ -54,6 +54,13 @@ _ = gettext
 
 
 
+####Info variables for progress
+info1=None
+info2=None
+info3=None
+info_win=None
+#######################################
+
 from conf import const
 
 from _sketch import Point, Polar, PointType
@@ -83,6 +90,17 @@ from _sketch import ContAngle, ContSmooth, ContSymmetrical, SelNone, SelNodes, S
 from events.skexceptions import *
 from events.undo import Undo, UndoList, CreateListUndo, CreateMultiUndo, UndoAfter, UndoRedo, NullUndo
 from events.connector import Connect, Disconnect, Issue, RemovePublisher, Subscribe, Publisher, QueueingPublisher
+
+
+def updateInfo(inf1=None,inf2=None,inf3=None):
+	if not inf1 is None:
+		info1.set(inf1)
+	if not inf2 is None:
+		info2.set(inf2)		
+	if not inf3 is None:
+		info3.set(inf3)
+	if not info_win is None:
+		info_win.update()
 
 #
 
