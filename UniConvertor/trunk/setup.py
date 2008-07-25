@@ -125,6 +125,8 @@ Export filters:
     * SK1 (sK1 format)
     * CGM (Computer Graphics Metafile)
     * WMF (Windows Metafile)
+    * PDF - Portable Document Format
+	* PS  - PostScript
     
 ------------------------------------------------------------------------------------
 			''',
