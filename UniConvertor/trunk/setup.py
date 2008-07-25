@@ -87,7 +87,7 @@ if __name__ == "__main__":
 					skmod_src+'curvemisc.c', skmod_src+'skaux.c', skmod_src+'skimage.c', ])
 			
 	setup (name = 'UniConvertor',
-			version = '1.1.2',
+			version = '1.1.3',
 			description = 'Universal vector graphics translator',
 			author = 'Igor E. Novikov',
 			author_email = 'igor.e.novikov@gmail.com',
