@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Sketch - A Python-based interactive drawing program
 # Copyright (C) 1997, 1998, 1999, 2000 by Bernhard Herzog
 #
@@ -86,14 +87,14 @@ from app import config
 from app.conf import const
 
 import handle
-import selinfo
+import selinfo, codecs
 from base import Primitive, RectangularPrimitive, Creator, Editor
 from compound import Compound
 from group import Group
 from bezier import PolyBezier, CombineBeziers
 from blend import Blend, MismatchError, BlendTrafo
 from properties import PropertyStack, FactoryTextStyle, DefaultTextProperties
-import color, pattern
+import color, pattern, app
 
 import graphics, font
 font_module = font
@@ -101,12 +102,13 @@ font_module = font
 from app.Lib import encoding; iso_latin_1 = encoding.iso_latin_1
 
 
+(encoder,decoder, sr,sw)=codecs.lookup('utf-8')
+
 
 printable = ''
 for n in range(len(iso_latin_1)):
 	if iso_latin_1[n] != encoding.notdef:
 		printable = printable + chr(n)
-
 
 # Alignment. Defaults are 0
 ALIGN_BASE = 0
@@ -156,6 +158,20 @@ class CommonText:
 		else:
 			undo = self.properties.SetProperty(font = font)
 		return self.properties_changed(undo)
+	
+	def SetGap(self, char, word, line):		
+		undo = self.properties.SetProperty(chargap = char,
+								wordgap = word,
+								linegap = line)
+		return self.properties_changed(undo)
+	
+	def SetAlign(self, align, valign):	
+		if align == const.ALIGN_CENTER:
+			valign=const.ALIGN_CENTER
+		else:
+			valign=const.ALIGN_BASE	
+		undo = self.properties.SetProperty(align = align, valign = valign)		
+		return self.properties_changed(undo)
 
 	def SetFontSize(self, size):
 		undo = self.properties.SetProperty(font_size = size)
@@ -200,14 +216,46 @@ class CommonTextEditor(Editor):
 	def Caret(self):
 		return self.caret
 
-	def InsertCharacter(self, char):
-		if len(char) == 1 and self.properties.font.IsPrintable(char):
+	def InsertCharacter(self, event):
+#		if len(char) == 1 and self.properties.font.IsPrintable(char):
+		try:			
+			char = event.char
+			char=char.decode('utf-8')			
 			text = self.text;	caret = self.caret
 			text = text[:caret] + char + text[caret:]
 			return self.SetText(text, caret + 1)
-		return NullUndo
-	#AddCmd(commands, InsertCharacter, '', key_stroke = tuple(printable),
-			#invoke_with_keystroke = 1)
+		except:
+			return NullUndo
+#	AddCmd(commands, InsertCharacter, '', key_stroke = tuple(printable), invoke_with_event = 1)
+	
+	def InsertEOL(self):
+		try:	
+			text = self.text;	caret = self.caret
+			text = text[:caret] + '\n' + text[caret:]
+			return self.SetText(text, caret + 1)
+		except:
+			return NullUndo
+#	AddCmd(commands, InsertEOL, '', key_stroke = ('Return','KP_Enter'))
+
+	def InsertTAB(self):
+		try:	
+			text = self.text;	caret = self.caret
+			text = text[:caret] + '\t' + text[caret:]
+			return self.SetText(text, caret + 1)
+		except:
+			return NullUndo
+#	AddCmd(commands, InsertTAB, '', key_stroke = 'Tab')	
+	
+	def InsertTextFromClipboard(self):
+		try:			
+			insertion = app.root.tk.call('::tk::GetSelection','.','CLIPBOARD')
+			insertion=insertion.decode('utf-8')		
+			text = self.text;	caret = self.caret
+			text = text[:caret] + insertion + text[caret:]
+			return self.SetText(text, caret + len(insertion))
+		except:
+			return NullUndo
+#	AddCmd(commands, InsertTextFromClipboard, '', key_stroke = ('Ctrl+v', 'Shift+Insert'))
 
 	def DeleteCharBackward(self):
 		if self.text and self.caret > 0:
@@ -215,7 +263,7 @@ class CommonTextEditor(Editor):
 			text = text[:caret - 1] + text[caret:]
 			return self.SetText(text, caret - 1)
 		return NullUndo
-	#AddCmd(commands, DeleteCharBackward, '', key_stroke = 'BackSpace')
+#	AddCmd(commands, DeleteCharBackward, '', key_stroke = 'BackSpace')
 
 	def DeleteCharForward(self):
 		if self.text and self.caret < len(self.text):
@@ -223,33 +271,88 @@ class CommonTextEditor(Editor):
 			text = text[:caret] + text[caret + 1:]
 			return self.SetText(text, caret)
 		return NullUndo
-	#AddCmd(commands, DeleteCharForward, '', key_stroke = ('Delete', 'C-d'))
+#	AddCmd(commands, DeleteCharForward, '', key_stroke = ('Delete', 'KP_Delete'))
 
 	def MoveForwardChar(self):
 		if self.caret < len(self.text):
 			self.SetCaret(self.caret + 1)
 			self.update_selection()
 		return NullUndo
-	#AddCmd(commands, MoveForwardChar, '', key_stroke = ('Right', 'C-f'))
+#	AddCmd(commands, MoveForwardChar, '', key_stroke = ('Right', 'KP_Right'))
 
 	def MoveBackwardChar(self):
 		if self.caret > 0:
 			self.SetCaret(self.caret - 1)
 			self.update_selection()
 		return NullUndo
-	#AddCmd(commands, MoveBackwardChar, '', key_stroke = ('Left', 'C-b'))
+#	AddCmd(commands, MoveBackwardChar, '', key_stroke = ('Left', 'KP_Left'))
+
+	def MoveToNextLine(self):
+		lines=split(self.text, '\n')
+		index, line_index = self.get_position()
+		if line_index < len(lines)-1:
+			if index>len(lines[line_index+1]):
+				self.SetCaret(self.caret + len(lines[line_index+1])+len(lines[line_index])-index+2)
+			else:
+				self.SetCaret(self.caret + len(lines[line_index])+1)
+			self.update_selection()
+		return NullUndo
+#	AddCmd(commands, MoveToNextLine, '', key_stroke = ('Down', 'KP_Down'))
+	
+	def MoveToPreviousLine(self):
+		lines=split(self.text, '\n')
+		index, line_index = self.get_position()
+		if line_index > 0:
+			if index>len(lines[line_index-1]):
+				self.SetCaret(self.caret - index)
+			else:
+				self.SetCaret(self.caret - len(lines[line_index-1])-1)
+			self.update_selection()
+		return NullUndo
+#	AddCmd(commands, MoveToPreviousLine, '', key_stroke = ('Up', 'KP_Up'))
 
 	def MoveToBeginningOfLine(self):
+		index, line_index = self.get_position()
+		self.SetCaret(self.caret-index+1)
+		self.update_selection()
+		return NullUndo
+#	AddCmd(commands, MoveToBeginningOfLine, '', key_stroke = ('Home', 'KP_Home'))
+	
+	def MoveToBeginningOfText(self):
 		self.SetCaret(0)
 		self.update_selection()
 		return NullUndo
-	#AddCmd(commands, MoveToBeginningOfLine, '', key_stroke = ('Home', 'C-a'))
+#	AddCmd(commands, MoveToBeginningOfText, '', key_stroke = ('Ctrl-Home', 'Ctrl-KP_Home'))
 
 	def MoveToEndOfLine(self):
+		lines=split(self.text, '\n')
+		index, line_index = self.get_position()
+		self.SetCaret(self.caret+len(lines[line_index])-index+1)
+		self.update_selection()
+		return NullUndo
+#	AddCmd(commands, MoveToEndOfLine, '', key_stroke = ('End', 'KP_End'))
+	
+	def MoveToEndOfText(self):
 		self.SetCaret(len(self.text))
 		self.update_selection()
 		return NullUndo
-	#AddCmd(commands, MoveToEndOfLine, '', key_stroke = ('End', 'C-e'))
+#	AddCmd(commands, MoveToEndOfText, '', key_stroke = ('Ctrl-End', 'Ctrl-KP_End'))
+	
+	def get_position(self):
+		lines=split(self.text, '\n')
+		caret=self.caret+1
+		index=0
+		line_index=0
+		for line in lines:
+			line+='\n'
+			caret-=len(line)
+			if caret<=0:
+				index=len(line)+caret
+				break
+			line_index+=1
+		return (index,line_index)
+				
+		
 
 
 RegisterCommands(CommonTextEditor)
@@ -271,8 +374,8 @@ class SimpleText(CommonText, RectangularPrimitive):
 	_lazy_attrs = RectangularPrimitive._lazy_attrs.copy()
 	_lazy_attrs['atrafo'] = 'update_atrafo'
 
-	def __init__(self, trafo = None, text = '', halign = ALIGN_LEFT,
-					valign = ALIGN_BASE, properties = None, duplicate = None):
+	def __init__(self, trafo = None, text = '', halign = const.ALIGN_LEFT,
+					valign = const.ALIGN_BASE, properties = None, duplicate = None):
 		CommonText.__init__(self, text, duplicate)
 		RectangularPrimitive.__init__(self, trafo, properties = properties,
 										duplicate = duplicate)
@@ -285,6 +388,8 @@ class SimpleText(CommonText, RectangularPrimitive):
 			self.valign = valign
 			if properties is None:
 				self.properties = PropertyStack(base=FactoryTextStyle())
+			self.properties.align = self.halign
+			self.properties.valign = self.valign
 		self.cache = {}
 
 	def Disconnect(self):
@@ -293,7 +398,7 @@ class SimpleText(CommonText, RectangularPrimitive):
 
 	def Hit(self, p, rect, device, clip = 0):
 		a = self.properties
-		llx, lly, urx, ury = a.font.TextBoundingBox(self.text, a.font_size)
+		llx, lly, urx, ury = a.font.TextBoundingBox(self.text, a.font_size, a)
 		trafo = self.trafo(self.atrafo)
 		trafo = trafo(Trafo(urx - llx, 0, 0, ury - lly, llx, lly))
 		return device.ParallelogramHit(p, trafo, 1, 1, 1,
@@ -304,41 +409,43 @@ class SimpleText(CommonText, RectangularPrimitive):
 		if multiple:
 			return trafo(NullPoint)
 		else:
-			pts = self.properties.font.TypesetText(self.text)
+			pts = self.properties.font.TypesetText(self.text,self.properties)
 			return map(trafo, pts)
-
 
 	def SetAlignment(self, horizontal, vertical):
 		undo = (self.SetAlignment, self.halign, self.valign)
 		if horizontal is not None:
 			self.halign = horizontal
+			self.properties.align = horizontal
 		if vertical is not None:
 			self.valign = vertical
+			self.properties.valign = vertical
 		self._changed()
 		return undo
-	#AddCmd(commands, 'AlignLeft', _("Align Left"), SetAlignment,
-			#args = (ALIGN_LEFT, None))
-	#AddCmd(commands, 'AlignRight', _("Align Right"), SetAlignment,
-			#args =(ALIGN_RIGHT,None))
-	#AddCmd(commands, 'AlignHCenter', _("Align H. Center"), SetAlignment,
-			#args = (ALIGN_CENTER, None))
-	#AddCmd(commands, 'AlignTop', _("Align Top"), SetAlignment,
-			#args = (None, ALIGN_TOP))
-	#AddCmd(commands, 'AlignVCenter', _("Align V. Center"), SetAlignment,
-			#args =(None, ALIGN_CENTER))
-	#AddCmd(commands, 'AlignBase', _("Align Baseline"), SetAlignment,
-			#args = (None, ALIGN_BASE))
-	#AddCmd(commands, 'AlignBottom', _("Align Bottom"), SetAlignment,
-			#args = (None, ALIGN_BOTTOM))
+	
+#	AddCmd(commands, 'AlignLeft', _("Align Left"), SetAlignment,
+#			args = (const.ALIGN_LEFT, None))
+#	AddCmd(commands, 'AlignRight', _("Align Right"), SetAlignment,
+#			args =(const.ALIGN_RIGHT,None))
+#	AddCmd(commands, 'AlignHCenter', _("Align H. Center"), SetAlignment,
+#			args = (const.ALIGN_CENTER, None))
+#	AddCmd(commands, 'AlignTop', _("Align Top"), SetAlignment,
+#			args = (None, const.ALIGN_TOP))
+#	AddCmd(commands, 'AlignVCenter', _("Align V. Center"), SetAlignment,
+#			args =(None, const.ALIGN_CENTER))
+#	AddCmd(commands, 'AlignBase', _("Align Baseline"), SetAlignment,
+#			args = (None, const.ALIGN_BASE))
+#	AddCmd(commands, 'AlignBottom', _("Align Bottom"), SetAlignment,
+#			args = (None, const.ALIGN_BOTTOM))
 
 	def Alignment(self):
-		return self.halign, self.valign
+		return self.properties.align, self.properties.valign
 
 	def RemoveTransformation(self):
 		if self.trafo.matrix() != IdentityMatrix:
 			a = self.properties
 			trafo = self.trafo
-			llx, lly, urx, ury = a.font.TextCoordBox(self.text, a.font_size)
+			llx, lly, urx, ury = a.font.TextCoordBox(self.text, a.font_size, a)
 			try:
 				undostyle = Primitive.Transform(self, trafo.inverse())
 			except SingularMatrix:
@@ -349,43 +456,51 @@ class SimpleText(CommonText, RectangularPrimitive):
 
 	def DrawShape(self, device, rect = None, clip = 0):
 		RectangularPrimitive.DrawShape(self, device)
-		# Workaround for a bug in my Xserver.
-		text = split(self.text, '\n')[0]
-		device.DrawText(self.text, self.trafo(self.atrafo), clip,
-						cache = self.cache)
+		base_trafo = self.trafo(self.atrafo)
+		base_trafo = base_trafo(Scale(self.properties.font_size))
+		paths = self.properties.font.GetPaths(self.text, self.properties)
+		obj = PolyBezier(paths, self.properties.Duplicate())
+		obj.Transform(base_trafo)
+		device.MultiBezier(obj.paths, rect, clip)
 
 	def update_atrafo(self):
-		a = self.properties
-		llx, lly, urx, ury = a.font.TextCoordBox(self.text, a.font_size)
-		hj = self.halign
-		if hj == ALIGN_RIGHT:
-			xoff = llx - urx
-		elif hj == ALIGN_CENTER:
-			xoff = (llx - urx) / 2
-		else:
-			xoff = 0
-		vj = self.valign
-		if vj == ALIGN_TOP:
-			yoff = -ury
-		elif vj == ALIGN_CENTER:
-			yoff = (lly - ury) / 2 - lly
-		elif vj == ALIGN_BOTTOM:
-			yoff = -lly
-		else:
-			yoff = 0
+#		a = self.properties
+#		llx, lly, urx, ury = a.font.TextCoordBox(self.text, a.font_size, a)
+#		hj = self.halign
+#		if hj == ALIGN_RIGHT:
+#			xoff = llx - urx
+#		elif hj == ALIGN_CENTER:
+#			xoff = (llx - urx) / 2
+#		else:
+#			xoff = 0
+		xoff = 0
+		yoff=0
+#		vj = self.valign
+#		if vj == ALIGN_TOP:
+#			yoff = -ury
+#		elif vj == ALIGN_CENTER:
+#			yoff = (lly - ury) / 2 - lly
+#		elif vj == ALIGN_BOTTOM:
+#			yoff = -lly
+#		else:
+#			yoff = 0
 		self.atrafo = Translation(xoff, yoff)
 
 	def update_rects(self):
 		trafo = self.trafo(self.atrafo)
 		a = self.properties
-		rect = apply(Rect, a.font.TextBoundingBox(self.text, a.font_size))
+		rect = apply(Rect, a.font.TextBoundingBox(self.text, a.font_size, a))
 		self.bounding_rect = trafo(rect).grown(2)
-		rect = apply(Rect, a.font.TextCoordBox(self.text, a.font_size))
+		rect = apply(Rect, a.font.TextCoordBox(self.text, a.font_size, a))
 		self.coord_rect = trafo(rect)
 
 	def Info(self):
+		text=self.text.replace('\n','')
+		text=text.replace('\r','')
+		text=text.strip()
+		text=text.encode('utf-8')
 		return (_("Text `%(text)s' at %(position)[position]"),
-				{'text':self.text[:10], 'position':self.trafo.offset()} )
+				{'text':text[:10], 'position':self.trafo.offset()} )
 
 	def FullTrafo(self):
 		# XXX perhaps the Trafo method should return
@@ -394,7 +509,12 @@ class SimpleText(CommonText, RectangularPrimitive):
 
 	def SaveToFile(self, file):
 		RectangularPrimitive.SaveToFile(self, file)
-		file.SimpleText(self.text, self.trafo, self.halign, self.valign)
+		file.SimpleText(self.text, self.trafo, 
+					self.properties.align, 
+					self.properties.valign,
+					self.properties.chargap,
+					self.properties.wordgap,
+					self.properties.linegap)
 
 	def Blend(self, other, p, q):
 		if self.__class__ != other.__class__ \
@@ -408,33 +528,35 @@ class SimpleText(CommonText, RectangularPrimitive):
 
 	def AsBezier(self):
 		if self.text:
-			objects = []
+			text = split(self.text, '\n')[0]
 			base_trafo = self.trafo(self.atrafo)
 			base_trafo = base_trafo(Scale(self.properties.font_size))
-			pos = self.properties.font.TypesetText(self.text)
-			for i in range(len(self.text)):
-				paths = self.properties.font.GetOutline(self.text[i])
-				if paths:
-					obj = PolyBezier(paths = paths,
-										properties = self.properties.Duplicate())
-					trafo = base_trafo(Translation(pos[i]))
-					obj.Transform(trafo)
-					objects.append(obj)
-			return Group(objects)
+			paths = self.properties.font.GetPaths(self.text, self.properties)
+			obj = PolyBezier(paths, self.properties.Duplicate())
+			obj.Transform(base_trafo)
+			return obj
 
 	def Paths(self):
-		paths = []
+#		paths = []
 		if self.text:
+			text = split(self.text, '\n')[0]
 			base_trafo = self.trafo(self.atrafo)
 			base_trafo = base_trafo(Scale(self.properties.font_size))
-			pos = self.properties.font.TypesetText(self.text)
-			for i in range(len(self.text)):
-				outline = self.properties.font.GetOutline(self.text[i])
-				trafo = base_trafo(Translation(pos[i]))
-				for path in outline:
-					path.Transform(trafo)
-					paths.append(path)
-		return tuple(paths)            
+			paths = self.properties.font.GetPaths(self.text, self.properties)
+			obj = PolyBezier(paths, self.properties.Duplicate())
+			obj.Transform(base_trafo)
+		return obj.paths 
+							
+#			base_trafo = self.trafo(self.atrafo)
+#			base_trafo = base_trafo(Scale(self.properties.font_size))
+#			pos = self.properties.font.TypesetText(self.text)
+#			for i in range(len(self.text)):
+#				outline = self.properties.font.GetOutline(self.text[i])
+#				trafo = base_trafo(Translation(pos[i]))
+#				for path in outline:
+#					path.Transform(trafo)
+#					paths.append(path)
+#		return tuple(paths)            
 
 	def Editor(self):
 		return SimpleTextEditor(self)
@@ -489,7 +611,7 @@ class SimpleTextEditor(CommonTextEditor):
 
 	def GetHandles(self):
 		a = self.properties
-		pos, up = a.font.TextCaretData(self.text, self.caret, a.font_size)
+		pos, up = a.font.TextCaretData(self.text, self.caret, a.font_size, a)
 		pos = self.trafo(self.atrafo(pos))
 		up = self.trafo.DTransform(up)
 		return [handle.MakeCaretHandle(pos, up)]
@@ -498,12 +620,13 @@ class SimpleTextEditor(CommonTextEditor):
 		trafo = self.trafo(self.atrafo(Scale(self.properties.font_size)))
 		trafo = trafo.inverse()
 		p2 = trafo(p)
-		pts = self.properties.font.TypesetText(self.text + ' ')
+		pts = self.properties.font.TypesetText(self.text + ' ',self.properties)
 		dists = []
 		for i in range(len(pts)):
 			dists.append((abs(pts[i].x - p2.x), i))
 		caret = min(dists)[-1]
 		self.SetCaret(caret)
+#		print "CATCHED!"
 		return 1
 
 	def Destroy(self):
@@ -548,11 +671,11 @@ def coord_sys_at(lengths, pos, type):
 		return Trafo(diff.x, diff.y, -diff.y, diff.x, p.x, p.y)
 
 
-def pathtext(path, start_pos, text, font, size, type):
+def pathtext(path, start_pos, text, font, size, type, properties):
 	metric = font.metric
 	lengths = path.arc_lengths(start_pos)
 	scale = Scale(size); factor = size / 2000.0
-	pos = font.TypesetText(text)
+	pos = font.TypesetText(text, properties)
 	pos = map(scale, pos)
 	trafos = []
 	for idx in range(len(text)):
@@ -612,12 +735,12 @@ class InternalPathText(CommonText, Primitive):
 		length = len(self.trafos)
 		sizes = [a.font_size] * length
 
-		boxes = map(a.font.TextBoundingBox, self.text[:length], sizes)
+		boxes = map(a.font.TextBoundingBox, self.text[:length], sizes, a)
 		rects = map(lambda *a:a, map(apply, [Rect] * length, boxes))
 		self.bounding_rect = reduce(UnionRects, map(apply, self.trafos, rects),
 									EmptyRect)
 
-		boxes = map(a.font.TextCoordBox, self.text[:length], sizes)
+		boxes = map(a.font.TextCoordBox, self.text[:length], sizes, a)
 		rects = map(lambda *a:a, map(apply, [Rect] * length, boxes))
 		self.coord_rect = reduce(UnionRects, map(apply, self.trafos, rects),
 									EmptyRect)
@@ -626,7 +749,7 @@ class InternalPathText(CommonText, Primitive):
 		self.trafos = map(self.trafo, pathtext(self.paths[0], self.start_pos,
 												self.text, self.properties.font,
 												self.properties.font_size,
-												self.model))
+												self.model,self.properties))
 	def update_paths(self):
 		paths = self.parent.get_paths()
 		try:
@@ -692,7 +815,7 @@ class InternalPathText(CommonText, Primitive):
 		text = self.text; trafos = self.trafos
 
 		for idx in range(len(trafos)):
-			llx, lly, urx, ury = bbox(text[idx], font_size)
+			llx, lly, urx, ury = bbox(text[idx], font_size, self.properties)
 			trafo = trafos[idx](Trafo(urx - llx, 0, 0, ury - lly, llx, lly))
 			if device.ParallelogramHit(p, trafo, 1, 1, 1,
 										ignore_outline_mode = 1):
@@ -762,7 +885,7 @@ class InternalPathTextEditor(CommonTextEditor):
 				# XXX fix this
 				self.start_point = self.paths[0].point_at(self.start_pos)
 				return [handle.MakeNodeHandle(self.start_point, 1)]
-		pos, up = a.font.TextCaretData(text, caret, a.font_size)
+		pos, up = a.font.TextCaretData(text, caret, a.font_size, a)
 		pos = trafo(pos)
 		up = trafo.DTransform(up)
 		self.start_point = self.trafos[0].offset()
@@ -804,7 +927,7 @@ class InternalPathTextEditor(CommonTextEditor):
 		font = self.properties.font; font_size = self.properties.font_size
 		t = self.nearest_start_pos(self.drag_cur)
 		trafos = map(self.trafo, pathtext(self.paths[0], t, text, font,
-											font_size, self.model))
+											font_size, self.model, self.properties))
 
 		device.BeginComplexText(0, self.cache)
 		for idx in range(len(trafos)):
@@ -903,21 +1026,21 @@ class PathText(Compound):
 
 	def SelectTextObject(self):
 		self.document.SelectObject(self.text)
-	#AddCmd(commands, SelectTextObject, _("Select Text"), key_stroke = 't')
+#	AddCmd(commands, SelectTextObject, _("Select Text"), key_stroke = 't')
 
 	def SelectPathObject(self):
 		self.document.SelectObject(self.path)
-	#AddCmd(commands, SelectPathObject, _("Select Path"), key_stroke = 'p')
+#	AddCmd(commands, SelectPathObject, _("Select Path"), key_stroke = 'p')
 
 	def get_paths(self):
 		return self.path.Paths()
 
 	def SetModel(self, model):
 		return self.text.SetModel(model)
-	#AddCmd(commands, 'SetModelRotate', _("Rotate Letters"), SetModel,
-			#args = PATHTEXT_ROTATE)
-	#AddCmd(commands, 'SetModelSkew', _("Skew Letters"), SetModel,
-			#args = PATHTEXT_SKEW)
+#	AddCmd(commands, 'SetModelRotate', _("Rotate Letters"), SetModel,
+#			args = PATHTEXT_ROTATE)
+#	AddCmd(commands, 'SetModelSkew', _("Skew Letters"), SetModel,
+#			args = PATHTEXT_SKEW)
 
 	def Model(self):
 		return self.text.Model()

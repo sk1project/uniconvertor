@@ -36,16 +36,21 @@ class Layer(EditableCompound):
 	is_SpecialLayer = 0
 	is_GridLayer = 0
 	is_GuideLayer = 0
+	is_MasterLayer = 0
+	is_Page=0
 
 	def __init__(self, name = _("New Layer"),
 					visible = 1, printable = 1, locked = 0,
-					outlined = 0, outline_color = config.preferences.layer_color):
+					outlined = 0, outline_color = config.preferences.layer_color,
+					is_MasterLayer=0, is_Page=0):
 		EditableCompound.__init__(self, [])
 		self.name = name
 		self.visible = visible
 		self.printable = printable
 		self.locked = locked
 		self.outlined = outlined
+		self.is_MasterLayer = is_MasterLayer
+		self.is_Page = is_Page
 		if type(outline_color) == TupleType:
 			if len(outline_color)==3:
 				outline_color=('RGB',outline_color[0],outline_color[1],outline_color[2])
@@ -204,8 +209,12 @@ class Layer(EditableCompound):
 		return self.outlined
 
 	def SaveToFile(self, file):
-		file.BeginLayer(self.name, self.visible, self.printable, self.locked,
-						self.outlined, self.outline_color)
+		if self.is_MasterLayer:
+			file.BeginMasterLayer(self.name, self.visible, self.printable, self.locked,
+							self.outlined, self.outline_color)
+		else:
+			file.BeginLayer(self.name, self.visible, self.printable, self.locked,
+							self.outlined, self.outline_color)
 		for obj in self.objects:
 			obj.SaveToFile(file)
 		file.EndLayer()
@@ -378,4 +387,3 @@ class GridLayer(SpecialLayer):
 			# a hack...
 			self.document.queue_layer(LAYER_COLOR, self)
 		return undo
-
