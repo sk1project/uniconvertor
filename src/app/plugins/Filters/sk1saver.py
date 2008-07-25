@@ -1,4 +1,6 @@
-# Sketch - A Python-based interactive drawing program
+# -*- coding: utf-8 -*-
+
+# Copyright (C) 2003-2008 by Igor Novikov
 # Copyright (C) 1997, 1998, 1999, 2000 by Bernhard Herzog
 #
 # This library is free software; you can redistribute it and/or
@@ -320,10 +322,18 @@ class SKSaver:
 	def BeginLayer(self, name, visible, printable, locked, outlined, color):
 		self.file.write('layer(%s,%d,%d,%d,%d,%s)\n'
 						% (`name`, visible, printable, locked, outlined,
-							color_repr(color)))
+							color_repr(color)))	
+		
+	def BeginMasterLayer(self, name, visible, printable, locked, outlined, color):
+		self.file.write('masterlayer(%s,%d,%d,%d,%d,%s)\n'
+						% (`name`, visible, printable, locked, outlined,
+							color_repr(color)))		
 
 	def EndLayer(self):
 		pass
+	
+	def Page(self):
+		self.file.write('page()\n')
 
 	def BeginGuideLayer(self, name, visible, printable, locked, outlined,
 						color):
@@ -500,16 +510,24 @@ class SKSaver:
 			if path.closed:
 				write("bC()\n")
 
-	def SimpleText(self, text, trafo, halign, valign):
+	def SimpleText(self, text, trafo, halign, valign, chargap, wordgap, linegap):
+		text = self.unicode_encoder(text)
 		write = self.file.write
 		write('txt(%s,' % `text`)
 		if trafo.matrix() != IdentityMatrix:
 			write('(%g,%g,%g,%g,%g,%g)' % trafo.coeff())
 		else:
-			write('(%g,%g)' % (trafo.v1, trafo.v2))
-		if halign or valign:
-			write(',%d,%d' % (halign, valign))
+			write('(%g,%g)' % (trafo.v1, trafo.v2))		
+		write(',%d,%d' % (halign, valign))
+		write(',%g,%g,%g' % (chargap, wordgap, linegap))
+		
 		write(')\n')
+		
+	def unicode_encoder(self, text):
+		output=''
+		for char in text:
+			output+='\u0%x'%ord(char)
+		return output
 
 	def write_image(self, image, relative_filename = 1):
 		write = self.file.write
