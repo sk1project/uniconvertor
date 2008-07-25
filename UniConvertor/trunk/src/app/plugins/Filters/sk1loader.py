@@ -1,4 +1,6 @@
-# Sketch - A Python-based interactive drawing program
+# -*- coding: utf-8 -*-
+
+# Copyright (C) 2003-2008 by Igor Novikov
 # Copyright (C) 1997, 1998, 1999, 2000 by Bernhard Herzog
 #
 # This library is free software; you can redistribute it and/or
@@ -27,7 +29,7 @@ format_name = 'sK1'
 (''"sK1 Document")
 
 from types import StringType, TupleType
-import os, sys
+import os, sys, app
 from string import atoi
 
 from app.events.warn import warn, INTERNAL, pdebug, warn_tb
@@ -36,7 +38,7 @@ from app import SketchLoadError, SketchError
 from app.plugins import plugins
 from app.io import load
 from app.conf import const
-from app.Graphics.color import ParseSKColor
+from app.Graphics.color import ParseSketchColor, CreateCMYKColor, CreateSPOTColor
 from app import CreateRGBColor, SolidPattern, HatchingPattern,EmptyPattern,\
 		LinearGradient, ConicalGradient, RadialGradient, ImageTilePattern, \
 		Style, MultiGradient, Trafo, Translation, Point, \
@@ -64,9 +66,8 @@ base_style.font_size = 12.0
 # sanity check: does base_style have all properties?
 for key in dir(properties.factory_defaults):
 	if not hasattr(base_style, key):
-		warn(INTERNAL, 'added default for property %s', key)
-		setattr(base_style, key,
-				getattr(properties.factory_defaults, key))
+		#warn(INTERNAL, 'added default for property %s', key)
+		setattr(base_style, key, getattr(properties.factory_defaults, key))
 
 papersizes = [    'A0', 'A1', 'A2',
 	'A3', 'A4', 'A5', 'A6', 'A7',
@@ -80,16 +81,15 @@ class SKLoader(GenericLoader):
 
 	base_style = base_style
 
-	functions = ['document', 'layer', ('bezier', 'b'), ('rectangle', 'r'),
-					('ellipse', 'e'),
-					'group', ('group', 'G'), 'endgroup', ('endgroup', 'G_'),
-					'guess_cont']
+	functions = ['document', 'layer', 'masterlayer', 'page', ('bezier', 'b'), 
+				('rectangle', 'r'),	('ellipse', 'e'), 'group', 
+				('group', 'G'), 'endgroup', ('endgroup', 'G_'), 'guess_cont']
 
 	def __init__(self, file, filename, match):
 		GenericLoader.__init__(self, file, filename, match)
 		if atoi(match.group('minor')) > 2:
 			self.add_message(_("The file was created by a newer version"
-								" of Sketch, there might be inaccuracies."))
+								" of sK1, there might be inaccuracies."))
 		if self.filename:
 			self.directory = os.path.split(filename)[0]
 		else:
@@ -151,7 +151,16 @@ class SKLoader(GenericLoader):
 			c = self.color_cache.get(color_spec)
 			if c:
 				return c
-			c = apply(ParseSKColor, color_spec)
+			if color_spec[0]=='RGB':
+				c = CreateRGBColor(color_spec[1],color_spec[2],color_spec[3])
+			elif color_spec[0]=='CMYK':
+				c = CreateCMYKColor(color_spec[1],color_spec[2],color_spec[3],color_spec[4])
+			elif color_spec[0]=='SPOT': 
+				c = CreateSPOTColor(color_spec[3],color_spec[4],color_spec[5],
+								color_spec[6],color_spec[7],color_spec[8],color_spec[9],
+								color_spec[2],color_spec[1])
+			else:
+				c = apply(ParseSketchColor, color_spec)			
 			self.color_cache[color_spec] = c
 		except:
 			# This should only happen if the color_spec is invalid
@@ -325,8 +334,8 @@ class SKLoader(GenericLoader):
 		return line
 
 	functions.append('txt')
-	def txt(self, thetext, trafo, halign = text.ALIGN_LEFT,
-			valign = text.ALIGN_BASE):
+	def txt(self, thetext, trafo, halign=text.ALIGN_LEFT, valign=text.ALIGN_BASE, chargap=1.0, wordgap=1.0, linegap=1.0):
+		thetext = self.unicode_decoder(thetext)
 		if len(trafo) == 2:
 			trafo = Translation(trafo)
 		else:
@@ -334,7 +343,20 @@ class SKLoader(GenericLoader):
 		object = text.SimpleText(text = thetext, trafo = trafo,
 									halign = halign, valign = valign,
 									properties = self.get_prop_stack())
+		
+		object.properties.SetProperty(align=halign, valign=valign, 
+									chargap=chargap, wordgap=wordgap, linegap=linegap)		
 		self.append_object(object)
+		
+	def unicode_decoder(self, text):
+		output=''
+		for word in text.split('\u')[1:]:
+				num=int(word,16)
+				if num > 256:
+					output+=('\u'+word).decode('raw_unicode_escape')
+				else:
+					output+=chr(int(num))
+		return output
 
 	functions.append('im')
 	def im(self, trafo, id):
@@ -459,11 +481,17 @@ class SKLoader(GenericLoader):
 		bezier_load = self.bezier_load
 		num = 1
 		line = '#'
+		fileinfo=os.stat(self.filename)
+		totalsize=fileinfo[6]
+		interval=int((totalsize/200)/10)+1
+		interval_count=0
 		if __debug__:
 			import time
 			start_time = time.clock()
 		try:
 			line = readline()
+			parsed=int(file.tell()*100/totalsize)
+			app.updateInfo(inf2='%u'%parsed+'% of file is parsed...',inf3=parsed)
 			while line:
 				num = num + 1
 				if line[0] == 'b' and line[1] in 'sc':
@@ -500,6 +528,11 @@ class SKLoader(GenericLoader):
 						self.add_message(_("Unknown function %s") % funcname)
 					
 				line = readline()
+				interval_count+=1
+				if interval_count>interval:
+					interval_count=0
+					parsed=int(file.tell()*100/totalsize)
+					app.updateInfo(inf2='%u'%parsed+'% of file is parsed...',inf3=parsed)
 
 		except (SketchLoadError, SyntaxError), value:
 			# a loader specific error occurred
@@ -524,6 +557,7 @@ class SKLoader(GenericLoader):
 		for style in self.style_dict.values():
 			self.object.load_AddStyle(style)
 		self.object.load_Completed()
+		app.updateInfo(inf2='Pasing is finished',inf3=100)
 
 		self.object.meta.native_format = 1
 
