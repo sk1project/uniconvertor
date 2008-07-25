@@ -412,8 +412,13 @@ _set_defaults('line_arrow1', _("Line Arrow 1"), _("Arrow 1"), LineProperty,
 _set_defaults('line_arrow2', _("Line Arrow 2"), _("Arrow 2"), LineProperty,
 				None)
 _set_defaults('font', _("Font"), _("Font"), FontProperty, None)
-_set_defaults('font_size', _("Font Size"), _("Size"), FontProperty, 12,
-				blend = blend_number)
+_set_defaults('font_size', _("Font Size"), _("Size"), FontProperty, 12, blend = blend_number)
+_set_defaults('linegap', _("Linegap"), _("Linegap"), FontProperty, 1.0)
+_set_defaults('wordgap', _("Wordgap"), _("Wordgap"), FontProperty, 1.0)
+_set_defaults('chargap', _("Chargap"), _("Chargap"), FontProperty, 1.0)
+_set_defaults('align', _("Text Alignment"), _("Alignment"), FontProperty, const.ALIGN_LEFT)
+_set_defaults('valign', _("Text Vertical Alignment"), _("VAlignment"), FontProperty, const.ALIGN_BASE)
+
 
 factory_text_style = factory_defaults.Copy()
 factory_text_style.fill_pattern = SolidPattern(black)

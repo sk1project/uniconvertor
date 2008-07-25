@@ -44,7 +44,7 @@ from app.events.undodict import UndoDict
 
 from app import Rect, Point, UnionRects, InfinityRect, Trafo, Rotation, Translation, Scale
 from app import UndoRedo, Undo, CreateListUndo, NullUndo, UndoAfter
-
+import app
 import color, selinfo, pagelayout
 
 from base import Protocols
@@ -56,7 +56,7 @@ from pattern import SolidPattern
 import guide
 from selection import SizeSelection, EditSelection, TrafoSelection, TrafoRectangle
 from math import *
-from app.conf.const import STYLE, SELECTION, EDITED, MODE, UNDO, REDRAW, LAYOUT
+from app.conf.const import STYLE, SELECTION, EDITED, MODE, UNDO, REDRAW, LAYOUT, PAGE
 from app.conf.const import LAYER, LAYER_ORDER, LAYER_ACTIVE, GUIDE_LINES, GRID
 from app.conf.const import SelectSet, SelectAdd,SelectSubtract,SelectSubobjects,\
 		SelectDrag, SelectGuide, Button1Mask
@@ -76,20 +76,27 @@ class SketchDocument(Protocols):
 	script_access = {}
 
 	def __init__(self, create_layer = 0):
+		self.pages = []
+		self.active_page=0
 		self.snap_grid = GridLayer()
 		self.snap_grid.SetDocument(self)
 		self.guide_layer = GuideLayer(_("Guide Lines"))
 		self.guide_layer.SetDocument(self)
+		layer=Layer(_("MasterLayer 1"))
+		layer.SetDocument(self)
+		layer.is_MasterLayer=1
+		self.master_layers=[layer]
 		if create_layer:
 			# a new empty document
 			self.active_layer = Layer(_("Layer 1"))
 			self.active_layer.SetDocument(self)
-			self.layers = [self.active_layer, self.guide_layer,
-							self.snap_grid]
+			self.layers = [self.snap_grid]+[self.active_layer] + self.master_layers + [self.guide_layer]
+			self.pages.append([self.active_layer])
 		else:
 			# we're being created by the load module
 			self.active_layer = None
 			self.layers = []
+			self.pages.append(self.layers)
 
 	def __del__(self):
 		if __debug__:
@@ -105,7 +112,7 @@ class SketchDocument(Protocols):
 				return self.layers[idx[0]]
 		raise ValueError, 'invalid index %s' % `idx`
 
-	def AppendLayer(self, layer_name = None, *args, **kw_args):
+	def AppendLayer(self, layer_name = None, master=0, *args, **kw_args):
 		try:
 			old_layers = self.layers[:]
 			if layer_name is None:
@@ -114,14 +121,97 @@ class SketchDocument(Protocols):
 				layer_name = str(layer_name)
 			layer = apply(Layer, (layer_name,) + args, kw_args)
 			layer.SetDocument(self)
-			self.layers.append(layer)
+			if master:
+				layer.is_MasterLayer=1
+				mlayers=self.getMasterLayers()
+				mlayers.append(layer)
+				self.layers = [self.snap_grid] + self.getRegularLayers() + mlayers + [self.guide_layer]
+			else:
+				rlayers=self.getRegularLayers()
+				rlayers.append(layer)
+				self.layers = [self.snap_grid] + rlayers + self.getMasterLayers() + [self.guide_layer]
 			if not self.active_layer:
-				self.active_layer = layer
+				self.active_layer = layer			
 			return layer
 		except:
 			self.layers[:] = old_layers
 			raise
 	script_access['AppendLayer'] = SCRIPT_OBJECT
+	
+	def RearrangeLayers(self):
+		if not len(self.getMasterLayers()):
+			layer=Layer(_("MasterLayer 1"))
+			layer.SetDocument(self)
+			layer.is_MasterLayer=1
+			self.layers.append(layer)
+		self.layers = [self.snap_grid] + self.getRegularLayers() + self.getMasterLayers() + [self.guide_layer]
+	
+	def getRegularLayers(self):
+		result=[]
+		for layer in self.layers:
+			if not layer.is_SpecialLayer and not layer.is_MasterLayer:
+				result.append(layer)
+		return result
+	
+	def getMasterLayers(self):
+		result=[]
+		for layer in self.layers:
+			if layer.is_MasterLayer:
+				result.append(layer)
+		return result
+	
+	def insert_pages(self, number=1, index=0, is_before=0):
+		for item in range(number):
+			if is_before:
+				self.pages.insert(index, self.NewPage())
+				self.active_page+=1
+				self.setActivePage(index)
+			else:
+				self.pages.insert(index+item+1, self.NewPage())
+				self.setActivePage(index+1)	
+			
+	def setActivePage(self, index):
+		self.pages[self.active_page]=self.getRegularLayers()
+		self.layers=[self.snap_grid] + self.pages[index] + self.getMasterLayers() + [self.guide_layer]
+		self.active_page=index
+		self.active_layer=(self.pages[index])[0]
+
+	def updateActivePage(self):
+		self.pages[self.active_page]=self.getRegularLayers()
+		
+	def NewPage(self):
+		page=[]
+		new_layer=Layer(_("Layer 1"))
+		new_layer.SetDocument(self)
+		page.append(new_layer)
+		return page				
+	
+	def delete_page(self, index=0):
+		if len(self.pages)==1:
+			return
+		if self.active_page and index == self.active_page:
+			self.setActivePage(index-1)
+		if not self.active_page and index == self.active_page:
+			self.setActivePage(1)
+			self.active_page=0	
+		if self.active_page and self.active_page>index:
+			self.active_page-=1					
+		self.pages.remove(self.pages[index])
+		
+	def delete_pages(self, number=1, index=0,is_before=0):
+		for item in range(number):
+			self.delete_page(index+is_before)
+
+	def move_page(self, index=0, backward=0):
+		if index==0 or index==len(self.pages)-1:
+			return
+		else:
+			page=self.pages[index]
+			self.pages.remove(page)
+			self.pages.insert(index+1-2*backward, page)
+		if index==self.active_page:
+			self.active_page=self.active_page+1-2*backward
+			
 
 	def BoundingRect(self, visible = 1, printable = 0):
 		rects = []
@@ -209,11 +299,33 @@ class SketchDocument(Protocols):
 		return join(info, '\n')
 
 	def SaveToFile(self, file):
+		self.updateActivePage()
 		file.BeginDocument()
 		self.page_layout.SaveToFile(file)
 		self.write_styles(file)
-		for layer in self.layers:
-			layer.SaveToFile(file)
+		self.snap_grid.SaveToFile(file)
+		
+		pagesnum=len(self.pages)
+		pagecount=0
+		interval=100/pagesnum			
+		for page in self.pages:
+			file.Page()
+			pagecount+=1
+			app.updateInfo(inf2=_('Saving page %u of %u')%(pagecount,pagesnum),
+						 inf3=interval*pagecount)			
+			layercount=0
+			layersnum=len(page)
+			l_interval=interval/layersnum
+			for layer in page:
+				layercount+=1
+				app.updateInfo(inf2=_('Saving page %u of %u, layer %u of %u')%
+							(pagecount,pagesnum,layercount,layersnum),
+							 inf3=interval*pagecount)
+				layer.SaveToFile(file)			
+
+		for layer in self.getMasterLayers():
+			layer.SaveToFile(file)			
+		self.guide_layer.SaveToFile(file)
 		file.EndDocument()
 
 	def load_AppendObject(self, layer):
@@ -243,7 +355,29 @@ class SketchDocument(Protocols):
 			self.layers.append(self.guide_layer)
 		if add_grid_layer:
 			self.layers.append(self.snap_grid)
-
+		self.extract_pages()
+		self.RearrangeLayers()
+		
+	def extract_pages(self):
+		layers=self.getRegularLayers()
+		if layers[0].is_Page:
+			self.pages=[]
+			for layer in layers:
+				if layer.is_Page:
+					page=[]
+					self.pages.append(page)
+				else:
+					page.append(layer)
+			pages=[]+self.pages
+			for page in pages:
+				if not len(page):		
+					self.pages.remove(page)
+		else:
+			self.pages=[]
+			self.pages.append(layers)
+		self.active_page=0
+		self.layers=[self.snap_grid] + self.pages[0] + self.getMasterLayers() + [self.guide_layer]
+		self.active_layer=(self.pages[0])[0]
 
 #
 #	Class MetaInfo
@@ -506,17 +640,34 @@ class EditDocument(SketchDocument, QueueingPublisher):
 		self.end_transaction(queue_edited = 1)
 
 	def Insert(self, object, undo_text = _("Create Object")):
+		group_flag = 0
 		if isinstance(object, guide.GuideLine):
 			self.add_guide_line(object)
 		else:
 			self.begin_transaction(undo_text, clear_selection_rect = 0)
 			try:
 				try:
-					object.SetDocument(self)
+					if type(object) == ListType:
+						gobject = Group(object)
+					else:
+						gobject = object
 					selected, undo = self.insert(object)
 					self.add_undo(undo)
-					self.add_undo(self.AddClearRect(object.bounding_rect))
+					self.add_undo(self.AddClearRect(gobject.bounding_rect))
 					self.__set_selection(selected, SelectSet)
+					self.add_undo(self.remove_selected())
+					
+					extracted_select=[]
+					for info, object in self.selection.GetInfo():
+						objects=[]
+						if type(object) == ListType:
+							objects = object
+						else:
+							objects.append(object)												
+						select, undo_insert = self.insert(objects, at = info[1:], layer = info[0])
+						extracted_select+=select
+						self.add_undo(undo_insert)
+					self.__set_selection(extracted_select, SelectSet)
 				except:
 					self.abort_transaction()
 			finally:
@@ -553,6 +704,9 @@ class EditDocument(SketchDocument, QueueingPublisher):
 							# guide lines cannot be selected in the
 							# ordinary way, but other objects on the
 							# guide layer can.
+#							pass
+########################################################################
+########################################################################
 							selected = None
 				self.__set_selection(selected, type)
 
@@ -1241,7 +1395,9 @@ class EditDocument(SketchDocument, QueueingPublisher):
 
 	def WasEdited(self):
 		# return true if document has changed since last save
-		return self.undo.UndoCount()
+		if self.undo.UndoCount():
+		  return 1
+		return 0
 	script_access['WasEdited'] = SCRIPT_GET
 
 	def ClearEdited(self):
@@ -1274,7 +1430,7 @@ class EditDocument(SketchDocument, QueueingPublisher):
 		# XXX this method should be removed in favour of the more
 		# generic SetProperties.
 		self.SetProperties(line_pattern = SolidPattern(color),
-							if_type_present = 1)
+							if_type_present = 0)
 
 	def SetProperties(self, **kw):
 		self.apply_to_selected(_("Set Properties"),
@@ -1384,22 +1540,26 @@ class EditDocument(SketchDocument, QueueingPublisher):
 			copies.append(obj.Duplicate())
 
 		if len(copies) > 1:
-			copies = Group(copies)
+			for copy in copies:
+				copy.UntieFromDocument()
+				copy.SetDocument(None)
 		else:
-			copies = copies[0]
+			copy = copies[0]
 			# This is ugly: Special case for internal path text objects.
 			# If the internal path text object is the only selected
 			# object, turn the copy into a normal simple text object.
 			# Thsi avoids some of the problems when you "Copy" an
 			# internal path text.
 			import text
-			if copies.is_PathTextText:
-				properties = copies.Properties().Duplicate()
-				copies = text.SimpleText(text = copies.Text(),
+			if copy.is_PathTextText:
+				properties = copy.Properties().Duplicate()
+				copy = text.SimpleText(text = copy.Text(),
 											properties = properties)
 
-		copies.UntieFromDocument()
-		copies.SetDocument(None)
+			copy.UntieFromDocument()
+			copy.SetDocument(None)
+			copies[0]=copy
+			
 		return copies
 
 	def CopyForClipboard(self):
@@ -1475,11 +1635,15 @@ class EditDocument(SketchDocument, QueueingPublisher):
 
 	def CanUngroupAll(self):
 		infos = self.selection.GetInfo()
+		isGroup=0
 		if len(infos) > 0:
-					isGroup=infos[0][-1].is_Group
-					for i in range(len(infos)):
-							if infos[i][-1].is_Group:
-									isGroup=infos[i][-1].is_Group
+			for i in range(len(infos)):
+				isGroup+=infos[i][-1].is_Group
+		#if len(infos) > 0:
+					#isGroup=infos[0][-1].is_Group
+					#for i in range(len(infos)):
+							#if infos[i][-1].is_Group:
+									#isGroup=infos[i][-1].is_Group
 		return len(infos) > 0 and isGroup
 
 	def UngroupSelected(self):
@@ -1498,35 +1662,39 @@ class EditDocument(SketchDocument, QueueingPublisher):
 					self.abort_transaction()
 			finally:
 				self.end_transaction()
+				
+	def ExtractNonGroup(self, object):
+		objects=[]
+		if object.is_Group:
+			for item in object.objects:
+				objects+=self.ExtractNonGroup(item)
+		else:
+			objects.append(object)
+		return objects				
 
 	def UngroupAllSelected(self):
 		if self.CanUngroupAll():
 			self.begin_transaction(_("Ungroup All"))
 			try:
 				try:
-					while self.CanUngroupAll():
-						selection = []
-						undo_g=[]
-						infos = self.selection.GetInfo()
-						self.add_undo(self.remove_selected())
-						for i in range(len(infos)):
-							info, group = self.selection.GetInfo()[i]
-							if group.is_Group:
-								objects = group.Ungroup()
-								select, undo_insert = self.insert(objects, at = info[1:], layer = info[0])
-								selection=selection+select
-							else:
-								objects = group
-								select, undo_insert = self.insert(objects, at = info[1:], layer = info[0])
-								selection.append((info, group))
-								self.add_undo(undo_insert)
-						self.SelectNone()
-						self.__set_selection(selection, SelectSet)
-						#self.SelectObject(selection, SelectSet)
+					self.add_undo(self.remove_selected())
+					extracted_select=[]
+					for info, object in self.selection.GetInfo():
+						objects = self.ExtractNonGroup(object)
+						select, undo_insert = self.insert(objects, at = info[1:], layer = info[0])
+						extracted_select+=select
+						self.add_undo(undo_insert)
+					self.__set_selection(extracted_select, SelectSet)
 				except:
 					self.abort_transaction()
 			finally:
 				self.end_transaction()
+				
+	def ModifyAndCopy(self):
+		if self.selection:
+			copies=self.copy_objects(self.selection.GetObjects())
+		self.Undo()
+		self.Insert(copies, undo_text=_("Modify&Copy"))	
 
 	def CanCreateMaskGroup(self):
 		infos = self.selection.GetInfo()
@@ -1715,6 +1883,10 @@ class EditDocument(SketchDocument, QueueingPublisher):
 					self.abort_transaction()
 			finally:
 				self.end_transaction()
+				
+	def HandleMoveSelected(self, h, v):
+		val=config.preferences.handle_jump
+		self.MoveSelected(h*val, v*val)
 
 	def MoveSelected(self, h, v):
 		if self.selection:
@@ -1724,7 +1896,7 @@ class EditDocument(SketchDocument, QueueingPublisher):
 					#cnt = self.selection.coord_rect.center()
 					text = _("Move")
 					#angle=angle*pi/180
-					trafo = Translation(h*2.83465, v*2.83465)
+					trafo = Translation(h, v)
 					self.TransformSelected(trafo, text)
 				except:
 					self.abort_transaction()
@@ -2039,8 +2211,101 @@ class EditDocument(SketchDocument, QueueingPublisher):
 			finally:
 				self.end_transaction()
 
+
 	#
+	#  PAGES MANAGMENT
 	#
+	
+############
+	def CanGoToPage(self):
+		return len(self.pages)>1
+	
+	def GoToPage(self, index=0):
+		self.begin_transaction(_("Go to page"),clear_selection_rect = 0)
+		try:
+			try:
+				current_page=self.active_page
+				if self.CanUndo():
+					self.add_undo((self._return_to_page, current_page))
+				self.setActivePage(index)
+			except:
+				self.abort_transaction()
+		finally:
+			self.end_transaction()
+			self.issue(PAGE)			
+	
+	def _return_to_page(self, index):
+		current_page=self.active_page
+		self.setActivePage(index)
+		self.issue(PAGE)
+		return (self._return_to_page, current_page)
+	
+############	
+	def InsertPages(self, number=1, index=0, is_before=0):
+		if number>1:
+			self.begin_transaction(_("Insert Pages"), clear_selection_rect = 0)
+		else:
+			self.begin_transaction(_("Insert Page"), clear_selection_rect = 0)
+		try:
+			try:
+				for_del=abs(is_before-1)
+				self.add_undo((self._delete_pages,number,index,for_del))
+				self.insert_pages(number,index,is_before)
+			except:
+				self.abort_transaction()
+		finally:
+			self.end_transaction()			
+			self.issue(PAGE)
+	
+	def _insert_pages(self,number,index,is_before):
+		self.insert_pages(number,index,is_before)
+		self.issue(PAGE)
+		return (self._delete_pages,number,index,is_before)
+		
+	def _delete_pages(self, number=1, index=0,is_before=0):
+		self.delete_pages(number,index,is_before)
+		self.issue(PAGE)
+		return (self._insert_pages,number,index,is_before)
+	
+############
+	def CanDeletePage(self,index):
+		return 0 <= index < len(self.pages) and len(self.pages) > 1
+	
+	def CanBePageDeleting(self):
+		return len(self.pages) > 1
+		
+	def DeletePage(self, index=0):
+		if self.CanDeletePage(index):
+			self.begin_transaction(_("Delete Page"), clear_selection_rect = 0)
+			try:
+				try:
+					self.add_undo((self._insert_page,index,self.pages[index]))
+					self.delete_page(index)					
+				except:
+					self.abort_transaction()
+			finally:
+				self.end_transaction()				
+				self.issue(PAGE)
+	
+	def _insert_page(self,index,page):
+		current_page = self.pages[self.active_page]
+		self.pages.insert(index,page)		
+		self.active_page = self.pages.index(current_page)
+		self.SelectNone()
+		self.issue(PAGE)
+		return (self._delete_page,index,page)
+
+	def _delete_page(self,index,page):
+		current_page = self.pages[self.active_page]
+		self.pages.remove(page)
+		self.active_page = self.pages.index(current_page)
+		self.SelectNone()
+		self.issue(PAGE)
+		return (self._insert_page,index,page)		
+		
+
+	#
+	#  LAYERS METHODS
 	#
 
 	def Layers(self):
@@ -2555,4 +2820,4 @@ class EditDocument(SketchDocument, QueueingPublisher):
 			return Group(groups)
 		else:
 			return None
-
+		

@@ -96,7 +96,7 @@ REDRAW = 'REDRAW'
 STYLE = 'STYLE'
 UNDO = 'UNDO'
 GUIDE_LINES = 'GUIDE_LINES'
-
+PAGE = 'PAGE'
 
 # graphics object
 #TRANSFORMED = 'TRANSFORMED'
@@ -239,3 +239,15 @@ CurEdit = 'left_ptr'#'xterm'
 CurHelp		= 'question_arrow'
 CurWait		= 'watch'
 CurMove		= 'top_left_arrow'#'fleur'
+
+#
+# Text Alignment
+#
+ALIGN_BASE = 0
+ALIGN_CENTER = 1
+ALIGN_TOP = 2
+ALIGN_BOTTOM = 3
+
+ALIGN_LEFT = 0
+ALIGN_CENTER = 1
+ALIGN_RIGHT = 2

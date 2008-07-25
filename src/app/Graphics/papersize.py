@@ -61,19 +61,19 @@ _din_sizes = [
 	('A5', 0.148 * m_to_pt, 0.210 * m_to_pt),
 	('A6', 0.105 * m_to_pt, 0.148 * m_to_pt),
 #    ('A7', 0.074 * m_to_pt, 0.105 * m_to_pt),
-	('B1 (ISO)', 1.0 * m_to_pt, 0.707 * m_to_pt),
+	('B1 (ISO)', 0.707 * m_to_pt, 1.0 * m_to_pt),
 	('B4 (ISO)', 0.250 * m_to_pt, 0.353 * m_to_pt),
 	('B5 (ISO)', 0.176 * m_to_pt, 0.250 * m_to_pt),
 	('C3', 0.324 * m_to_pt, 0.458 * m_to_pt),
 	('C4', 0.229 * m_to_pt, 0.324 * m_to_pt),
 	('C5', 0.162 * m_to_pt, 0.229 * m_to_pt),
 	('C6', 0.114 * m_to_pt, 0.162 * m_to_pt),
-	('Visit card #1', 0.09 * m_to_pt, 0.05 * m_to_pt),
-	('Visit card #2', 0.085 * m_to_pt, 0.055 * m_to_pt),
-	('Envelope C6', 0.162 * m_to_pt, 0.114 * m_to_pt),
-	('Envelope E65/DL', 0.220 * m_to_pt, 0.110 * m_to_pt),
-	('Envelope C5', 0.229 * m_to_pt, 0.162 * m_to_pt),
-	('Envelope C4', 0.324 * m_to_pt, 0.229 * m_to_pt),
+	('Visit card #1', 0.05 * m_to_pt, 0.09 * m_to_pt),
+	('Visit card #2', 0.055 * m_to_pt, 0.085 * m_to_pt),
+	('Envelope C6', 0.114 * m_to_pt, 0.162 * m_to_pt),
+	('Envelope E65/DL', 0.110 * m_to_pt, 0.220 * m_to_pt),
+	('Envelope C5', 0.162 * m_to_pt, 0.229 * m_to_pt),
+	('Envelope C4', 0.229 * m_to_pt, 0.324 * m_to_pt),
 	]
 
 
@@ -92,4 +92,3 @@ PapersizesList = _din_sizes + _american_sizes
 
 for name, width, height in PapersizesList:
 	Papersize[name] = (width, height)
-

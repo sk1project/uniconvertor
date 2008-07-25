@@ -93,14 +93,7 @@ from events.connector import Connect, Disconnect, Issue, RemovePublisher, Subscr
 
 
 def updateInfo(inf1=None,inf2=None,inf3=None):
-	if not inf1 is None:
-		info1.set(inf1)
-	if not inf2 is None:
-		info2.set(inf2)		
-	if not inf3 is None:
-		info3.set(inf3)
-	if not info_win is None:
-		info_win.update()
+	pass
 
 #
 
