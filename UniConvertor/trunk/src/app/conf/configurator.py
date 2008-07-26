@@ -336,6 +336,9 @@ class Preferences(connector.Publisher):
 	use_cms=0
 	simulate_printer=0
 	#------------------------------------
+	forceCMYK=0
+	forceRGB=0
+	#------------------------------------
 
 	#RULER data
 	ruler_min_tick_step = 4
