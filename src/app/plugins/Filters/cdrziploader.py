@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2007 by Igor E. Novikov
+# Copyright (C) 2008 by Igor E. Novikov
 #
 # This library is covered by GNU General Public License v2.0.
 # For more info see COPYRIGHTS file in sK1 root directory.

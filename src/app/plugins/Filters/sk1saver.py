@@ -246,7 +246,9 @@ from app.utils.os_utils import relpath, Empty
 from app import IdentityMatrix, EmptyPattern, SolidPattern, Style, \
 		StandardColors, SketchError, const
 from app.Graphics import properties
+from app.Graphics.image import CMYK_IMAGE
 from app.Lib.units import m_to_pt, in_to_pt
+
 
 
 base_style = Style()
@@ -537,7 +539,10 @@ class SKSaver:
 				from streamfilter import Base64Encode
 				write('bm(%d)\n' % id(image))
 				file = Base64Encode(self.file)
-				image.image.save(file, 'PPM')
+				if image.image_mode == CMYK_IMAGE:
+					image.orig_image.save(file, 'JPEG', quality=100)
+				else:
+					image.orig_image.save(file, 'PNG')
 				file.close()
 				write('-\n')
 			else:

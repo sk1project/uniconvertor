@@ -1,4 +1,5 @@
-# Sketch - A Python-based interactive drawing program
+# -*- coding: utf-8 -*-
+
 # Copyright (C) 2007 by Igor Novikov
 # Copyright (C) 1999, 2000 by Bernhard Herzog (CMX parsing)
 #

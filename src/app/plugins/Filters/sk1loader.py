@@ -355,7 +355,7 @@ class SKLoader(GenericLoader):
 				if num > 256:
 					output+=('\u'+word).decode('raw_unicode_escape')
 				else:
-					output+=chr(int(num))
+					output+=chr(int(num)).decode('latin1')
 		return output
 
 	functions.append('im')

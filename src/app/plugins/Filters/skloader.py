@@ -62,9 +62,8 @@ base_style.font_size = 12.0
 # sanity check: does base_style have all properties?
 for key in dir(properties.factory_defaults):
 	if not hasattr(base_style, key):
-		warn(INTERNAL, 'added default for property %s', key)
-		setattr(base_style, key,
-				getattr(properties.factory_defaults, key))
+		#warn(INTERNAL, 'added default for property %s', key)
+		setattr(base_style, key, getattr(properties.factory_defaults, key))
 
 papersizes = [#    'A0', 'A1', 'A2',
 	'A3', 'A4', 'A5', 'A6', 'A7',
