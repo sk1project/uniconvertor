@@ -193,7 +193,7 @@ class ExportInfo(ConfigInfo):
 			raise SketchError(_("Cannot load filter %(name)s")
 								% {'name':self.module_name})
 		if file is None:
-			file = open(filename, 'w')
+			file = open(filename, 'wb')
 			close = 1
 		else:
 			close = 0
