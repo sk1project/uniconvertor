@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2007 by Igor E. Novikov, Valek Fillipov
+# Copyright (C) 2007 by Igor Novikov
 #
 # This library is covered by GNU General Public License v2.0.
 # For more info see COPYRIGHTS file in sK1 root directory.
@@ -18,15 +18,17 @@
 
 
 
-import sys, types, struct, zlib, math
+import sys, types, struct, zlib, math, PIL, StringIO
 
 from struct import unpack, calcsize
 
+from types import TupleType
+
 from streamfilter import BinaryInput
 
-from app import CreatePath, Point, ContSmooth, ContAngle, ContSymmetrical, \
+from app import _, CreatePath, Point, ContSmooth, ContAngle, ContSymmetrical, \
 		SolidPattern, EmptyPattern, LinearGradient, RadialGradient, \
-		ConicalGradient, MultiGradient,\
+		ConicalGradient, PolyBezier, MultiGradient,\
 		CreateRGBColor, CreateCMYKColor, Trafo, Point, Polar, Translation, \
 		Scale, StandardColors, ImageTilePattern, ImageData, MaskGroup, \
 		Arrow
@@ -34,6 +36,7 @@ from app import CreatePath, Point, ContSmooth, ContAngle, ContSymmetrical, \
 from app.events.warn import INTERNAL, warn_tb, warn, USER
 from app.io.load import GenericLoader, SketchLoadError, EmptyCompositeError
 from app.Lib import units
+import app
 
 def load_file(file):
 	f = open(file, 'rb')
@@ -84,7 +87,7 @@ class RiffChunk:
 		if len(decomp.unconsumed_tail):
 			raise Exception('unconsumed tail in compressed data (%u bytes)' % len(decomp.unconsumed_tail))
 		if len(decomp.unused_data) != blocksizessize:
-			raise Exception('mismatch in unused data after compressed data (%u != %u)' % (len(decomp.unused_data), bytesatend))
+			raise Exception('mismatch in unused data after compressed data (%u != %u)' % (len(decomp.unused_data), blocksizessize))
 		if len(self.uncompresseddata) != uncompressedsize:
 			raise Exception('mismatched compressed data size: expected %u got %u' % (uncompressedsize, len(self.uncompresseddata)))
 		chunk = RiffChunk(infocollector=self.infocollector)
@@ -113,15 +116,6 @@ class RiffChunk:
 			self.rawsize += 1
 		self.number=self.infocollector.numcount
 		self.infocollector.numcount+=1
-		#if self.fourcc == 'DISP':
-			#[bitmapoffset] = struct.unpack('<I',buf[offset+32:offset+36])
-			#bitmapoffset = self.rawsize + 8 - bitmapoffset
-			#bitmapoffset = struct.pack('>I', bitmapoffset)
-			#self.image_buf = 'BM'+buf[offset+4:offset+7]+'\x00\x00\x00\x00'+bitmapoffset[2:3]+'\x00\x00'+buf[offset+10:offset+8+self.rawsize]
-			#import PIL.Image,PIL.ImageTk, StringIO
-			#self.image = PIL.Image.open(StringIO.StringIO(self.image_buf ))
-			#self.image.load()
-			#self.infocollector.image= PIL.ImageTk.PhotoImage(self.image)
 		if self.fourcc == 'vrsn':
 			[version] = struct.unpack('<H', self.data)
 			self.infocollector.cdr_version=version/100
@@ -129,8 +123,12 @@ class RiffChunk:
 			self.infocollector.fill_chunks.append(self)
 		if self.fourcc == 'outl':
 			self.infocollector.outl_chunks.append(self)
+		if self.fourcc == 'bmp ':
+			self.infocollector.bmp_chunks.append(self)
+		if self.fourcc == 'mcfg':
+			self.infocollector.page_chunk=self
 		self.contents = []
-		self.fullname = self.full_name()        
+		self.fullname = self.full_name()
 		self.chunkname = self.chunk_name()
 		if self.fourcc == 'RIFF' or self.fourcc == 'LIST':
 			self.listtype = buf[offset+8:offset+12]
@@ -147,7 +145,7 @@ class RiffChunk:
 				self.infocollector.objects+=1
 				self.infocollector.obj_chunks.append(self)
 			if self.listtype == 'bmpt':
-				self.infocollector.bitmaps+=1	
+				self.infocollector.bitmaps+=1
 			if self.listtype == 'grp ':
 				self.infocollector.groups+=1
 				self.is_group=True
@@ -166,7 +164,7 @@ class RiffChunk:
 					self.contents.append(chunk)
 					offset += 8 + chunk.rawsize
 					
-			if self.listtype == 'grp ' or self.listtype == 'page':	
+			if self.listtype == 'grp ' or self.listtype == 'page':
 				self.infocollector.obj_chunks.append(None)
 	
 	def full_name(self):
@@ -185,28 +183,31 @@ class RiffChunk:
 			return '<'+self.listtype+'>'
 		return '<'+self.fourcc+'>'
 	
-class Outline:	
+class Outline:
 	outlineIndex=''
 	color = None
 	width = 0
 	caps=0
 	corner=0
+	spec=0
+	dashes = []
 	
-class BezierNode:	
+class BezierNode:
 	point1=None
 	point2=None
 	point3=None
 	
-class BezierCurve:	
+class BezierCurve:
 	outlineIndex=''
 	colorIndex=''
 	paths = []
+	scale=1
 	
-	def __init__(self, outlineIndex, colorIndex, paths):
+	def __init__(self, outlineIndex, colorIndex, paths, scale):
 		self.colorIndex=colorIndex
 		self.outlineIndex=outlineIndex
 		self.paths=paths
-		
+		self.scale=scale
 	
 class InfoCollector:
 	image=None
@@ -218,6 +219,8 @@ class InfoCollector:
 	bitmaps=0
 	compression=False
 	numcount=0
+	bmp_chunks=[]
+	bmp_dict={}
 	obj_chunks=[]
 	fill_chunks=[]
 	outl_chunks=[]
@@ -232,16 +235,23 @@ class InfoCollector:
 	scale =.0002835
 	loader=None
 	trafo_list=[]
+	extracted_image = None
+	page_chunk=None
+	doc_page=()
+	scale_with=1
 	
 	def process_properties(self):
-		self.loda_type_func = {0xa:self.loda_outl,0x14:self.loda_fild,0x1e:self.loda_coords}	
+		self.loda_type_func = {0xa:self.loda_outl,0x14:self.loda_fild,0x1e:self.loda_coords}
 		for chunk in self.fill_chunks:
 			self.process_fill(chunk)
 		outl_index=0
 		for chunk in self.outl_chunks:
 			self.process_outline(chunk,outl_index)
-			outl_index+=1		
-		self.obj_chunks.reverse()	
+			outl_index+=1
+		self.obj_chunks.reverse()
+		for bmp in self.bmp_chunks:
+			self.bmp_dict[ord(bmp.data[0])]=bmp
+		self.get_page_size()
 		for chunk in self.obj_chunks:
 			if chunk:
 				if chunk.is_group:
@@ -251,7 +261,7 @@ class InfoCollector:
 			else:
 				self.paths_heap.append(1)
 		self.validate_heap()
-				
+	
 	def validate_heap(self):
 		paths_heap=self.paths_heap
 		result=[]
@@ -264,13 +274,25 @@ class InfoCollector:
 				else:
 					result.append(obj)
 			else:
-				result.append(obj)				
+				result.append(obj)
 		self.paths_heap=result
-				
+	
+	def get_page_size(self):
+		if self.page_chunk is None:
+			return
+		offset=0x4
+		if self.cdr_version >= 13:
+			offset=0xc
+		if self.cdr_version in [7,8]:
+			offset=0x0
+		[width] = struct.unpack('<L', self.page_chunk.data[offset:offset+0x4])
+		[height] = struct.unpack('<L', self.page_chunk.data[offset+0x4:offset+0x8])
+		self.doc_page = (width, height)	   
+	
 	def check_trafo(self, chunk):
 		pass
-			
-	def get_trafo(self, trfd):
+		
+	def get_trafo(self, trfd, scale=1):
 		cdr_version=self.cdr_version
 		
 		ieeestart = 32
@@ -278,17 +300,18 @@ class InfoCollector:
 			ieeestart = 40
 		if cdr_version == 5:
 			ieeestart = 18
-
-		[var0] = struct.unpack('<d', trfd.data[ieeestart:ieeestart+8]) 
-		[var1] = struct.unpack('<d', trfd.data[ieeestart+8:ieeestart+8+8]) 
-		[var2] = struct.unpack('<d', trfd.data[ieeestart+2*8:ieeestart+8+2*8]) 		
-		[var3] = struct.unpack('<d', trfd.data[ieeestart+3*8:ieeestart+8+3*8]) 
-		[var4] = struct.unpack('<d', trfd.data[ieeestart+4*8:ieeestart+8+4*8]) 
-		[var5] = struct.unpack('<d', trfd.data[ieeestart+5*8:ieeestart+8+5*8]) 
-		#print 'chunk no.:',trfd.number
-		#print 'trafo: ', var4, var3,  var1, var0, var2, var5		
-		return Trafo( var0, var3, var1, var4, var2, var5)
-			
+		
+		(x_shift,y_shift)=self.doc_page
+		
+		[var0] = struct.unpack('<d', trfd.data[ieeestart:ieeestart+8])
+		[var1] = struct.unpack('<d', trfd.data[ieeestart+8:ieeestart+8+8])
+		[var2] = struct.unpack('<d', trfd.data[ieeestart+2*8:ieeestart+8+2*8])
+		[var3] = struct.unpack('<d', trfd.data[ieeestart+3*8:ieeestart+8+3*8])
+		[var4] = struct.unpack('<d', trfd.data[ieeestart+4*8:ieeestart+8+4*8])
+		[var5] = struct.unpack('<d', trfd.data[ieeestart+5*8:ieeestart+8+5*8])
+		self.scale_with=min(var0*cmp(var0,0), var4*cmp(var4,0))
+		return Trafo( var0, var3, var1, var4, (var2+x_shift/2)*scale, (var5+y_shift/2)*scale)
+		
 	def process_paths(self, list):
 		cdr_version=self.cdr_version
 		chunk=None
@@ -308,24 +331,78 @@ class InfoCollector:
 		[numofparms] = struct.unpack('<L', chunk.data[0x4:0x8])
 		[startofparms] = struct.unpack('<L',chunk.data[0x8:0xC])
 		[startoftypes] = struct.unpack('<L',chunk.data[0xC:0x10])
-			
+		
 		type = ord(chunk.data[0x10])
 
 		for i in range(numofparms):
 			[offset] = struct.unpack('<L',chunk.data[startofparms+i*4:startofparms+i*4+4])
 			[argtype] = struct.unpack('<L',chunk.data[startoftypes + (numofparms-1-i)*4:startoftypes + (numofparms-1-i)*4+4])
-
+			
 			if self.loda_type_func.has_key(argtype) == 1:
 				self.loda_type_func[argtype](chunk,type,offset,cdr_version,trafo)
-			else:
-				pass
 		
 		if not self.current_paths.count==[]:
-			self.paths_heap.append(BezierCurve(self.outlineIndex, self.colorIndex, self.current_paths))	
+			self.paths_heap.append(BezierCurve(self.outlineIndex, self.colorIndex, self.current_paths, self.scale_with))
+			
+		if self.extracted_image is not None:
+			trafo=self.get_trafo(trfd, self.scale)
+			self.paths_heap.append(('BMP',self.extracted_image, trafo))
+		
 		self.current_paths=[]
+		self.extracted_image = None
 		self.outlineIndex=None
 		self.colorIndex=None
+		self.scale_with=1
 		
+	def extract_bmp(self, numbmp,width,height):
+		if not self.bmp_dict.has_key(numbmp):
+			return
+		chunk=self.bmp_dict[numbmp]
+		palflag = ord(chunk.data[0x36])
+		[bmpsize] = struct.unpack('<L',chunk.data[42:46])
+		[bmpstart] = struct.unpack('<L',chunk.data[50:54])
+		
+		numcol = (bmpstart - 82)/3
+		if palflag == 5:
+			numcol = 256
+		bmpstart2 = numcol*4 + 54
+		bmpstart2 = struct.pack('<L',bmpstart2)
+		
+		if palflag == 3:#CMYK image
+			self.bmpbuf=chunk.data[bmpstart+40:]
+			self.extracted_image = PIL.Image.fromstring('CMYK', (width, height), self.bmpbuf, 'raw', 'CMYK', 0, -1)
+		elif palflag == 5:#Grayscale image
+			self.bmpbuf=chunk.data[bmpstart+40:]
+			bytes=math.ceil(width/2.0)*2
+			self.extracted_image = PIL.Image.fromstring('L', (width, height), self.bmpbuf, 'raw', 'L', bytes, -1)
+		elif palflag == 6: #Mono image
+			bmpstart2 = numcol*4 + 66
+			bmpstart2 = struct.pack('<L',bmpstart2)		
+			self.bmpbuf = 'BM'+chunk.data[42:50]+bmpstart2[0:4]+'\x28\x00\x00\x00'
+			self.bmpbuf += chunk.data[62:72]+chunk.data[74:78]
+			self.bmpbuf += '\x00\x00'+chunk.data[82:90]+'\x00\x00\x00\x00'
+			self.bmpbuf += '\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+			self.bmpbuf += chunk.data[bmpstart+40:]			
+			self.extracted_image = PIL.Image.open(StringIO.StringIO(self.bmpbuf ))
+			self.extracted_image.load()
+			
+#		elif palflag == 1: #RGB
+#			print 'width, height', (width, height)
+#			self.bmpbuf=chunk.data[bmpstart+40:]
+#			self.extracted_image = PIL.Image.fromstring('RGB', (width, height), self.bmpbuf, 'raw', 'BGR', 0, -1)
+		
+		else:
+			self.bmpbuf = 'BM'+chunk.data[42:50]+bmpstart2[0:4]+'\x28\x00\x00\x00'
+			self.bmpbuf += chunk.data[62:72]+chunk.data[74:78]
+			self.bmpbuf += '\x00\x00'+chunk.data[82:90]+'\x00\x00\x00\x00'
+			if numcol > 1:
+				self.bmpbuf = self.bmpbuf+'\x00\x01\x00\x00\x00\x00\x00\x00'
+				for i in range (numcol):
+					self.bmpbuf = self.bmpbuf+chunk.data[122+i*3:125+i*3]+'\x00'
+			self.bmpbuf += chunk.data[bmpstart+40:]
+			self.extracted_image = PIL.Image.open(StringIO.StringIO(self.bmpbuf ))
+			self.extracted_image.load()
+			
 	def loda_coords(self,chunk,type,offset,version,trafo):
 		if type == 1:  # rectangle
 			CoordX1 = 0 
@@ -337,8 +414,8 @@ class InfoCollector:
 			if CoordY2 > 0x7FFFFFFF:
 				CoordY2 = CoordY2 - 0x100000000
 			
-			CoordX1, CoordY1=trafo(CoordX1, CoordY1)	
-			CoordX2, CoordY2=trafo(CoordX2, CoordY2)	
+			CoordX1, CoordY1=trafo(CoordX1, CoordY1)
+			CoordX2, CoordY2=trafo(CoordX2, CoordY2)
 			
 			path = CreatePath()
 			path.AppendLine(Point(CoordX1*self.scale, CoordY1*self.scale))
@@ -347,7 +424,7 @@ class InfoCollector:
 			path.AppendLine(Point(CoordX1*self.scale, CoordY2*self.scale))
 			path.AppendLine(Point(CoordX1*self.scale, CoordY1*self.scale))
 			path.AppendLine(path.Node(0))
-			path.ClosePath()			
+			path.ClosePath()
 			self.current_paths.append(path)
 
 		if type == 3: # line and curve
@@ -358,19 +435,19 @@ class InfoCollector:
 			point2=None
 			cont=ContSymmetrical
 			for i in range (pointnum):
-				[CoordX] = struct.unpack('<L', chunk.data[offset+4+i*8:offset+8+i*8])                           
+				[CoordX] = struct.unpack('<L', chunk.data[offset+4+i*8:offset+8+i*8])
 				[CoordY] = struct.unpack('<L', chunk.data[offset+8+i*8:offset+12+i*8])
 				
 				if CoordX > 0x7FFFFFFF:
 					CoordX = CoordX - 0x100000000
 				if CoordY > 0x7FFFFFFF:
 					CoordY = CoordY - 0x100000000
-				CoordX, CoordY=trafo(CoordX, CoordY)		
-					
+				CoordX, CoordY=trafo(CoordX, CoordY)
+				
 				Type = ord(chunk.data[offset+4+pointnum*8+i])
 				
 				if Type&2 == 2:
-					pass                                                                                                                                                                  
+					pass
 				if Type&4 == 4:
 					pass
 				if Type&0x10 == 0 and Type&0x20 == 0:
@@ -390,11 +467,11 @@ class InfoCollector:
 					if path:
 						path.AppendLine(Point(CoordX*self.scale, CoordY*self.scale))
 						point1=None
-						point2=None                                                  
+						point2=None
 				if Type&0x40 == 0 and Type&0x80 == 0x80:
 					path.AppendBezier(point1,point2,Point(CoordX*self.scale, CoordY*self.scale),cont)
 					point1=None
-					point2=None                                             
+					point2=None
 				if Type&0x40 == 0x40 and Type&0x80 == 0x80:
 					if point1:
 						point2=Point(CoordX*self.scale, CoordY*self.scale)
@@ -403,52 +480,76 @@ class InfoCollector:
 				if Type&8 == 8:
 					if path:
 						path.ClosePath()
-			if path:	
+			if path:
 				self.current_paths.append(path)
+		if type == 5: # bitmap
+			bmp_color_models = ('Invalid','Pal1','CMYK255','RGB','Gray','Mono','Pal6','Pal7','Pal8')
+			bmp_clrmode = ord(chunk.data[offset+0x30])
+			clrdepth = ord(chunk.data[offset+0x22])
+			[width] = struct.unpack('<L', chunk.data[offset+0x24:offset+0x28])
+			[height] = struct.unpack('<L', chunk.data[offset+0x28:offset+0x2c])
+			[idx1] = struct.unpack('<L', chunk.data[offset+0x2c:offset+0x30])
+			numbmp = ord(chunk.data[offset+0x30])
+			[idx2] = struct.unpack('<L', chunk.data[offset+0x34:offset+0x38])
+			[idx3] = struct.unpack('<L', chunk.data[offset+0x38:offset+0x3c])
+			self.extract_bmp(numbmp,width,height)
 
-		
 	def loda_fild(self,chunk,type,offset,version,trafo):
 		self.colorIndex='%02X'%ord(chunk.data[offset])+'%02X'%ord(chunk.data[offset+1])+\
 					'%02X'%ord(chunk.data[offset+2])+'%02X'%ord(chunk.data[offset+3])
-		
+
 	def loda_outl(self,chunk,type,offset,version,trafo):
 		self.outlineIndex='%02X'%ord(chunk.data[offset])+'%02X'%ord(chunk.data[offset+1])+\
 				'%02X'%ord(chunk.data[offset+2])+'%02X'%ord(chunk.data[offset+3])
 
-			
+
 	def process_outline(self, chunk, usual):
 		cdr_version=self.cdr_version
 		outl = Outline()
 		outl.outlineIndex='%02X'%ord(chunk.data[0]) + '%02X'%ord(chunk.data[1]) + '%02X'%ord(chunk.data[2]) + '%02X'%ord(chunk.data[3])
 
+		ls_offset = 0x4
+		lc_offset = 0x6
 		ct_offset = 0x8
 		lw_offset = 0xc
-		lc_offset = 0x6
-		offset = 0x1c	
+		offset = 0x1c
+		dash_offset = 0x68
 			
 		if cdr_version >= 13:
+			ls_offset = 0x18
+			lc_offset = 0x1a
 			ct_offset = 0x1c
 			lw_offset = 0x1e
-			lc_offset = 0x1a
 			offset = 0x28
+			dash_offset = 0x74
+			
+		outl.spec=ord(chunk.data[ls_offset])
 		
 		outl.caps=ord(chunk.data[lc_offset])
 		outl.corner=ord(chunk.data[ct_offset])
 		[line_width] = struct.unpack('<L',chunk.data[lw_offset:lw_offset+4])
 		outl.width=line_width*self.scale
-		
+
+		## dashes
+		[dashnum]= struct.unpack('<h', chunk.data[dash_offset:dash_offset+2])
+		if dashnum > 0:
+			outl.dashes = range(dashnum)
+			for i in outl.dashes:
+				[dash] = struct.unpack('<h', chunk.data[dash_offset+2+i*2:dash_offset+4+i*2])
+				outl.dashes[i] = dash
+
 		clrmode = ord(chunk.data[offset+0x30])
 		
 		if clrmode == 9:
-			outl.color=CreateCMYKColor(0, 0, 0, ord(chunk.data[offset+0x38]) /255.0)
+			outl.color=CreateCMYKColor(0, 0, 0, 1.0 - ord(chunk.data[offset+0x38]) /255.0)
 		elif clrmode == 5:
 			outl.color=CreateRGBColor(ord(chunk.data[offset+0x3a]) / 255.0, 
 						   ord(chunk.data[offset+0x39])/ 255.0,
 						   ord(chunk.data[offset+0x38]) / 255.0)
 		elif clrmode == 4:
-			outl.color=CreateCMYKColor(ord(chunk.data[offset+0x38])/100.0,
-							ord(chunk.data[offset+0x39])/100.0,
-							ord(chunk.data[offset+0x3a])/100.0, 0/100.0)
+			outl.color=CreateCMYKColor(ord(chunk.data[offset+0x38])/255.0,
+							ord(chunk.data[offset+0x39])/255.0,
+							ord(chunk.data[offset+0x3a])/255.0, 0.0)
 		elif clrmode == 2:
 			outl.color=CreateCMYKColor(ord(chunk.data[offset+0x38])/100.0,
 							ord(chunk.data[offset+0x39])/100.0,
@@ -467,10 +568,8 @@ class InfoCollector:
 		elif clrmode == 20:
 			outl.color=CreateCMYKColor(1.0,1.0,1.0,1.0)
 		else:
-			outl.color=None
+			outl.color=CreateCMYKColor(0, 0, 0, 1)
 			
-#		if outl.width==0.0002835:
-#			outl.color=None
 		self.outl_data[outl.outlineIndex]=outl
 		if not usual:
 			self.default_outl_data=outl
@@ -487,33 +586,33 @@ class InfoCollector:
 		if	pal < 3:
 			fild_type = fild_pal_type[pal]
 		else:
-			fild_type = 'Unknown (%X)'%pal					
+			fild_type = 'Unknown (%X)'%pal
 		clr_offset = 0x8
 		if cdr_version >= 13:
 			clr_offset = 0x1b
 			
-		if clr_offset < chunk.rawsize:			
+		if clr_offset < chunk.rawsize:
 			clrmode = ord(chunk.data[clr_offset])
 			if fild_type == 'Solid':
 				offset = 0x10
 				if cdr_version >= 13:
 					offset =0x23
-				if clrmode == 9:
-					fill_data[colorIndex]=CreateCMYKColor(0, 0, 0, ord(chunk.data[offset]) /255.0)
-				elif clrmode == 5:
+				if clrmode == 9: #Grayscale
+					fill_data[colorIndex]=CreateCMYKColor(0, 0, 0, 1.0 - ord(chunk.data[offset]) /255.0)
+				elif clrmode == 5: #RGB
 					fill_data[colorIndex]=CreateRGBColor(ord(chunk.data[offset+2]) / 255.0, 
-								   ord(chunk.data[offset+1])/ 255.0,
-								   ord(chunk.data[offset]) / 255.0)
-				elif clrmode == 4:
-					fill_data[colorIndex]=CreateCMYKColor(ord(chunk.data[offset])/100.0,
-									ord(chunk.data[offset+1])/100.0,
-									ord(chunk.data[offset+2])/100.0, 0/100.0)
-				elif clrmode == 3:
+									ord(chunk.data[offset+1])/ 255.0,
+									ord(chunk.data[offset]) / 255.0)
+				elif clrmode == 4: #CMY
+					fill_data[colorIndex]=CreateCMYKColor(ord(chunk.data[offset])/255.0,
+									ord(chunk.data[offset+1])/255.0,
+									ord(chunk.data[offset+2])/255.0, 0.0)
+				elif clrmode == 3:#CMYK255
 					fill_data[colorIndex]=CreateCMYKColor(ord(chunk.data[offset])/255.0,
 									ord(chunk.data[offset+1])/255.0,
 									ord(chunk.data[offset+2])/255.0,
-									ord(chunk.data[offset+3])/255.0)					
-				elif clrmode == 2:
+									ord(chunk.data[offset+3])/255.0)
+				elif clrmode == 2: #CMYK
 					fill_data[colorIndex]=CreateCMYKColor(ord(chunk.data[offset])/100.0,
 									ord(chunk.data[offset+1])/100.0,
 									ord(chunk.data[offset+2])/100.0,
@@ -528,7 +627,7 @@ class InfoCollector:
 									ord(chunk.data[offset+1])/255.0,
 									ord(chunk.data[offset+2])/255.0,
 									ord(chunk.data[offset+3])/255.0)
-				elif clrmode == 0x14:
+				elif clrmode == 0x14: #Registration Color
 					fill_data[colorIndex]=CreateCMYKColor(1,1,1,1)
 				else:
 					fill_data[colorIndex]=CreateCMYKColor(0, 0, 0, .20)
@@ -536,7 +635,8 @@ class InfoCollector:
 				fill_data[colorIndex]=None
 			if fild_type == 'Gradient':
 				fill_data[colorIndex]=CreateCMYKColor(0, 0, 0, .3)
-	
+#			else:
+#				fill_data[colorIndex]=CreateCMYKColor(0, 1, 0, 0)
 
 class RiffEOF(Exception):
 	pass
@@ -553,16 +653,17 @@ class CDRLoader(GenericLoader):
 		self.verbosity=False
 		self.info = None
 		self.file=file
-		
+
 	def Load(self):
-		try:
+		try:			
 			self.file.seek(0)
 			cdr = RiffChunk()
 			cdr.load(self.file.read())
+			app.updateInfo(inf2=_("Parsing is finished"),inf3=10)
 			
 			self.document()
 			self.layer('cdr_object', 1, 1, 0, 0, ('RGB',0,0,0))
-
+			
 			if self.verbosity:
 				text=''
 				if cdr.infocollector.cdr_version>0:
@@ -575,13 +676,13 @@ class CDRLoader(GenericLoader):
 					if cdr.infocollector.compression:
 						text+='   COMPRESSED'
 				sys.stderr.write(text)
-				
-			if cdr.infocollector.cdr_version>6:	
+			
+			if cdr.infocollector.cdr_version>6:
 				self.info=cdr.infocollector
 				self.info.loader=self
 				self.info.process_properties()
 				
-				self.import_curves()		
+				self.import_curves()
 				
 			else:
 				warn(USER, 'File <'+self.filename+
@@ -598,11 +699,23 @@ class CDRLoader(GenericLoader):
 			raise
 		
 	def import_curves(self):
+		objcount=0
+		objnum=len(self.info.paths_heap)
+		jump=87.0/objnum
+		interval=int((objnum/20)/10)+1
+		interval_count=0
 		for obj in self.info.paths_heap:
+			objcount+=1
+			interval_count+=1
+			if interval_count>interval:
+				interval_count=0
+				app.updateInfo(inf2=_("Interpreting object %u of %u")%(objcount,objnum),inf3=10+int(jump*objcount))
 			if obj==1:
 				self.begin_group()
 			elif obj==0:
 				self.end_group()
+			elif type(obj)==TupleType and obj[0]=='BMP':
+				self.image(obj[1],obj[2])
 			else:
 				style = self.style
 				if obj.colorIndex:
@@ -615,29 +728,58 @@ class CDRLoader(GenericLoader):
 					
 				if obj.outlineIndex:
 					if self.info.outl_data.has_key(obj.outlineIndex):
-						if self.info.outl_data[obj.outlineIndex].color:# and self.info.outl_data[obj.outlineIndex].width>0.2268:
-							style.line_pattern = SolidPattern(self.info.outl_data[obj.outlineIndex].color)
-						else:
+						if self.info.outl_data[obj.outlineIndex].spec & 0x01:
 							style.line_pattern = EmptyPattern
-						style.line_width = self.info.outl_data[obj.outlineIndex].width
+						else:
+							style.line_pattern = SolidPattern(self.info.outl_data[obj.outlineIndex].color)
+						
+						if self.info.outl_data[obj.outlineIndex].spec & 0x04:
+							style.line_dashes = self.info.outl_data[obj.outlineIndex].dashes
+						
+						if self.info.outl_data[obj.outlineIndex].spec & 0x20:
+							style.line_width = self.info.outl_data[obj.outlineIndex].width*obj.scale
+						else:
+							style.line_width = self.info.outl_data[obj.outlineIndex].width
+							
 						style.line_cap = self.info.outl_data[obj.outlineIndex].caps + 1
 						style.line_join = self.info.outl_data[obj.outlineIndex].corner
 					else:
 						style.line_pattern = EmptyPattern
 				else:
 					if self.info.default_outl_data:
-						if self.info.default_outl_data.color:
-							style.line_pattern = SolidPattern(self.info.default_outl_data.color)
-						else:
+						if self.info.default_outl_data.spec & 0x01:
 							style.line_pattern = EmptyPattern
-						style.line_width = self.info.default_outl_data.width
+						else:
+							style.line_pattern = SolidPattern(self.info.default_outl_data.color)
+							
+						if self.info.default_outl_data.spec & 0x04:
+							style.line_dashes = self.info.default_outl_data.dashes
+
+						if self.info.default_outl_data.spec & 0x20:
+							style.line_width = self.info.default_outl_data.width*obj.scale
+						else:
+							style.line_width = self.info.default_outl_data.width
 						style.line_cap = self.info.default_outl_data.caps + 1
-						style.line_join = self.info.default_outl_data.corner						
+						style.line_join = self.info.default_outl_data.corner
 					else:
 						style.line_pattern = EmptyPattern
+						
+				object = PolyBezier(paths = tuple(obj.paths), properties = self.get_prop_stack())
+				self.append_object(object)
+				
+				if obj.outlineIndex:
+					if self.info.outl_data[obj.outlineIndex].spec & 0x10:
+						copy = object.Duplicate()
+						copy.properties.SetProperty(line_width=0)
+						self.append_object(copy)
+				else:
+					if self.info.default_outl_data.spec & 0x10:
+						copy = object.Duplicate()
+						copy.properties.SetProperty(line_width=0)
+						self.append_object(copy)
+				
+
+				
+
 					
-				self.bezier(tuple(obj.paths))
-
-
-
-			
+				

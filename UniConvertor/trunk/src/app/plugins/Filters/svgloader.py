@@ -849,31 +849,32 @@ class SVGHandler(handler.ContentHandler):
 			if id:
 				self.named_objects[id] = ('object', 'image', attrs)
 			return
-		href = as_latin1(attrs['xlink:href'])
-		image = load_image(os.path.join(self.loader.directory, href)).image
-		if attrs.has_key('x'):
-			x = attrs['x']
-		else:
-			x = '0'
-		if attrs.has_key('y'):
-			y = attrs['y']
-		else:
-			y = '0'
-		x, y = self.user_point(x, y)
-		
-		width = self.user_length(attrs['width'])
-		scalex =  width / image.size[0]
-
-		height = self.user_length(attrs['height']) 
-		scaley = -height / image.size[1]
-
-		style = attrs.get('style', '')
-		if style:
-			self.parse_style(style)
-		self.set_loader_style()
-		t = self.trafo(Trafo(scalex, 0, 0, scaley, x, y + height))
-		self._print('image', t)
-		self.loader.image(image, t)
+		href = attrs['xlink:href']
+		if os.path.isfile(os.path.join(self.loader.directory, href)):			
+			image = load_image(os.path.join(self.loader.directory, href)).image
+			if attrs.has_key('x'):
+				x = attrs['x']
+			else:
+				x = '0'
+			if attrs.has_key('y'):
+				y = attrs['y']
+			else:
+				y = '0'
+			x, y = self.user_point(x, y)
+			
+			width = self.user_length(attrs['width'])
+			scalex =  width / image.size[0]
+	
+			height = self.user_length(attrs['height']) 
+			scaley = -height / image.size[1]
+	
+			style = attrs.get('style', '')
+			if style:
+				self.parse_style(style)
+			self.set_loader_style()
+			t = self.trafo(Trafo(scalex, 0, 0, scaley, x, y + height))
+			self._print('image', t)
+			self.loader.image(image, t)
 
 	def begin_text(self, attrs):
 		if self.in_defs:

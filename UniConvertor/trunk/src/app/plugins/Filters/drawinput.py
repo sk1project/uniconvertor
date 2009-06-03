@@ -276,8 +276,7 @@ class DrawfileLoader(GenericLoader):
 
 					self.style.line_arrow1 = Arrow(path, 1)
 					if (object.width / scale) < 1.0:
-						self.style.line_arrow1.path.Transform(
-							Scale(object.width / scale, object.width / scale) )
+						self.style.line_arrow1.path.Transform(Scale(object.width / scale, object.width / scale) )
 
 				if object.style['end cap'] == 'butt':
 					self.style.line_cap = const.CapButt
@@ -333,8 +332,7 @@ class DrawfileLoader(GenericLoader):
 					
 					self.style.line_arrow2 = Arrow(path, 1)
 					if (object.width / scale) < 1.0:
-						self.style.line_arrow2.path.Transform(
-							Scale(object.width / scale, object.width / scale) )
+						self.style.line_arrow2.path.Transform(Scale(object.width / scale, object.width / scale) )
 
 				# Outline colour
 				if object.outline == [255, 255, 255, 255]:
@@ -457,14 +455,13 @@ class DrawfileLoader(GenericLoader):
 					x, y = object.transform[4]/scale, object.transform[5]/scale
 					ox, oy = self.relative(object.baseline[0],
 											object.baseline[1])
-					transform = Trafo( object.transform[0]/65536.0,
+					transform = Trafo(object.transform[0]/65536.0,
 										object.transform[1]/65536.0,
 										object.transform[2]/65536.0,
 										object.transform[3]/65536.0,
 										ox + x, oy + y )
 				else:
-					transform = Translation(
-						self.relative(object.baseline[0], object.baseline[1]) )
+					transform = Translation(self.relative(object.baseline[0], object.baseline[1]) )
 
 				# Write the text
 				self.simple_text(object.text, transform)
@@ -514,10 +511,8 @@ class DrawfileLoader(GenericLoader):
 											object.transform[5])
 
 					# Multiply the scale factor by that in the transformation matrix 
-					scale_x = (object.transform[0]/65536.0) * \
-								(72.0 / object.sprite['dpi x'])
-					scale_y = (object.transform[3]/65536.0) * \
-								(72.0 / object.sprite['dpi y'])
+					scale_x = (object.transform[0]/65536.0) * (72.0 / object.sprite['dpi x'])
+					scale_y = (object.transform[3]/65536.0) * (72.0 / object.sprite['dpi y'])
 
 					transform = Trafo( scale_x,
 										(object.transform[1]/65536.0) * \
@@ -547,10 +542,8 @@ class DrawfileLoader(GenericLoader):
 #                               (72.0 / object.sprite['dpi x'])
 #                    scale_y = (bbox_height / size_y) * \
 #                               (72.0 / object.sprite['dpi y'])
-					scale_x = (object.x2 - object.x1) / \
-								(scale * object.sprite['width'])
-					scale_y = (object.y2 - object.y1) / \
-								(scale * object.sprite['height'])
+					scale_x = (object.x2 - object.x1) / (scale * object.sprite['width'])
+					scale_y = (object.y2 - object.y1) / (scale * object.sprite['height'])
 		
 					transform = Trafo( scale_x, 0.0, 0.0, scale_y, x, y )
 
@@ -672,8 +665,7 @@ class DrawfileLoader(GenericLoader):
 						# Align text
 						align = args
 						# Start new line
-						cursor = self.ta_new_line(cursor, object,
-													self.linespacing )
+						cursor = self.ta_new_line(cursor, object, self.linespacing )
 
 					elif command == 'B':
 #                        print 'Background:', args
@@ -737,8 +729,7 @@ class DrawfileLoader(GenericLoader):
 						# Write current line
 						self.ta_write_line(align, cursor, line, 0)
 						# Start new line
-						cursor = self.ta_new_line(cursor, object,
-													self.linespacing)
+						cursor = self.ta_new_line(cursor, object, self.linespacing)
 
 						# Can't position cursor?
 						if cursor == [None, None]:
@@ -757,8 +748,7 @@ class DrawfileLoader(GenericLoader):
 						self.ta_write_line(align, cursor, line, 0)
 						# Start new line
 						if last_command != 'newl':
-							cursor = self.ta_new_line(
-								cursor, object, paragraph + self.linespacing)
+							cursor = self.ta_new_line(cursor, object, paragraph + self.linespacing)
 						else:
 							cursor = self.ta_new_line(cursor, object, paragraph)
 
@@ -779,9 +769,7 @@ class DrawfileLoader(GenericLoader):
 					elif command == 'font':
 #                        print 'Use font:', args
 						# Font change
-						font_name, \
-									font_size, \
-									font_width = object.font_table[args]
+						font_name, font_size, font_width = object.font_table[args]
 						# Select font
 						use_font = RISCOSFont(font_name)
 						# Move cursor to start of a line if the cursor is
@@ -803,8 +791,8 @@ class DrawfileLoader(GenericLoader):
 						text, space = self.make_safe(args[0]), args[1]
 
 						# Add the width of the text to the current total width
-						width = width + \
-								use_font.TextCoordBox(text, font_size)[2]
+						textobj=SimpleText()
+						width = width + use_font.TextCoordBox(text, font_size, textobj.properties)[2]
 
 #                        print width, margins[1] - margins[0]
 
@@ -832,16 +820,14 @@ class DrawfileLoader(GenericLoader):
 								width = 0.0
 
 							# Now attempt to fit this word on the next line
-							width = use_font.TextCoordBox(text, font_size)[2]
+							width = use_font.TextCoordBox(text, font_size, textobj.properties)[2]
 
 							br = len(text)
 							# Continue to try until the word fits, or none of it fits
-							while width > (self.margins[1] - self.margins[0]) \
-									and br > 0:
+							while width > (self.margins[1] - self.margins[0]) and br > 0:
 
 								# Keep checking the size of the word
-								width = use_font.TextCoordBox(text[:br],
-																font_size)[2]
+								width = use_font.TextCoordBox(text[:br], font_size, textobj.properties)[2]
 								br = br - 1
 
 							if br == 0:
@@ -869,8 +855,7 @@ class DrawfileLoader(GenericLoader):
 								# keep the remaining text
 								text = text[br:]
 								# The width is just the width of this text
-								width = use_font.TextCoordBox(
-									text, font_size)[2]
+								width = use_font.TextCoordBox(text, font_size, textobj.properties)[2]
 
 							# If the whole string fit onto the line then
 							# control will flow to the else clause which will
@@ -890,9 +875,7 @@ class DrawfileLoader(GenericLoader):
 												font_width,
 												self.ta_set_colour(foreground),
 												self.ta_set_colour(background) ) )
-								width = width + \
-										use_font.TextCoordBox(
-											space, font_size)[2]
+								width = width + use_font.TextCoordBox(space, font_size, textobj.properties)[2]
 
 						# Can't position cursor?
 						if cursor == [None, None]:
@@ -917,7 +900,7 @@ class DrawfileLoader(GenericLoader):
 	def ta_write_line(self, align, cursor, line, wrapped):
 
 #        print 'ta_write_line:', align, cursor, margins
-		
+		textobj=SimpleText()
 		if line == [] or cursor == [None, None]:
 			return
 
@@ -947,8 +930,7 @@ class DrawfileLoader(GenericLoader):
 				self.style.line_pattern = bg
 				self.style.fill_pattern = fg
 				# Determine the horizontal position of the next word
-				next = cursor[0] + \
-						self.style.font.TextCoordBox(word, font_size)[2]
+				next = cursor[0] + self.style.font.TextCoordBox(word, font_size, textobj.properties)[2]
 				# Write the text to the page
 				self.simple_text(word, Translation(cursor))
 				# Reposition the cursor
@@ -970,8 +952,7 @@ class DrawfileLoader(GenericLoader):
 				self.style.line_pattern = bg
 				self.style.fill_pattern = fg
 				# Determine the horizontal position of the this word
-				cursor[0] = cursor[0] - \
-							self.style.font.TextCoordBox(word, font_size)[2]
+				cursor[0] = cursor[0] - self.style.font.TextCoordBox(word, font_size, textobj.properties)[2]
 				# Write the text to the page
 				self.simple_text(word, Translation(cursor))
 
@@ -986,13 +967,11 @@ class DrawfileLoader(GenericLoader):
 				# Set the font
 				self.style.font = RISCOSFont(font_name)
 				# Increase the width
-				total_width = total_width + \
-								self.style.font.TextCoordBox(word, font_size)[2]
+				total_width = total_width + self.style.font.TextCoordBox(word, font_size, textobj.properties)[2]
 
 			# Place the cursor at a suitable place and render the text as if it
 			# was left justified
-			cursor[0] = self.margins[0] + \
-						(self.margins[1] - self.margins[0] - total_width)/2.0
+			cursor[0] = self.margins[0] + (self.margins[1] - self.margins[0] - total_width)/2.0
 
 			for word, font_name, font_size, font_width, fg, bg in line:
 
@@ -1004,8 +983,7 @@ class DrawfileLoader(GenericLoader):
 				self.style.line_pattern = bg
 				self.style.fill_pattern = fg
 				# Determine the horizontal position of the next word
-				next = cursor[0] + \
-						self.style.font.TextCoordBox(word, font_size)[2]
+				next = cursor[0] + self.style.font.TextCoordBox(word, font_size, textobj.properties)[2]
 				# Write the text to the page
 				self.simple_text(word, Translation(cursor))
 				# Reposition the cursor
@@ -1031,12 +1009,9 @@ class DrawfileLoader(GenericLoader):
 					# Set the font
 					self.style.font = RISCOSFont(font_name)
 					# Increase the width
-					total_width = total_width + \
-									self.style.font.TextCoordBox(
-										word, font_size)[2]
+					total_width = total_width + self.style.font.TextCoordBox(word, font_size, textobj.properties)[2]
 					# Add this word to the new list
-					new_line.append( (word, font_name, font_size,
-										font_width, fg, bg) )
+					new_line.append( (word, font_name, font_size, font_width, fg, bg) )
 
 			# If there are no words then return to the caller
 			if len(new_line) == 0:
@@ -1044,8 +1019,7 @@ class DrawfileLoader(GenericLoader):
 
 			# Determine the spacing required between each word
 			if len(new_line) > 1:
-				spacing = (self.margins[1] - self.margins[0] - total_width) / \
-							(len(new_line) - 1)
+				spacing = (self.margins[1] - self.margins[0] - total_width) / (len(new_line) - 1)
 			else:
 				spacing = 0.0
 
@@ -1062,8 +1036,7 @@ class DrawfileLoader(GenericLoader):
 				self.style.line_pattern = bg
 				self.style.fill_pattern = fg
 				# Determine the horizontal position of the end of this word
-				next = cursor[0] + \
-						self.style.font.TextCoordBox(word, font_size)[2]
+				next = cursor[0] + self.style.font.TextCoordBox(word, font_size, textobj.properties)[2]
 				# Write the text to the page
 				self.simple_text(word, Translation(cursor))
 				# Reposition the cursor
@@ -1086,8 +1059,7 @@ class DrawfileLoader(GenericLoader):
 				self.style.line_pattern = bg
 				self.style.fill_pattern = fg
 				# Determine the horizontal position of the next word
-				next = cursor[0] + \
-						self.style.font.TextCoordBox(word, font_size)[2]
+				next = cursor[0] + self.style.font.TextCoordBox(word, font_size, textobj.properties)[2]
 				# Write the text to the page
 				self.simple_text(word, Translation(cursor))
 				# Reposition the cursor

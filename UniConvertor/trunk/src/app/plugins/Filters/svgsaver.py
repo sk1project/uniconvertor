@@ -98,11 +98,12 @@ class SVGSaver:
 				color = properties.line_pattern.Color().RGB()
 				style.append("stroke:" + csscolor(color))
 			if properties.line_dashes != ():
-				#FIXME: This could be much more intelligent, but this
-				#quick hack will only produce one style of dashed line
-				#for the moment.
-				style.append("stroke-dasharray:" + "6,3")
-			style.append('stroke-width:' + `properties.line_width`)
+				dash=[]
+				for d in properties.line_dashes:
+					dd=d*properties.line_width
+					dash.append ('%g' % dd)
+				style.append("stroke-dasharray:" + join(dash,','))
+			style.append('stroke-width:%g' % properties.line_width)
 			if properties.line_join != const.JoinMiter:
 				style.append('stroke-linejoin:'
 								+ svg_joins[properties.line_join])
@@ -233,7 +234,7 @@ class SVGSaver:
 		endText = '</text >\n'
 
 		self.file.write(beginText %  (( style, ) + tm) )
-		self.file.write(escape(object.Text()))
+		self.file.write(escape(object.Text().encode("utf-8")))
 		self.file.write("\n")
 		self.file.write(endText)
 
@@ -244,17 +245,21 @@ class SVGSaver:
 		self.file.write('</g>\n')
 
 	def Save(self):
-		self.file.write('<?xml version="1.0" encoding="ISO-8859-1" '
+		self.file.write('<?xml version="1.0" encoding="UTF-8" '
 						'standalone="yes"?>\n')
-
-		left, bottom, right, top = self.document.BoundingRect()
+		self.file.write('<!-- Created with sK1/UniConvertor (http://sk1project.org/) -->\n')
+		left, bottom, right, top = self.document.PageRect()
 		width = right - left
 		height = top - bottom
 		self.trafo = Trafo(1, 0, 0, -1, -left, top)
-		self.file.write('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="%g" height="%g"' % (width, height))
-		#self.file.write(' transform="matrix(%g,%g,%g,%g,%g,%g)">\n' % trafo)
+		self.file.write('<svg xmlns="http://www.w3.org/2000/svg" '
+						'xmlns:xlink="http://www.w3.org/1999/xlink"')
+		self.file.write('\n')
+		self.file.write ('  width="%gpt" height="%gpt" viewBox="0 0 %g %g"' % (width, height, width, height))
+		self.file.write('\n')
+		self.file.write ('  fill-rule="evenodd"')
 		self.file.write('>\n')
-
+		
 		# Put the definition of a simple triangular arrowhead in the file,
 		# whether it is used or not
 		# FIXME: for a proper solution for arrow heads, we could walk

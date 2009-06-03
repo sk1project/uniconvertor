@@ -1,4 +1,6 @@
-# Sketch - A Python-based interactive drawing program
+# -*- coding: utf-8 -*-
+
+# Copyright (C) 2007 by Igor Novikov
 # Copyright (C) 1997, 1998, 1999, 2000, 2001, 2002 by Bernhard Herzog
 #
 # This library is free software; you can redistribute it and/or
@@ -236,7 +238,9 @@ class AILoader(GenericLoader):
 					"P": 'set_line_pattern',
 					"g": 'set_fill_gray',
 					"k": 'set_fill_cmyk',
+					"cmyk": 'set_fill_cmyk',
 					"Xa": 'set_fill_rgb',
+					"rgb": 'set_fill_rgb',
 					"x": 'set_fill_cmyk_custom',
 					"Xx": 'set_fill_generic_custom',
 					"p": 'set_fill_pattern',
@@ -246,12 +250,15 @@ class AILoader(GenericLoader):
 					"s": 'stroke_close',
 					"B": 'fill_stroke',
 					"b": 'fill_stroke_close',
+					"closepath": 'fill_stroke_close',
 					"N": 'invisible',        # an invisible open path
 					"n": 'invisible_close',  # a invisible closed path
 					"u": 'begin_group',
 					"U": 'end_group',
 					"*u": 'begin_compound_path',
+					"newpath": 'begin_compound_path',
 					"*U": 'end_compound_path',
+					"gsave": 'end_compound_path',
 					"*": 'guide',
 					"[": 'mark',
 					"]": 'make_array',
@@ -1064,17 +1071,17 @@ class AILoader(GenericLoader):
 					self.skip_to_dsc('EndProcSet', 'EndProlog')
 				elif keyword == 'BeginResource':
 					self.skip_to_dsc('EndResource', 'EndProlog')
-				elif keyword == 'Creator':
-					# try to determine whether the file really is an
-					# illustrator file as opposed to some other EPS
-					# file. It seems that Illustrator itself only
-					# accepts EPS files as illustrator files if they
-					# contain "Adobe Illustrator" in their Create
-					# DSC-comment
-					if string.find(value, "Adobe Illustrator") == -1:
-						self.add_message("This is probably not an"
-											" Illustrator file."
-											" Try embedding it as EPS")
+				#elif keyword == 'Creator':
+					## try to determine whether the file really is an
+					## illustrator file as opposed to some other EPS
+					## file. It seems that Illustrator itself only
+					## accepts EPS files as illustrator files if they
+					## contain "Adobe Illustrator" in their Create
+					## DSC-comment
+					#if string.find(value, "Adobe Illustrator") == -1:
+						#self.add_message("This is probably not an"
+											#" Illustrator file."
+											#" Try embedding it as EPS")
 			if token == END:
 				return
 
