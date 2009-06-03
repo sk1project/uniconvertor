@@ -87,7 +87,7 @@ if __name__ == "__main__":
 					skmod_src+'curvemisc.c', skmod_src+'skaux.c', skmod_src+'skimage.c', ])
 			
 	setup (name = 'UniConvertor',
-			version = '1.1.3',
+			version = '1.1.4',
 			description = 'Universal vector graphics translator',
 			author = 'Igor E. Novikov',
 			author_email = 'igor.e.novikov@gmail.com',
@@ -101,7 +101,7 @@ UniConvertor is a multiplatform universal vector graphics translator.
 It uses sK1 engine to convert one format to another.
 
 sK1 Team (http://sk1project.org),
-copyright (C) 2007 by Igor E. Novikov
+Copyright (C) 2007-2009 by Igor E. Novikov
 ------------------------------------------------------------------------------------
 
 Import filters: 
@@ -115,6 +115,7 @@ Import filters:
     * Scalable Vector Graphics (SVG)
     * Skencil/Sketch/sK1 (SK and SK1)
     * Acorn Draw (AFF)
+	* HPGL for cutting plotter files (PLT)
     
 ------------------------------------------------------------------------------------
 
@@ -127,6 +128,7 @@ Export filters:
     * WMF (Windows Metafile)
     * PDF - Portable Document Format
 	* PS  - PostScript
+	* PLT - HPGL for cutting plotter files
     
 ------------------------------------------------------------------------------------
 			''',
