@@ -1,7 +1,7 @@
 :: ---------------------------------------------------------------------
 ::  Wrapper script to start a UniConvertor application once it is installed
 ::
-::  Copyright (C) 2007 Igor E. Novikov
+::  Copyright (C) 2007-2009 Igor E. Novikov
 ::
 ::  This library is free software; you can redistribute it and/or
 ::  modify it under the terms of the GNU Lesser General Public
@@ -19,4 +19,4 @@
 :: ---------------------------------------------------------------------
 
 
-@python -c "import uniconvertor" "%~1" "%~2"
+@python -c "from uniconvertor import uniconv; uniconv();" "%~1" "%~2"
