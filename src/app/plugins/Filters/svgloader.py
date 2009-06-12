@@ -468,7 +468,7 @@ class SVGHandler(handler.ContentHandler):
 			str = str[:-1]
 			factor = 1.0
 		else:
-			factor = 1.0
+			factor = .8
 		return float(str) * factor
 
 	def user_point(self, x, y):
@@ -489,10 +489,10 @@ class SVGHandler(handler.ContentHandler):
 			# XXX this is wrong
 			x = x[:-1]
 			xunit = '%'
-			factor = 1
+			factor = 1.0
 		else:
 			xunit = ''
-			factor = 1.0
+			factor = .8
 		x = float(x) * factor
 		
 		yunit = y[-2:]
@@ -505,7 +505,7 @@ class SVGHandler(handler.ContentHandler):
 			factor = 1.0
 		else:
 			yunit = ''
-			factor = 1.0
+			factor = .8
 		y = float(y) * factor
 
 		return Point(x, y)
