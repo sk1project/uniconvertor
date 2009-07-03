@@ -387,3 +387,4 @@ class GridLayer(SpecialLayer):
 			# a hack...
 			self.document.queue_layer(LAYER_COLOR, self)
 		return undo
+
