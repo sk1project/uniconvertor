@@ -1693,8 +1693,8 @@ class EditDocument(SketchDocument, QueueingPublisher):
 	def ModifyAndCopy(self):
 		if self.selection:
 			copies=self.copy_objects(self.selection.GetObjects())
-		self.Undo()
-		self.Insert(copies, undo_text=_("Modify&Copy"))	
+			self.Undo()
+			self.Insert(copies, undo_text=_("Modify&Copy"))	
 
 	def CanCreateMaskGroup(self):
 		infos = self.selection.GetInfo()
@@ -1973,18 +1973,19 @@ class EditDocument(SketchDocument, QueueingPublisher):
 		return self.selection.GetObjectMethod(aclass, method)
 
 	def CurrentObjectCompatible(self, aclass):
-		obj = self.CurrentObject()
+		obj = self.CurrentObject()			
 		if obj is not None:
 			if aclass.is_Editor:
-				return isinstance(obj, aclass.EditedClass)
+				return obj.__class__.__name__== aclass.EditedClass.__name__
 			else:
-				return isinstance(obj, aclass)
+				return obj.__class__.__name__== aclass.__name__
 		return 0
 
 	# XXX the following methods for blend groups, path text, clones and
 	# bezier objects should perhaps be implemented in their respective
 	# modules (and then somehow grafted onto the document class?)
 
+		
 	def CanBlend(self):
 		info = self.selection.GetInfo()
 		if len(info) == 2:
@@ -2210,6 +2211,77 @@ class EditDocument(SketchDocument, QueueingPublisher):
 					self.abort_transaction()
 			finally:
 				self.end_transaction()
+	#
+	#  IMAGES MANAGMENT
+	#
+	
+############
+	def CanBeRGB(self):
+		from image import RGB_IMAGE, RGBA_IMAGE
+		obj = self.CurrentObject()
+		if obj:
+			if obj.is_Image:
+				if obj.data.image_mode==RGB_IMAGE or obj.data.image_mode==RGBA_IMAGE:
+					return 0
+				else:
+					return 1
+		return 0
+
+	def CanBeCMYK(self):
+		from image import CMYK_IMAGE
+		obj = self.CurrentObject()
+		if obj:
+			if obj.is_Image and not obj.data.image_mode==CMYK_IMAGE:
+					return 1
+		return 0
+
+	def CanBeGrayscale(self):
+		from image import GRAYSCALE_IMAGE
+		obj = self.CurrentObject()
+		if obj:
+			if obj.is_Image and not obj.data.image_mode==GRAYSCALE_IMAGE:
+					return 1
+		return 0
+
+	def CanBeBW(self):
+		from image import BW_IMAGE
+		obj = self.CurrentObject()
+		if obj:
+			if obj.is_Image and not obj.data.image_mode==BW_IMAGE:
+					return 1
+		return 0
+	
+	def ConvertImage(self, mode):
+		obj = self.CurrentObject()
+		self.CallObjectMethod(obj.__class__, _("Convert Image"), 'Convert', mode)
+#		obj.Convert(mode)
+		self.SelectNone()
+		self.SelectObject(obj)
+				
+	def CanEmbed(self):
+		obj = self.CurrentObject()
+		if obj:
+			if obj.is_Image and obj.CanEmbed():
+				return obj.CanEmbed()
+		return 0
+	
+	def Embed(self):
+		obj = self.CurrentObject()
+		obj.Embed()
+		self.SelectNone()
+		self.SelectObject(obj)
+
+	def CanInvert(self):
+		obj = self.CurrentObject()
+		if obj:
+			if obj.is_Image and obj.IsEmbedded():
+				return 1
+		return 0
+
+	def Invert(self):
+		obj = self.CurrentObject()
+		self.CallObjectMethod(obj.__class__, _("Invert Image"), 'InvertImage')
+		app.mw.canvas.ForceRedraw()
 
 
 	#

@@ -110,7 +110,8 @@ class LoaderWithComposites:
 				self.append_object(composite)
 			else:
 				self.__pop()
-				raise EmptyCompositeError
+				#may be just pass the problem?
+				#raise EmptyCompositeError
 		else:
 			raise SketchLoadError('no composite to end')
 
@@ -197,6 +198,14 @@ class GenericLoader(LoaderWithComposites):
 		self.begin_composite(doc_class, args, kw)
 
 	def layer(self, *args, **kw):
+		self.begin_layer_class(layer.Layer, args, kw)
+		
+	def masterlayer(self, *args, **kw):
+		kw['is_MasterLayer']=1
+		self.begin_layer_class(layer.Layer, args, kw)
+		
+	def page(self, *args, **kw):
+		kw['is_Page']=1
 		self.begin_layer_class(layer.Layer, args, kw)
 
 	def end_layer(self):
