@@ -23,9 +23,9 @@ from app.conf.const import ArcArc, ArcChord, ArcPieSlice, ConstraintMask, \
 from app import _, Point, Polar, Trafo, SingularMatrix, Rect, UnionRects, \
 		CreateMultiUndo, NullUndo, RegisterCommands
 
-import graphics
+#import graphics
 
-from app.UI.command import AddCmd
+#from app.UI.command import AddCmd
 
 import handle
 from base import Primitive, RectangularPrimitive, RectangularCreator, Creator,\
@@ -110,10 +110,9 @@ class Ellipse(RectangularPrimitive):
 	def ArcType(self):
 		return self.arc_type
 
-	AddCmd(commands, 'EllipseArc', _("Arc"), SetArcType, args = ArcArc)
-	AddCmd(commands, 'EllipseChord', _("Chord"), SetArcType, args = ArcChord)
-	AddCmd(commands, 'EllipsePieSlice', _("Pie Slice"), SetArcType,
-			args = ArcPieSlice)
+	#AddCmd(commands, 'EllipseArc', _("Arc"), SetArcType, args = ArcArc)
+	#AddCmd(commands, 'EllipseChord', _("Chord"), SetArcType, args = ArcChord)
+	#AddCmd(commands, 'EllipsePieSlice', _("Pie Slice"), SetArcType, args = ArcPieSlice)
 
 	def normalize(self):
 		pi2 = 2 * pi

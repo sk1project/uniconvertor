@@ -74,17 +74,17 @@ def uniconv():
 	sys.path.insert(1, _pkgdir)
 	
 	from app.io import load
-	from app.plugins import plugins
+	from sk1libs import filters
 	import app
 	
 	app.init_lib()
 	
+	filters.load_plugin_configuration()
 	doc = load.load_drawing(input_file)
 	extension = os.path.splitext(output_file)[1]
-	plugins.load_plugin_configuration()
-	fileformat = plugins.guess_export_plugin(extension)
+	fileformat = filters.guess_export_plugin(extension)
 	if fileformat:
-		saver = plugins.find_export_plugin(fileformat)
+		saver = filters.find_export_plugin(fileformat)
 		saver(doc, output_file)
 	else:
 		sys.stderr.write('ERROR: unrecognized extension %s\n' % extension)
