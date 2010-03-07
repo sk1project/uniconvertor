@@ -31,9 +31,6 @@ from app import _, SingularMatrix, PointsToRect, Trafo, Polar,\
 		RoundedRectanglePath, RectanglePath, NullUndo
 from app.events.warn import warn, INTERNAL
 
-#import app.UI.skpixmaps
-#pixmaps = app.UI.skpixmaps.PixmapTk
-
 from base import Primitive, RectangularPrimitive, RectangularCreator, Editor
 from bezier import PolyBezier
 import handle
@@ -51,8 +48,10 @@ class Rectangle(RectangularPrimitive):
 
 	def __init__(self, trafo = None, radius1 = 0, radius2 = 0,
 					properties = None, duplicate = None):
+		if trafo is not None and trafo.m11==trafo.m21==trafo.m12==trafo.m22==0:
+			trafo=Trafo(1,0,0,-1,trafo.v1,trafo.v2)
 		RectangularPrimitive.__init__(self, trafo, properties = properties,
-										duplicate = duplicate)
+										duplicate = duplicate)	
 		if duplicate is not None:
 			self.radius1 = duplicate.radius1
 			self.radius2 = duplicate.radius2
@@ -63,7 +62,8 @@ class Rectangle(RectangularPrimitive):
 	def Radii(self):
 		return self.radius1, self.radius2
 
-	def SetTrafoAndRadii(self, trafo, radius1, radius2):
+	def SetTrafoAndRadii(self, trafo, radius1, radius2):	
+		print 'TRAFO >>>>>>>>',trafo	
 		undo = self.SetTrafoAndRadii, self.trafo, self.radius1, self.radius2
 		self.trafo = trafo
 		if radius1 <= 0 or radius2 <= 0:

@@ -39,7 +39,7 @@ from app.Lib import type1
 from graphics import CommonDevice
 import color
 import pagelayout
-import font
+from sk1libs import ft2engine as font
 
 
 class _DummyLineStyle:
@@ -300,7 +300,7 @@ class PostScriptDevice(CommonDevice):
 				c, m, y, k = color.getCMYK()
 				self.file.write('%g %g %g %g cmyk\n' % (round(c, 3), round(m, 3), round(y, 3), round(k, 3)))
 			else:
-				r, g, b = color.RGB()
+				r, g, b = color.getRGB()
 				self.file.write('%g %g %g rgb\n' % (round(r, 3), round(g, 3), round(b, 3)))
 			self.current_color = color
 

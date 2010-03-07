@@ -95,38 +95,6 @@ from events.connector import Connect, Disconnect, Issue, RemovePublisher, Subscr
 def updateInfo(inf1=None,inf2=None,inf3=None):
 	pass
 
-#
-
-def _import_PIL():
-	# Import PIL and work around some bugs...
-	# First, try to import PIL as a package
-	try:
-		import PIL
-		import PIL.Image
-		# Work around a bug in PIL 1.0 when used as a package
-		if PIL.__path__[0] not in sys.path:
-			sys.path.append(PIL.__path__[0])
-	except ImportError:
-		# Must be an older PIL.
-		try:
-			import Image, ImageChops
-		except:
-			warn.warn(warn.USER, "Can't import the Python Imaging Library")
-			sys.exit(1)
-		from app.plugins import plugins
-		plugins.create_packages('PIL')
-		import PIL
-		PIL.__path__.append(os.path.split(Image.__file__)[0])
-		PIL.Image = Image
-		PIL.ImageChops = ImageChops
-		sys.modules['PIL.Image'] = Image
-		sys.modules['PIL.ImageChops'] = ImageChops
-
-_import_PIL()
-
-
-
-#
 
 command_classes = []
 
@@ -151,7 +119,7 @@ from Graphics.dashes import StandardDashes
 from Graphics.document import EditDocument, SelectionMode, EditMode
 Document = EditDocument
 
-from Graphics.font import GetFont
+from sk1libs.ft2engine import GetFont
 from Graphics.gradient import MultiGradient, CreateSimpleGradient
 from Graphics.graphics import SimpleGC, GraphicsDevice, InvertingDevice, HitTestDevice
 
@@ -177,9 +145,8 @@ from Graphics.text import SimpleText, SimpleTextCreator, PathText
 
 
 def init_lib():
-	from app.plugins import plugins
+	from sk1libs import filters
 # 	config.load_user_preferences()
-	plugins.load_plugin_configuration()
 	Issue(None, const.INITIALIZE)
 
 def init_ui():

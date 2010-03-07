@@ -28,10 +28,10 @@ class GuideLine(GraphicsObject, Draggable):
 		self.horizontal = horizontal
 
 	def DrawShape(self, device):
-		device.DrawGuideLine(self.point, self.horizontal)
+		device.DrawGuideLine(self.point, self.horizontal,1)
 
 	def DrawDragged(self, device, partially):
-		device.DrawGuideLine(self.drag_cur, self.horizontal)
+		device.DrawGuideLine(self.drag_cur, self.horizontal,0)
 
 	def Hit(self, p, rect, device):
 		if self.horizontal:
