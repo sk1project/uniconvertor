@@ -155,27 +155,23 @@ Export filters:
 				'uniconvertor.app.io',
 				'uniconvertor.app.managers',
 				'uniconvertor.app.modules',
-				'uniconvertor.app.plugins',
 				'uniconvertor.app.scripts',
 				'uniconvertor.app.utils'
 			],
 			
 			package_dir = {'uniconvertor': 'src',
 			'uniconvertor.app': 'src/app',
-			'uniconvertor.app.plugins': 'src/app/plugins',
 			'uniconvertor.app.modules': 'src/app/modules',
 			},
 			
-			package_data={'uniconvertor.app': ['VERSION','modules/*.*'],			
-			'uniconvertor.app.plugins': ['Filters/*.py'],
+			package_data={'uniconvertor.app': ['VERSION','modules/*.*'],		
 			'uniconvertor': ['GNU_GPL_v2', 'GNU_LGPL_v2', 'COPYRIGHTS',
 						 'share/icc/*.*', 'share/fonts/*.*', 'share/ps_templates/*.*'], 
 			},
 
 			scripts=[script_name],
 
-			ext_modules = [filter_module, type1mod_module, skread_module, 
-						pstokenize_module, skmod_module])
+			ext_modules = [filter_module, type1mod_module, skread_module, pstokenize_module, skmod_module])
 			
 			
 			
