@@ -15,7 +15,7 @@
 from types import IntType, ListType
 import operator
 
-#from app.UI import command
+from app.UI import command
 
 from app.conf.const import SelectAdd
 from app import SketchInternalError, _

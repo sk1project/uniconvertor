@@ -1665,7 +1665,11 @@ class EditDocument(SketchDocument, QueueingPublisher):
 				
 	def ExtractNonGroup(self, object):
 		objects=[]
-		if object.is_Group:
+		if object.is_Blend:
+			objs=object.Ungroup()
+			for item in objs:
+				objects+=self.ExtractNonGroup(item)
+		elif object.is_Group:
 			for item in object.objects:
 				objects+=self.ExtractNonGroup(item)
 		else:

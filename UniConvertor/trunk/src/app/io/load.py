@@ -33,7 +33,7 @@ import os, string
 import time
 
 from app import config
-from app.plugins import plugins
+from sk1libs import filters
 from app.utils import locale_utils
 from app.events.warn import warn, INTERNAL, pdebug
 from app.conf.const import ArcPieSlice
@@ -328,27 +328,31 @@ def load_drawing_from_file(file, filename = '', doc_class = None):
 	if line[:4] == 'RIFF' and len(line) < 12:
 		line = line + file.read(12 - len(line))
 	#print line
-	for info in plugins.import_plugins:
+	for info in filters.import_plugins:
 		match = info.rx_magic.match(line)
 		if match:
 			loader = info(file, filename, match)
 			try:
-				if do_profile:
-					import profile
-					warn(INTERNAL, 'profiling...')
-					prof = profile.Profile()
-					prof.runctx('loader.Load()', globals(), locals())
-					prof.dump_stats(os.path.join(info.dir, info.module_name + '.prof'))
-					warn(INTERNAL, 'profiling... (done)')
-					doc = loader.object
-				else:
-					#t = time.clock()
-					doc = loader.Load()
-					#print 'load in', time.clock() - t, 'sec.'
-				messages = loader.Messages()
-				if messages:
-					doc.meta.load_messages = messages
-				return doc
+				try:
+					if do_profile:
+						import profile
+						warn(INTERNAL, 'profiling...')
+						prof = profile.Profile()
+						prof.runctx('loader.Load()', globals(), locals())
+						prof.dump_stats(os.path.join(info.dir, info.module_name + '.prof'))
+						warn(INTERNAL, 'profiling... (done)')
+						doc = loader.object
+					else:
+						#t = time.clock()
+						doc = loader.Load()
+						#print 'load in', time.clock() - t, 'sec.'
+					messages = loader.Messages()
+					if messages:
+						doc.meta.load_messages = messages
+					return doc
+				except Exception, value:
+					raise SketchLoadError(_("Parsing error: ")+ str(value))
+								
 			finally:
 				info.UnloadPlugin()
 	else:

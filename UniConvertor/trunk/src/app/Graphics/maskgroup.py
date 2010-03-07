@@ -24,7 +24,7 @@
 
 from app.events.warn import warn_tb, INTERNAL
 
-#from app.UI.command import AddCmd
+from app.UI.command import AddCmd
 
 from app import _, IntersectRects, RegisterCommands
 from compound import EditableCompound
@@ -159,8 +159,8 @@ class MaskGroup(EditableCompound):
 	def SelectMask(self):
 		if self.document is not None:
 			self.document.SelectObject(self.objects[0])
-	#AddCmd(commands, SelectMask, _("Select Mask"), key_stroke = 'm')
+	AddCmd(commands, SelectMask, _("Select Mask"), key_stroke = 'm')
 
-	#context_commands = ('SelectMask',)
+	context_commands = ('SelectMask',)
 
 RegisterCommands(MaskGroup)

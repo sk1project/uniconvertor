@@ -18,9 +18,7 @@ from app import Point, Polar, Rect, EmptyRect, UnionRects, PointsToRect
 from app import _, _sketch, CreatePath, config, RegisterCommands, \
 		CreateMultiUndo, NullUndo, Undo
 
-#from app.UI.command import AddCmd
-#import app.UI.skpixmaps
-#pixmaps = app.UI.skpixmaps.PixmapTk
+from app.UI.command import AddCmd
 
 from app._sketch import ContAngle, ContSmooth, ContSymmetrical, \
 		SelNone, SelNodes, SelSegmentFirst, SelSegmentLast, Bezier, Line
@@ -459,7 +457,7 @@ class PolyBezierEditor(Editor):
 		for path in self.paths:
 			for i in range(path.len):
 				path.SelectSegment(i, 1)
-	#AddCmd(commands, SelectAllNodes, _("Select All Nodes"))
+	AddCmd(commands, SelectAllNodes, _("Select All Nodes"))
 
 	def deselect(self):
 		for path in self.paths:
@@ -848,8 +846,7 @@ class PolyBezierEditor(Editor):
 				else:
 					paths.append(path)
 		return self.set_paths(paths)
-	#AddCmd(commands, OpenNodes, _("Cut Curve"), key_stroke = 'c',
-			#bitmap = pixmaps.BezierOpenNodes)
+	AddCmd(commands, OpenNodes, _("Cut Curve"), key_stroke = 'c')
 
 	def CloseNodes(self):
 		# find out if close is possible
@@ -932,8 +929,7 @@ class PolyBezierEditor(Editor):
 		else:
 			return
 		return undo
-	#AddCmd(commands, CloseNodes, _("Close Nodes"),
-			#bitmap = pixmaps.BezierCloseNodes)
+	AddCmd(commands, CloseNodes, _("Close Nodes"))
 
 	def SetContinuity(self, cont):
 		new_paths = []
@@ -943,12 +939,9 @@ class PolyBezierEditor(Editor):
 			else:
 				new_paths.append(path)
 		return self.set_paths(new_paths)
-	#AddCmd(commands, 'ContAngle', _("Angle"), SetContinuity,
-			#args = ContAngle, bitmap = pixmaps.BezierAngle, key_stroke = 'a')
-	#AddCmd(commands, 'ContSmooth', _("Smooth"), SetContinuity,
-			#args = ContSmooth, bitmap = pixmaps.BezierSmooth, key_stroke = 's')
-	#AddCmd(commands, 'ContSymmetrical', _("Symmetrical"), SetContinuity,
-			#args = ContSymmetrical, bitmap = pixmaps.BezierSymm, key_stroke='y')
+	AddCmd(commands, 'ContAngle', _("Angle"), SetContinuity,args = ContAngle, key_stroke = 'a')
+	AddCmd(commands, 'ContSmooth', _("Smooth"), SetContinuity, args = ContSmooth, key_stroke = 's')
+	AddCmd(commands, 'ContSymmetrical', _("Symmetrical"), SetContinuity, args = ContSymmetrical, key_stroke='y')
 
 	def SegmentsToLines(self):
 		if self.selection_type == SelCurvePoint:
@@ -963,8 +956,7 @@ class PolyBezierEditor(Editor):
 				else:
 					new_paths.append(path)
 		return self.set_paths(new_paths)
-	#AddCmd(commands, SegmentsToLines, _("Curve->Line"), key_stroke = 'l',
-			#bitmap = pixmaps.BezierCurveLine)
+	AddCmd(commands, SegmentsToLines, _("Curve->Line"), key_stroke = 'l')
 
 	def SegmentsToCurve(self):
 		if self.selection_type == SelCurvePoint:
@@ -979,8 +971,7 @@ class PolyBezierEditor(Editor):
 				else:
 					new_paths.append(path)
 		return self.set_paths(new_paths)
-	#AddCmd(commands, SegmentsToCurve, _("Line->Curve"), key_stroke = 'b',
-			#bitmap = pixmaps.BezierLineCurve)
+	AddCmd(commands, SegmentsToCurve, _("Line->Curve"), key_stroke = 'b')
 
 	def DeleteNodes(self):
 		new_paths = []
@@ -1002,8 +993,7 @@ class PolyBezierEditor(Editor):
 				pdebug('bezier', 'PolyBezier removed')
 			self.document.DeselectObject(self.object)
 			return self.parent.Remove(self.object)
-	#AddCmd(commands, DeleteNodes, _("Delete Nodes"),
-			#bitmap = pixmaps.BezierDeleteNode, key_stroke = ('-', 'Delete'))
+	AddCmd(commands, DeleteNodes, _("Delete Nodes"), key_stroke = ('-', 'Delete'))
 
 	def InsertNodes(self):
 		if self.selection_type == SelCurvePoint:
@@ -1020,8 +1010,7 @@ class PolyBezierEditor(Editor):
 				else:
 					new_paths.append(path)
 		return self.set_paths(new_paths)
-	#AddCmd(commands, InsertNodes, _("Insert Nodes"), key_stroke = '+',
-			#bitmap = pixmaps.BezierInsertNode)
+	AddCmd(commands, InsertNodes, _("Insert Nodes"), key_stroke = '+')
 
 	def ChangeRect(self):
 		prop = self.properties

@@ -25,9 +25,7 @@ from app import _, Point, Polar, Trafo, SingularMatrix, Rect, UnionRects, \
 
 import graphics
 
-#from app.UI.command import AddCmd
-#import app.UI.skpixmaps
-#pixmaps = app.UI.skpixmaps.PixmapTk
+from app.UI.command import AddCmd
 
 import handle
 from base import Primitive, RectangularPrimitive, RectangularCreator, Creator,\
@@ -71,6 +69,8 @@ class Ellipse(RectangularPrimitive):
 
 	def __init__(self, trafo = None, start_angle = 0.0, end_angle = 0.0,
 					arc_type = ArcPieSlice, properties = None, duplicate = None):
+		if trafo is not None and trafo.m11==trafo.m21==trafo.m12==trafo.m22==0:
+			trafo=Trafo(1,0,0,-1,trafo.v1,trafo.v2)
 		if duplicate is not None:
 			self.start_angle = duplicate.start_angle
 			self.end_angle = duplicate.end_angle
@@ -110,10 +110,10 @@ class Ellipse(RectangularPrimitive):
 	def ArcType(self):
 		return self.arc_type
 
-	#AddCmd(commands, 'EllipseArc', _("Arc"), SetArcType, args = ArcArc)
-	#AddCmd(commands, 'EllipseChord', _("Chord"), SetArcType, args = ArcChord)
-	#AddCmd(commands, 'EllipsePieSlice', _("Pie Slice"), SetArcType,
-			#args = ArcPieSlice)
+	AddCmd(commands, 'EllipseArc', _("Arc"), SetArcType, args = ArcArc)
+	AddCmd(commands, 'EllipseChord', _("Chord"), SetArcType, args = ArcChord)
+	AddCmd(commands, 'EllipsePieSlice', _("Pie Slice"), SetArcType,
+			args = ArcPieSlice)
 
 	def normalize(self):
 		pi2 = 2 * pi

@@ -21,41 +21,87 @@
 # memory.
 #
 
-import os
+import os, app
 from types import StringType
 
-import PIL.Image, PIL.ImageChops
+from sk1libs.imaging import ImageChops
+from sk1libs import imaging
 
-from app import _, RegisterCommands
-#from app.UI.command import AddCmd
+from app import _, RegisterCommands, colormanager
+from app.UI.command import AddCmd
 
 from external import ExternalData, get_cached, ExternalGraphics
+
+RGB_IMAGE=_('RGB')
+RGBA_IMAGE=_('RGBA')
+GRAYSCALE_IMAGE=_('Grayscale')
+CMYK_IMAGE=_('CMYK')
+BW_IMAGE=_('Monochrome')
+UNSUPPORTED=_('UNSUPPORTED')
 
 class ImageData(ExternalData):
 
 	attributes = {'mode':0, 'size':0, 'im':0, 'info':0}
-
+	cached =0
+	
 	def __init__(self, image, filename = '', cache = 1):
-		# convert image to mode 'L' or 'RGB' if necessary
-		if image.mode not in ('RGB', 'RGBA', 'L'):
-			if image.mode == '1':
-				mode = 'L'
-			else:
-				mode = 'RGB'
-			image = image.convert(mode)
+		self.orig_image=image.copy()
+
+		if image.mode=='1':
+			self.image_mode=BW_IMAGE
+		elif image.mode=='L':
+			self.image_mode=GRAYSCALE_IMAGE
+		elif image.mode=='RGB':
+			self.image_mode=RGB_IMAGE
+		elif image.mode=='RGBA':
+			self.image_mode=RGBA_IMAGE
+		elif image.mode=='CMYK':
+			self.image_mode=CMYK_IMAGE
+			colormanager.add_to_image_pool(self)
+			self.cached=1
+		else:
+			self.image_mode=UNSUPPORTED
+													
+		if image.mode not in ('RGB', 'RGBA'):
+			image.load()
+			if image.mode=='CMYK':
+				if app.config.preferences.use_cms_for_bitmap:
+					self.image=colormanager.ImageCMYKtoRGB(image)
+				else:
+					self.image = image.convert('RGB')
+			else:				
+				self.image = image.convert('RGB')
 		else:
 			image.load()
-		self.image = image
+			self.image = image
+			
+		if self.image_mode==UNSUPPORTED:
+			self.orig_image=self.image.copy()
+			self.image_mode=RGB_IMAGE
+			
 		ExternalData.__init__(self, filename, cache)
+		
+	def __del__(self):
+		if self.cached and colormanager is not None:
+			colormanager.remove_from_image_pool(self)
 
 	def __getattr__(self, attr):
 		if self.attributes.has_key(attr):
 			return getattr(self.image, attr)
 		raise AttributeError, attr
+	
+	def update(self):
+		if app.config.preferences.use_cms_for_bitmap:
+			if self.image_mode==CMYK_IMAGE:
+				self.image=colormanager.ImageCMYKtoRGB(self.orig_image)
+			else:
+				self.image = self.orig_image.convert('RGB')
+		else:
+			self.image = self.orig_image.convert('RGB')
 
 	def AsEmbedded(self):
 		if self.filename:
-			return ImageData(self.image)
+			return ImageData(self.orig_image)
 		else:
 			return self
 
@@ -66,25 +112,28 @@ class ImageData(ExternalData):
 		return self.size
 
 	def Image(self):
-		return self.image
+		return self.orig_image
 
 	def Convert(self, mode):
-		if mode != self.image.mode:
-			return ImageData(self.image.convert(mode))
+		if mode != self.orig_image.mode:
+			if app.config.preferences.use_cms_for_bitmap:
+				if mode=='RGB'and self.orig_image.mode=='CMYK':
+					return ImageData(colormanager.ImageCMYKtoRGB(self.orig_image))
+				if mode=='CMYK'and self.orig_image.mode=='RGB':
+					return ImageData(colormanager.ImageRGBtoCMYK(self.orig_image))
+				return ImageData(self.orig_image.convert(mode))
+			else:				
+				return ImageData(self.orig_image.convert(mode))
 		else:
 			return self
 
 	def Invert(self):
-		return ImageData(PIL.ImageChops.invert(self.image))
+		return ImageData(ImageChops.invert(self.orig_image))
 
 
 
-def load_image(filename, cache = 1):
-	if type(filename) == StringType:
-		image = get_cached(filename)
-		if image:
-			return image
-	image = PIL.Image.open(filename)
+def load_image(filename, cache = 0):
+	image = imaging.Image.open(filename)
 	if type(filename) != StringType:
 		filename = ''
 	return ImageData(image, filename = filename, cache = cache)
@@ -96,30 +145,25 @@ class Image(ExternalGraphics):
 
 	commands = ExternalGraphics.commands[:]
 
-	def __init__(self, image = None, imagefile = '', trafo = None,
-					duplicate = None):
+	def __init__(self, image = None, imagefile = '', trafo = None, duplicate = None):
 		if duplicate is None:
 			if not image:
 				if not imagefile:
 					raise ValueError, 'Image must be instantiated with'\
 										' either image or imagefile'
 				image = load_image(imagefile)
-		ExternalGraphics.__init__(self, image, trafo,
-									duplicate = duplicate)
+		ExternalGraphics.__init__(self, image, trafo, duplicate = duplicate)
+		self.Embed()
 
 	def DrawShape(self, device, rect = None, clip = 0):
 		device.DrawImage(self.data, self.trafo, clip)
 
 	def Info(self):
+		mode=self.data.image_mode
 		width, height = self.data.Size()
 		x, y = self.trafo.offset()
-		if self.IsEmbedded():
-			return _("Embedded Image %(width)d x %(height)d "
-						"at (%(x)d, %(y)d)") % locals()
-		else:
-			filename = os.path.basename(self.data.Filename())
-			return _("Linked Image `%(filename)s' %(width)d x %(height)d "
-						"at (%(x)d, %(y)d)") % locals()
+		return _("Embedded %(mode)s image %(width)d x %(height)d "
+					"at (%(x)d, %(y)d)") % locals()
 
 	def SaveToFile(self, file):
 		file.Image(self.data, self.trafo)
@@ -132,20 +176,28 @@ class Image(ExternalGraphics):
 
 	def Embed(self):
 		return self.SetData(self.data.AsEmbedded())
-	#AddCmd(commands, 'EmbedImage', _("Embed Image"), Embed,
-			#sensitive_cb = 'CanEmbed')
+	
+	def InvertImage(self):
+		return self.SetData(self.data.Invert())
+	
+	def Convert(self, image_mode):
+		undo = (self.SetData, self.data)
+		if image_mode==RGB_IMAGE:
+			self.SetData(self.data.Convert('RGB'))
+		if image_mode==RGBA_IMAGE:
+			self.SetData(self.data.Convert('RGB'))
+		if image_mode==GRAYSCALE_IMAGE:
+			self.SetData(self.data.Convert('L'))
+		if image_mode==CMYK_IMAGE:
+			self.SetData(self.data.Convert('CMYK'))
+		if image_mode==BW_IMAGE:
+			self.SetData(self.data.Convert('1'))
+		return undo
 
 	def CallImageFunction(self, function, args = ()):
 		if type(args) != type(()):
 			args = (args,)
 		data = apply(getattr(self.data, function), args)
 		return self.SetData(data)
-	#AddCmd(commands, 'GrayscaleImage', _("Grayscale Image"),
-			#CallImageFunction, args = ('Convert', 'L'))
-	#AddCmd(commands, 'InvertImage', _("Invert Image"), CallImageFunction,
-			#args = 'Invert')
 
-	#context_commands = ('EmbedImage', 'GrayscaleImage', 'InvertImage')
-
-RegisterCommands(Image)
 

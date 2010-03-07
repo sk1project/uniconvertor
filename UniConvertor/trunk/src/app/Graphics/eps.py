@@ -21,7 +21,7 @@
 
 import os, math
 
-import PIL.Image
+from sk1libs.imaging import Image
 
 from app.Lib import dscparser
 from app.utils import os_utils
@@ -55,7 +55,7 @@ def render_preview(filename, startx, starty, width, height, resolution = None):
 		offy = -starty
 		os.system(gs_command % locals())
 
-		image = PIL.Image.open(temp)
+		image = Image.open(temp)
 		image.load()
 		return image
 	finally:

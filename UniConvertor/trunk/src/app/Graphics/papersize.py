@@ -92,3 +92,4 @@ PapersizesList = _din_sizes + _american_sizes
 
 for name, width, height in PapersizesList:
 	Papersize[name] = (width, height)
+

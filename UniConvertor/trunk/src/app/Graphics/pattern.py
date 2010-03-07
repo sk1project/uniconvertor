@@ -109,7 +109,7 @@ class SolidPattern(Pattern):
 
 	def Blend(self, other, frac1, frac2):
 		if other.__class__ == self.__class__:
-			return SolidPattern(Blend(self.color.RGB(), other.color.RGB(), frac1, frac2))
+			return SolidPattern(Blend(self.color, other.color, frac1, frac2))
 		else:
 			raise MismatchError
 

@@ -82,7 +82,7 @@ from math import sin, cos, atan2, hypot, pi, fmod, floor
 from app import _, Rect, UnionRects, EmptyRect, NullPoint, Polar, \
 		IdentityMatrix, SingularMatrix, Identity, Trafo, Scale, Translation, \
 		Rotation, NullUndo, CreateMultiUndo, RegisterCommands
-#from app.UI.command import AddCmd
+from app.UI.command import AddCmd
 from app import config
 from app.conf import const
 
@@ -95,9 +95,6 @@ from bezier import PolyBezier, CombineBeziers
 from blend import Blend, MismatchError, BlendTrafo
 from properties import PropertyStack, FactoryTextStyle, DefaultTextProperties
 import color, pattern, app
-
-import graphics, font
-font_module = font
 
 from app.Lib import encoding; iso_latin_1 = encoding.iso_latin_1
 
@@ -226,7 +223,7 @@ class CommonTextEditor(Editor):
 			return self.SetText(text, caret + 1)
 		except:
 			return NullUndo
-#	AddCmd(commands, InsertCharacter, '', key_stroke = tuple(printable), invoke_with_event = 1)
+	AddCmd(commands, InsertCharacter, '', key_stroke = tuple(printable), invoke_with_event = 1)
 	
 	def InsertEOL(self):
 		try:	
@@ -235,7 +232,7 @@ class CommonTextEditor(Editor):
 			return self.SetText(text, caret + 1)
 		except:
 			return NullUndo
-#	AddCmd(commands, InsertEOL, '', key_stroke = ('Return','KP_Enter'))
+	AddCmd(commands, InsertEOL, '', key_stroke = ('Return','KP_Enter'))
 
 	def InsertTAB(self):
 		try:	
@@ -244,7 +241,7 @@ class CommonTextEditor(Editor):
 			return self.SetText(text, caret + 1)
 		except:
 			return NullUndo
-#	AddCmd(commands, InsertTAB, '', key_stroke = 'Tab')	
+	AddCmd(commands, InsertTAB, '', key_stroke = 'Tab')	
 	
 	def InsertTextFromClipboard(self):
 		try:			
@@ -255,7 +252,7 @@ class CommonTextEditor(Editor):
 			return self.SetText(text, caret + len(insertion))
 		except:
 			return NullUndo
-#	AddCmd(commands, InsertTextFromClipboard, '', key_stroke = ('Ctrl+v', 'Shift+Insert'))
+	AddCmd(commands, InsertTextFromClipboard, '', key_stroke = ('Ctrl+v', 'Shift+Insert'))
 
 	def DeleteCharBackward(self):
 		if self.text and self.caret > 0:
@@ -263,7 +260,7 @@ class CommonTextEditor(Editor):
 			text = text[:caret - 1] + text[caret:]
 			return self.SetText(text, caret - 1)
 		return NullUndo
-#	AddCmd(commands, DeleteCharBackward, '', key_stroke = 'BackSpace')
+	AddCmd(commands, DeleteCharBackward, '', key_stroke = 'BackSpace')
 
 	def DeleteCharForward(self):
 		if self.text and self.caret < len(self.text):
@@ -271,21 +268,21 @@ class CommonTextEditor(Editor):
 			text = text[:caret] + text[caret + 1:]
 			return self.SetText(text, caret)
 		return NullUndo
-#	AddCmd(commands, DeleteCharForward, '', key_stroke = ('Delete', 'KP_Delete'))
+	AddCmd(commands, DeleteCharForward, '', key_stroke = ('Delete', 'KP_Delete'))
 
 	def MoveForwardChar(self):
 		if self.caret < len(self.text):
 			self.SetCaret(self.caret + 1)
 			self.update_selection()
 		return NullUndo
-#	AddCmd(commands, MoveForwardChar, '', key_stroke = ('Right', 'KP_Right'))
+	AddCmd(commands, MoveForwardChar, '', key_stroke = ('Right', 'KP_Right'))
 
 	def MoveBackwardChar(self):
 		if self.caret > 0:
 			self.SetCaret(self.caret - 1)
 			self.update_selection()
 		return NullUndo
-#	AddCmd(commands, MoveBackwardChar, '', key_stroke = ('Left', 'KP_Left'))
+	AddCmd(commands, MoveBackwardChar, '', key_stroke = ('Left', 'KP_Left'))
 
 	def MoveToNextLine(self):
 		lines=split(self.text, '\n')
@@ -297,7 +294,7 @@ class CommonTextEditor(Editor):
 				self.SetCaret(self.caret + len(lines[line_index])+1)
 			self.update_selection()
 		return NullUndo
-#	AddCmd(commands, MoveToNextLine, '', key_stroke = ('Down', 'KP_Down'))
+	AddCmd(commands, MoveToNextLine, '', key_stroke = ('Down', 'KP_Down'))
 	
 	def MoveToPreviousLine(self):
 		lines=split(self.text, '\n')
@@ -309,20 +306,20 @@ class CommonTextEditor(Editor):
 				self.SetCaret(self.caret - len(lines[line_index-1])-1)
 			self.update_selection()
 		return NullUndo
-#	AddCmd(commands, MoveToPreviousLine, '', key_stroke = ('Up', 'KP_Up'))
+	AddCmd(commands, MoveToPreviousLine, '', key_stroke = ('Up', 'KP_Up'))
 
 	def MoveToBeginningOfLine(self):
 		index, line_index = self.get_position()
 		self.SetCaret(self.caret-index+1)
 		self.update_selection()
 		return NullUndo
-#	AddCmd(commands, MoveToBeginningOfLine, '', key_stroke = ('Home', 'KP_Home'))
+	AddCmd(commands, MoveToBeginningOfLine, '', key_stroke = ('Home', 'KP_Home'))
 	
 	def MoveToBeginningOfText(self):
 		self.SetCaret(0)
 		self.update_selection()
 		return NullUndo
-#	AddCmd(commands, MoveToBeginningOfText, '', key_stroke = ('Ctrl-Home', 'Ctrl-KP_Home'))
+	AddCmd(commands, MoveToBeginningOfText, '', key_stroke = ('Ctrl-Home', 'Ctrl-KP_Home'))
 
 	def MoveToEndOfLine(self):
 		lines=split(self.text, '\n')
@@ -330,13 +327,13 @@ class CommonTextEditor(Editor):
 		self.SetCaret(self.caret+len(lines[line_index])-index+1)
 		self.update_selection()
 		return NullUndo
-#	AddCmd(commands, MoveToEndOfLine, '', key_stroke = ('End', 'KP_End'))
+	AddCmd(commands, MoveToEndOfLine, '', key_stroke = ('End', 'KP_End'))
 	
 	def MoveToEndOfText(self):
 		self.SetCaret(len(self.text))
 		self.update_selection()
 		return NullUndo
-#	AddCmd(commands, MoveToEndOfText, '', key_stroke = ('Ctrl-End', 'Ctrl-KP_End'))
+	AddCmd(commands, MoveToEndOfText, '', key_stroke = ('Ctrl-End', 'Ctrl-KP_End'))
 	
 	def get_position(self):
 		lines=split(self.text, '\n')
@@ -423,20 +420,20 @@ class SimpleText(CommonText, RectangularPrimitive):
 		self._changed()
 		return undo
 	
-#	AddCmd(commands, 'AlignLeft', _("Align Left"), SetAlignment,
-#			args = (const.ALIGN_LEFT, None))
-#	AddCmd(commands, 'AlignRight', _("Align Right"), SetAlignment,
-#			args =(const.ALIGN_RIGHT,None))
-#	AddCmd(commands, 'AlignHCenter', _("Align H. Center"), SetAlignment,
-#			args = (const.ALIGN_CENTER, None))
-#	AddCmd(commands, 'AlignTop', _("Align Top"), SetAlignment,
-#			args = (None, const.ALIGN_TOP))
-#	AddCmd(commands, 'AlignVCenter', _("Align V. Center"), SetAlignment,
-#			args =(None, const.ALIGN_CENTER))
-#	AddCmd(commands, 'AlignBase', _("Align Baseline"), SetAlignment,
-#			args = (None, const.ALIGN_BASE))
-#	AddCmd(commands, 'AlignBottom', _("Align Bottom"), SetAlignment,
-#			args = (None, const.ALIGN_BOTTOM))
+	AddCmd(commands, 'AlignLeft', _("Align Left"), SetAlignment,
+			args = (const.ALIGN_LEFT, None))
+	AddCmd(commands, 'AlignRight', _("Align Right"), SetAlignment,
+			args =(const.ALIGN_RIGHT,None))
+	AddCmd(commands, 'AlignHCenter', _("Align H. Center"), SetAlignment,
+			args = (const.ALIGN_CENTER, None))
+	AddCmd(commands, 'AlignTop', _("Align Top"), SetAlignment,
+			args = (None, const.ALIGN_TOP))
+	AddCmd(commands, 'AlignVCenter', _("Align V. Center"), SetAlignment,
+			args =(None, const.ALIGN_CENTER))
+	AddCmd(commands, 'AlignBase', _("Align Baseline"), SetAlignment,
+			args = (None, const.ALIGN_BASE))
+	AddCmd(commands, 'AlignBottom', _("Align Bottom"), SetAlignment,
+			args = (None, const.ALIGN_BOTTOM))
 
 	def Alignment(self):
 		return self.properties.align, self.properties.valign
@@ -497,10 +494,13 @@ class SimpleText(CommonText, RectangularPrimitive):
 	def Info(self):
 		text=self.text.replace('\n','')
 		text=text.replace('\r','')
+		text=text.replace('\t','')
 		text=text.strip()
+		if len(text)>25:
+			text=text[:25]+'...'
 		text=text.encode('utf-8')
 		return (_("Text `%(text)s' at %(position)[position]"),
-				{'text':text[:10], 'position':self.trafo.offset()} )
+				{'text':text, 'position':self.trafo.offset()} )
 
 	def FullTrafo(self):
 		# XXX perhaps the Trafo method should return
@@ -1026,21 +1026,21 @@ class PathText(Compound):
 
 	def SelectTextObject(self):
 		self.document.SelectObject(self.text)
-#	AddCmd(commands, SelectTextObject, _("Select Text"), key_stroke = 't')
+	AddCmd(commands, SelectTextObject, _("Select Text"), key_stroke = 't')
 
 	def SelectPathObject(self):
 		self.document.SelectObject(self.path)
-#	AddCmd(commands, SelectPathObject, _("Select Path"), key_stroke = 'p')
+	AddCmd(commands, SelectPathObject, _("Select Path"), key_stroke = 'p')
 
 	def get_paths(self):
 		return self.path.Paths()
 
 	def SetModel(self, model):
 		return self.text.SetModel(model)
-#	AddCmd(commands, 'SetModelRotate', _("Rotate Letters"), SetModel,
-#			args = PATHTEXT_ROTATE)
-#	AddCmd(commands, 'SetModelSkew', _("Skew Letters"), SetModel,
-#			args = PATHTEXT_SKEW)
+	AddCmd(commands, 'SetModelRotate', _("Rotate Letters"), SetModel,
+			args = PATHTEXT_ROTATE)
+	AddCmd(commands, 'SetModelSkew', _("Skew Letters"), SetModel,
+			args = PATHTEXT_SKEW)
 
 	def Model(self):
 		return self.text.Model()

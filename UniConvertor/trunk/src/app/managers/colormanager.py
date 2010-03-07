@@ -6,13 +6,10 @@
 # For more info see COPYRIGHTS file in sK1 root directory.
 import os, app
 
-try:
-	from lcms import cmsOpenProfileFromFile,cmsCreateTransform,cmsDoTransform, \
-		cmsDeleteTransform,cmsCloseProfile,TYPE_RGB_8,TYPE_CMYK_8, \
-		INTENT_PERCEPTUAL,cmsFLAGS_NOTPRECALC,COLORB, INTENT_RELATIVE_COLORIMETRIC
-except:
-	app.config.preferences.use_cms=0
-	
+from sk1libs.pycms import cmsOpenProfileFromFile,cmsCreateTransform,cmsDoTransform, \
+	 cmsDoBitmapTransform, cmsDeleteTransform,cmsCloseProfile,TYPE_RGB_8,TYPE_CMYK_8, \
+	 INTENT_PERCEPTUAL,cmsFLAGS_NOTPRECALC,COLORB, INTENT_RELATIVE_COLORIMETRIC
+			
 class ColorManager:
 	rgb_monitor=None
 	cmyk_rgb=None
@@ -22,10 +19,33 @@ class ColorManager:
 	hRGB=None
 	hCMYK=None
 	hMONITOR=None
+	colors_pool=[]
+	image_pool=[]
 	
 	def __init__(self):
-		if app.config.preferences.use_cms:
-			self.refresh_profiles()
+		self.refresh_profiles()
+		
+	def add_to_pool(self,color):
+		self.colors_pool.append(color)
+		
+	def add_to_image_pool(self,image):
+		self.image_pool.append(image)
+		
+	def remove_from_pool(self,color):
+		if color in self.colors_pool:
+			self.colors_pool.remove(color)
+		
+	def remove_from_image_pool(self,image):
+		if image in self.image_pool:
+			self.image_pool.remove(image)
+		
+	def update(self):
+		for color in self.colors_pool:
+			color.update()
+			
+		for image in self.image_pool:
+			image.update()
+		
 		
 	def refresh_profiles(self):
 		if app.config.preferences.user_rgb_profile and os.path.isfile(app.config.preferences.user_rgb_profile):
@@ -143,8 +163,11 @@ class ColorManager:
 		cmsCloseProfile(self.hRGB)	
 		cmsCloseProfile(self.hMONITOR)	
 		
+	def ImageRGBtoCMYK(self, image):
+		return cmsDoBitmapTransform(self.rgb_cmyk, image, image.mode, TYPE_CMYK_8)
 		
-		
+	def ImageCMYKtoRGB(self, image):
+		return cmsDoBitmapTransform(self.cmyk_rgb, image, TYPE_CMYK_8, TYPE_RGB_8)		
 		
 		
 		
