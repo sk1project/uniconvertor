@@ -6,7 +6,6 @@
 # For more info see COPYRIGHTS file in sK1 root directory.
 
 import os
-from popen2 import popen2
 from app import config
 
 UTF_CODEC='utf-8'
@@ -33,14 +32,14 @@ def get_locale():
 def cmd_iconv(from_codec='', to_codec='', string=''):
 	if from_codec=='' or to_codec=='' or string=='' :
 		return string
+	#FIXME: command line call should be replaced by regular Python string expressions
 	from_bash = os.popen('echo "'+string+'" |iconv -f '+from_codec+' -t '+to_codec)
-# 	to_bash.write(string)
 	result=from_bash.read()
-# 	to_bash.close()
 	from_bash.close()
 	return result
 	
 def strip_line(string=''):
+	#may be .rstrip("\n") use?
 	if string=='' :
 		return string
 	return string[0:len(string)-1]

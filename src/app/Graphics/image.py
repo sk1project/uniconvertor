@@ -28,7 +28,7 @@ from sk1libs.imaging import ImageChops
 from sk1libs import imaging
 
 from app import _, RegisterCommands, colormanager
-from app.UI.command import AddCmd
+#from app.UI.command import AddCmd
 
 from external import ExternalData, get_cached, ExternalGraphics
 
