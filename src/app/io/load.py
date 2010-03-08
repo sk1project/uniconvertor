@@ -375,3 +375,38 @@ def load_drawing(filename):
 		file = filename
 		filename = ''
 	return load_drawing_from_file(file, filename)
+
+
+###########################################
+
+def parse_drawing_from_file(file, filename, doc_class = None):
+	line = file.readline()
+	if line[:4] == 'RIFF' and len(line) < 12:
+		line = line + file.read(12 - len(line))
+	for info in filters.parsing_plugins:
+		match = info.rx_magic.match(line)
+		if match:
+			parser = info(file, filename, match)
+			try:
+				try:
+					parser.Load()
+					return
+				except Exception, value:
+					raise SketchLoadError(_("Parsing error: ")+ str(value))
+								
+			finally:
+				info.UnloadPlugin()
+	else:
+		raise SketchLoadError(_("Unrecognised file type"))
+
+def parse_drawing(filename,output_filename):
+	
+	name=locale_utils.utf_to_locale(filename)
+	try:
+		file = open(name, 'rb')
+	except IOError, value:
+		message = value.strerror
+		raise SketchLoadError(_("Cannot open %(filename)s:\n%(message)s") % locals())
+
+	return parse_drawing_from_file(file, output_filename)
+	

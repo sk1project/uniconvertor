@@ -81,14 +81,20 @@ def uniconv():
 	app.init_lib()
 	
 	filters.load_plugin_configuration()
-	doc = load.load_drawing(input_file)
-	extension = os.path.splitext(output_file)[1]
-	fileformat = filters.guess_export_plugin(extension)
-	if fileformat:
-		saver = filters.find_export_plugin(fileformat)
-		saver(doc, output_file)
+	
+	if len(options) and options[0]=='-parse':
+		load.parse_drawing(input_file, output_file)
+		sys.exit(0)
 	else:
-		sys.stderr.write('ERROR: unrecognized extension %s\n' % extension)
-		sys.exit(1)
-	doc.Destroy()
+		doc = load.load_drawing(input_file)
+		extension = os.path.splitext(output_file)[1]
+		fileformat = filters.guess_export_plugin(extension)
+		if fileformat:
+			saver = filters.find_export_plugin(fileformat)
+			saver(doc, output_file)
+		else:
+			sys.stderr.write('ERROR: unrecognized extension %s\n' % extension)
+			sys.exit(1)
+		doc.Destroy()
+	
 	sys.exit(0)
