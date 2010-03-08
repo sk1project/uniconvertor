@@ -36,9 +36,10 @@ sK1 Team (http://sk1project.org), copyright (C) 2007-2009 by Igor E. Novikov
      SK1 - sK1 vector graphics files
      PDF - Portable Document Format
      PS  - PostScript
-	 PLT - HPGL for cutting plotter files
+     PLT - HPGL for cutting plotter files
 
 Example: uniconv drawing.cdr drawing.svg\n
+
 '''
 
 import sys, os, string
