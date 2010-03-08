@@ -35,7 +35,7 @@ import os
 
 from app import _, SolidPattern, StandardColors, CreateListUndo, Undo, \
 		PostScriptDevice
-from app.utils import os_utils
+from sk1libs.utils import system
 from app.UI.sketchdlg import SKModal
 
 from Tkinter import StringVar, Frame, Label, Button, Entry, E, W, X, TOP, \
@@ -251,8 +251,8 @@ def simple_separation(context):
 			filename = basename + '-' + hexcolor(color)  + '.ps'
 			ps_dev = PostScriptDevice(filename, as_eps = 1,
 										bounding_box = ps_bbox,
-										For = os_utils.get_real_username(),
-										CreationDate = os_utils.current_date(),
+										For = system.get_real_username(),
+										CreationDate = system.current_date(),
 										Title = os.path.basename(filename),
 										document = doc)
 			doc.Draw(ps_dev)

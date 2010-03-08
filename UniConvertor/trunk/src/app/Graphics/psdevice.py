@@ -27,7 +27,7 @@ from types import StringType
 from math import pi, sqrt
 from string import join, strip, lstrip, split
 
-from app.utils.os_utils import Empty
+from sk1libs.utils import Empty
 
 from app import _, config, _sketch, Scale, sKVersion
 from app.events.warn import pdebug, warn_tb, warn, USER, INTERNAL
