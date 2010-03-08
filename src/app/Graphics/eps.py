@@ -24,7 +24,7 @@ import os, math
 from sk1libs.imaging import Image
 
 from app.Lib import dscparser
-from app.utils import os_utils
+from sk1libs import utils
 IsEpsFileStart = dscparser.IsEpsFileStart
 from app import _, Point, config
 
@@ -45,7 +45,7 @@ def render_preview(filename, startx, starty, width, height, resolution = None):
 	try:
 		# quote the filename so that it can have spaces and to avoid a
 		# security hole
-		filename = os_utils.sh_quote(filename)
+		filename = utils.sh_quote(filename)
 		if resolution is None:
 			resolution = config.preferences.eps_preview_resolution
 		factor = resolution / 72.0
