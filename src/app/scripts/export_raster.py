@@ -37,7 +37,7 @@
 
 import os, tempfile
 
-import PIL.Image, PIL.ImageChops
+from sk1libs import imaging.Image, imaging.ImageChops
 
 import app.Scripting
 from app import _, PostScriptDevice
@@ -129,7 +129,7 @@ def render_ps(filename, resolution, width, height, orig_x = 0, orig_y = 0,
 		gs_cmd = gs_cmd % locals()
 
 		os.system(gs_cmd)
-		image = PIL.Image.open(temp)
+		image = imaging.Image.open(temp)
 		image.load()
 		return image
 	finally:
@@ -187,7 +187,7 @@ def export_alpha(context, filename, resolution, use_bbox = 0):
 						orig_x = x, orig_y = y, antialias = 2,
 						prolog = alpha_prolog, gsdevice = 'pgmraw')
 
-	alpha = PIL.ImageChops.invert(alpha)
+	alpha = imaging.ImageChops.invert(alpha)
 
 	rgb = rgb.convert('RGBA')
 	rgb.putalpha(alpha)
