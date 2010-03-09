@@ -1,7 +1,7 @@
-:: ---------------------------------------------------------------------
+:: --------------------------------------------------------------------
 ::  Wrapper script to start a UniConvertor application once it is installed
 ::
-::  Copyright (C) 2007-2009 Igor E. Novikov
+::  Copyright (C) 2007-2010 Igor E. Novikov
 ::
 ::  This library is free software; you can redistribute it and/or
 ::  modify it under the terms of the GNU Lesser General Public
@@ -17,6 +17,10 @@
 ::  License along with this library; if not, write to the Free Software
 ::  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
 :: ---------------------------------------------------------------------
+@echo off
 
-
-@python -c "from uniconvertor import uniconv; uniconv();" "%~1" "%~2"
+if "%~3"=="" (
+   python -c "from uniconvertor import uniconv; uniconv();" "%~1" "%~2"
+) else (
+   python -c "from uniconvertor import uniconv; uniconv();" "%~1" "%~2" "%~3"
+)
