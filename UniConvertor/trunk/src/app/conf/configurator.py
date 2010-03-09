@@ -200,11 +200,18 @@ class Preferences(connector.Publisher):
 	#If the grid should be visible in a new document, set grid_visible to a true value
 	grid_visible = 0
 	
+	#Grid style: 0 - dotted; 1- lines
+	grid_style = 1
+	
 	#The grid color of a new document as a tuple of RGB values in the range 0..1. E.g. (0, 0, 1) for blue
-	grid_color = ('RGB', 0, 0, 1)
+	#grid_color = ('RGB', 0, 0, 1)
+	grid_color = ('RGB', 0.83, 0.87, 0.91)
 	
 	#The outline color of a new GuideLayer as a tuple of RGB values in the range 0..1.
 	guide_color = ('RGB', 0, 0.3, 1)
+	horizontal_guide_shape = [5, 7]
+	vertical_guide_shape = [5, 8]
+	
 	layer_color = ('RGB', 0.196, 0.314, 0.635)
 	
 	#When objects are duplicated, the new copies are translated by duplicate_offset, given in document coordiates
@@ -212,18 +219,16 @@ class Preferences(connector.Publisher):
 	
 	#The default unit used in various places. Supported values: 'pt', 'in', 'cm', 'mm'
 	default_unit = 'mm'
+	default_unit_jump = 0.1
 	
 	poslabel_sets_default_unit = 1
 	
 	#How many steps to draw in a gradient pattern
-	gradient_steps_editor = 30
+	gradient_steps_editor = 100
 	gradient_steps_print = 50
 	
 	#If the text on the screen becomes smaller than greek_threshold, don't render a font, but draw little lines instead. XXX see comments in graphics.py
 	greek_threshold = 5
-	
-	#If the metrics file for a font can't be found or if a requested font is not known at all, the (metrics of) fallback_font is used	
-	fallback_font = 'Slim'
 	
 	#When snapping is active, coordinates specified with the mouse are snapped to the nearest `special' point (e.g. a grid point) if that is nearer than 
 	#max_snap_distance pixels. (Thus, this length is given in window (pixel-) coordinates).
@@ -246,7 +251,7 @@ class Preferences(connector.Publisher):
 	#The standard palette. If this is a relative pathname it is
 	#interpreted relative to std_res_dir.
 	palette = 'standard.spl'	
-	unipalette = 'CMYK standart.skp'
+	unipalette = 'CMYK_standart.skp'
 	arrows = 'standard.arrow'
 	dashes = 'standard.dashes'
 	pattern = 'pattern.ppm'
@@ -258,6 +263,8 @@ class Preferences(connector.Publisher):
 	sample_text = 'Text'	#	Font dialog sample text. Can be changed by simply editing it in the font dialog.
 	default_paper_format = 'A4'	#Default paper format for new documents and documents read from a files that don't specify a paper format. This should be one of the formats defined in papersize.py.
 	default_page_orientation = 0	#Default page orientation. Portrait = 0, Landscape = 1. Other values are silenty ignored.
+	draw_page_border = 1 #TODO: Should be merged with show_page_outline!
+	page_border_size = 5
 	
 	#Screen resolution in pixel per point. Used by the canvas to convert document coordinates to screen coordinates for a zoom factor of 100%
 	#None means to compute it from information obtained from the X-Server (ScreenWidth and ScreenMMWidth). 1.0 means 72 pixels per inch.
@@ -302,14 +309,28 @@ class Preferences(connector.Publisher):
 	print_destination = 'printer'	#	Default print destination. 'file' for file, 'printer' for printer	
 	print_directory = '~'		#	default directory for printing to file
 	menu_tearoff_fix = 1		#	Menus
-	
+	drawing_precision = 3
+
+	#---------UI managment---------
 	style = 'Plastik'
-	color_theme = 'System'
-	#color_theme = 'UbuntuLooks'
+#	style = 'Clearlooks'
+#	style = 'eXPect'
+	
+	color_theme = 'built-in'
+#	color_theme = 'UbuntuLooks'
+#	color_theme = 'eXPect'
+#	color_theme = 'ClassicPlastik'
+
 	icons='CrystalSVG'
-	small_font='Arial 8'
-	normal_font='Arial 10'
-	large_font='Arial 15'
+#	icons='eXPect'
+#	icons='Tango'
+#	icons='Human'
+	
+	#---------UI fonts---------
+	small_font='Tahoma 8'
+	normal_font='Tahoma 9'
+	large_font='Tahoma 10 bold'
+	fixed_font='CourierNew 9'
 	
 	#---------Color managment---------
 	default_rgb_profile='sRGB.icm'
@@ -323,11 +344,30 @@ class Preferences(connector.Publisher):
 	printer_intent=0
 	monitor_intent=0
 	
-	use_cms=0
+	use_cms=1
+	use_cms_for_bitmap=1
 	simulate_printer=0
-	#------------------------------------
-	forceCMYK=0
-	forceRGB=0
+	
+	# 0 - use RGB, 1 - use CMYK
+	color_blending_rule=1
+	
+	#----------Document font managment-------------	
+	default_font = 'BitstreamVeraSans-Roman'	# The PS name of the font used for new text-objects
+	system_font_dir='/usr/share/fonts'
+	user_font_dir='.fonts' # should be expanded to absolute path
+	#If the font file for a font can't be found or if a requested font 
+	#is not known at all, the fallback_font is used (PS name here):	
+	fallback_font = 'BitstreamVeraSans-Roman'
+	
+	#---------Open/save dialogs managment----
+	dir_for_open='~'
+	dir_for_save='~'
+	dir_for_vector_import='~'
+	dir_for_vector_export='~'
+	dir_for_bitmap_import='~'
+	dir_for_bitmap_export='~'
+	#0- autodetect; 1- kdialog(KDE); 2- zenity(Gnome); 3 - Tk (modified);
+	dialog_type=0
 	#------------------------------------
 
 	#RULER data
@@ -348,8 +388,12 @@ class Preferences(connector.Publisher):
 	#
 	#	Cairo data
 	#
-	cairo_enabled=0
-	alpha_channel_enabled=0
+	cairo_enabled=1
+	alpha_channel_enabled=1
+	bitmap_alpha_channel_enabled=1
+	cairo_tolerance=.1
+	cairo_antialias=0
+	cairo_bitmap_filter=0
 	
 	#
 	#	Bezier Objects
@@ -360,7 +404,11 @@ class Preferences(connector.Publisher):
 	#	start point.
 	polyline_create_line_with_first_cklick = 1
 	topmost_is_mask = 1	#	Mask Group
-	default_font = 'Slim'	#   The name of the font used for new text-objects
+	
+	#How to insert from clipboard: 0 - on the same place; 1 - as a floating insertion
+	insertion_mode = 0
+	#How to insert imported graphics: 0 - on the same place; 1 - as a floating insertion
+	import_insertion_mode = 0
 	
 	#	If true, try to unload some of the import filter modules after
 	#	use. Only filters marked as unloadable in their config file are
