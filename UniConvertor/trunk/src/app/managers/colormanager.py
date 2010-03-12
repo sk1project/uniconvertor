@@ -7,8 +7,9 @@
 import os, app
 
 from sk1libs.pycms import cmsOpenProfileFromFile,cmsCreateTransform,cmsDoTransform, \
-	 cmsDoBitmapTransform, cmsDeleteTransform,cmsCloseProfile,TYPE_RGB_8,TYPE_CMYK_8, \
-	 INTENT_PERCEPTUAL,cmsFLAGS_NOTPRECALC,COLORB, INTENT_RELATIVE_COLORIMETRIC
+	cmsCreateRGBProfile, cmsCreateCMYKProfile, cmsCreateLabProfile, cmsCreateGrayProfile, \
+	cmsDoBitmapTransform, cmsDeleteTransform,cmsCloseProfile,TYPE_RGB_8,TYPE_CMYK_8, \
+	INTENT_PERCEPTUAL,cmsFLAGS_NOTPRECALC,COLORB, INTENT_RELATIVE_COLORIMETRIC
 			
 class ColorManager:
 	rgb_monitor=None
@@ -50,22 +51,21 @@ class ColorManager:
 	def refresh_profiles(self):
 		if app.config.preferences.user_rgb_profile and os.path.isfile(app.config.preferences.user_rgb_profile):
 			rgb_file=app.config.user_rgb_profile
+			self.hRGB   = cmsOpenProfileFromFile(rgb_file, "r")
 		else:
-			rgb_file=os.path.join(app.config.sk_icc, app.config.preferences.default_rgb_profile)
+			self.hRGB   = cmsCreateRGBProfile()
 			
 		if app.config.preferences.user_cmyk_profile and os.path.isfile(app.config.preferences.user_cmyk_profile):
 			cmyk_file=app.config.preferences.user_cmyk_profile
+			self.hCMYK  = cmsOpenProfileFromFile(cmyk_file, "r")
 		else:
-			cmyk_file=os.path.join(app.config.sk_icc, app.config.preferences.default_cmyk_profile)
+			self.hCMYK  = cmsCreateCMYKProfile()
 			
 		if app.config.preferences.user_monitor_profile and os.path.isfile(app.config.preferences.user_monitor_profile):
 			monitor_file=app.config.preferences.user_monitor_profile
+			self.hMONITOR  = cmsOpenProfileFromFile(cmyk_file, "r")
 		else:
-			monitor_file=os.path.join(app.config.sk_icc, app.config.preferences.default_monitor_profile)
-		
-		self.hRGB   = cmsOpenProfileFromFile(rgb_file, "r")
-		self.hCMYK  = cmsOpenProfileFromFile(cmyk_file, "r")
-		self.hMONITOR  = cmsOpenProfileFromFile(cmyk_file, "r")
+			self.hMONITOR  = cmsCreateRGBProfile()
 	
 		self.cmyk_rgb = cmsCreateTransform(self.hCMYK, 
 								   TYPE_CMYK_8, 

@@ -22,7 +22,6 @@ class Configurator:
 		
 		self.sk_dir = base_dir
 		self.sk_share_dir = os.path.join(self.sk_dir,'share')
-		self.sk_icc = os.path.join(self.sk_share_dir,'icc')
 		self.sk_fonts = os.path.join(self.sk_share_dir,'fonts')
 		self.sk_ps = os.path.join(self.sk_share_dir,'ps_templates')
 		
@@ -96,11 +95,11 @@ class Configurator:
 	def check_sk_dir(self):		
 		#print 'sK1 directories test...         ',
 		result = True		
-		dirs = (self.sk_share_dir, self.sk_icc, self.sk_ps)
+		dirs = (self.sk_share_dir, self.sk_ps)
 		for dir in dirs:
 			if not os.path.isdir(dir): result = False			
 		if not result:
-			print 'sK1 installation is corrupted. Please check sK1 directories or reinstall sK1!'
+			print 'UniConvertor installation is corrupted. Please check UniConvertor directories or reinstall UniConvertor!'
 			sys.exit(1)
 			
 	def check_user_config(self):
@@ -112,10 +111,7 @@ class Configurator:
 				os.mkdir(self.user_config_dir, 0777)
 			except (IOError, os.error), value:
 				sys.stderr('cannot write preferences into %s.' % user_config_dir)
-				sys.exit(1)		
-		if not os.path.isdir(self.user_icc):
-			result = False
-			os.system("cp -r "+self.sk_icc+" "+self.user_icc)
+				sys.exit(1)
 		if not os.path.isdir(self.user_fonts):
 			result = False
 			os.system("cp -r "+self.sk_fonts+" "+self.user_fonts)
@@ -332,11 +328,7 @@ class Preferences(connector.Publisher):
 	large_font='Tahoma 10 bold'
 	fixed_font='CourierNew 9'
 	
-	#---------Color managment---------
-	default_rgb_profile='sRGB.icm'
-	default_cmyk_profile='GenericCMYK.icm'
-	default_monitor_profile='sRGB.icm'
-	
+	#---------Color managment---------	
 	user_rgb_profile=0
 	user_cmyk_profile=0
 	user_monitor_profile=0
