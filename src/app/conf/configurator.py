@@ -282,7 +282,7 @@ class Preferences(connector.Publisher):
 	eps_preview_resolution = 72
 	
 	#Whether to print internal warning messages. Useful for debugging.
-	print_internal_warnings = 1
+	print_internal_warnings = 0
 	
 	#print additional messages. these are usually only interesting for development purposes.
 	print_debug_messages = 0
