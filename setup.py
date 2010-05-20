@@ -120,12 +120,12 @@ Import filters:
 ------------------------------------------------------------------------------------
 
 Export filters: 
-    * AI (Postscript based Adobe Illustrator 5.0 format)
-    * SVG (Scalable Vector Graphics)
-    * SK (Sketch/Skencil format)
-    * SK1 (sK1 format)
-    * CGM (Computer Graphics Metafile)
-    * WMF (Windows Metafile)
+    * AI - Postscript based Adobe Illustrator 5.0 format
+    * SVG - Scalable Vector Graphics
+    * SK - Sketch/Skencil format
+    * SK1 - sK1 format
+    * CGM - Computer Graphics Metafile
+    * WMF - Windows Metafile
     * PDF - Portable Document Format
 	* PS  - PostScript
 	* PLT - HPGL for cutting plotter files
