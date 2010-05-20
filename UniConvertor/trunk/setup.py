@@ -47,9 +47,9 @@ if __name__ == "__main__":
 	
 	import os
 	if  os.name == 'nt':
-		script_name='src/uniconv.cmd'
+		script_name='src/uniconvertor.cmd'
 	else:
-		script_name='src/uniconv'
+		script_name='src/uniconvertor'
 	
 	filter_src=src_path+'modules/filter/'	
 	filter_module = Extension('uniconvertor.app.modules.streamfilter',
