@@ -2,7 +2,7 @@
 #
 # Setup script for UniConvertor
 #
-# Copyright (C) 2007 Igor E. Novikov
+# Copyright (C) 2007-2010 Igor E. Novikov
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
