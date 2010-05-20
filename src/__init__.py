@@ -7,7 +7,7 @@
 # For more info see COPYRIGHTS file in root directory.
 
 '''
-USAGE: uniconv [OPTIONS] [INPUT FILE] [OUTPUT FILE]
+USAGE: uniconvertor [OPTIONS] [INPUT FILE] [OUTPUT FILE]
 
 Converts one vector graphics format to another using sK1 engine.
 sK1 Team (http://sk1project.org), copyright (C) 2007-2009 by Igor E. Novikov
@@ -38,7 +38,7 @@ sK1 Team (http://sk1project.org), copyright (C) 2007-2009 by Igor E. Novikov
      PS  - PostScript
      PLT - HPGL for cutting plotter files
 
-Example: uniconv drawing.cdr drawing.svg\n
+Example: uniconvertor drawing.cdr drawing.svg\n
 
 '''
 
