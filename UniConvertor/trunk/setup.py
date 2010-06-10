@@ -116,7 +116,11 @@ Import filters:
     * Skencil/Sketch/sK1 (SK and SK1)
     * Acorn Draw (AFF)
 	* HPGL for cutting plotter files (PLT)
-    
+	* Autocad Drawing Exchange Format (DXF)
+	* Design format (Tajima) (DST)
+	* Embroidery file format (Brother) (PES)
+	* Embroidery file format (Melco) (EXP)
+	* Design format (Pfaff home) (PCS)
 ------------------------------------------------------------------------------------
 
 Export filters: 

@@ -13,7 +13,7 @@ Converts one vector graphics format to another using sK1 engine.
 sK1 Team (http://sk1project.org), copyright (C) 2007-2009 by Igor E. Novikov
 
  Allowed input formats:
-     AI  - Adobe Illustrator files (postscript based)
+	 AI  - Adobe Illustrator files (postscript based)
      CDR - CorelDRAW Graphics files (7-X3,X4 versions)
      CDT - CorelDRAW templates files (7-X3,X4 versions)
      CCX - Corel Compressed Exchange files
@@ -26,6 +26,12 @@ sK1 Team (http://sk1project.org), copyright (C) 2007-2009 by Igor E. Novikov
      SK  - Sketch/Skencil files
      SK1 - sK1 vector graphics files
      PLT - HPGL for cutting plotter files
+     DXF - Autocad Drawing Exchange Format
+	 DST - Design format (Tajima)
+	 PES - Embroidery file format (Brother)
+	 EXP - Embroidery file format (Melco)
+	 PCS - Design format (Pfaff home)
+     
 
  Allowed output formats:
      AI  - Adobe Illustrator files (postscript based)
