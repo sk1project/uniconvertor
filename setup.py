@@ -115,12 +115,12 @@ Import filters:
     * Scalable Vector Graphics (SVG)
     * Skencil/Sketch/sK1 (SK and SK1)
     * Acorn Draw (AFF)
-	* HPGL for cutting plotter files (PLT)
-	* Autocad Drawing Exchange Format (DXF)
-	* Design format (Tajima) (DST)
-	* Embroidery file format (Brother) (PES)
-	* Embroidery file format (Melco) (EXP)
-	* Design format (Pfaff home) (PCS)
+    * HPGL for cutting plotter files (PLT)
+    * Autocad Drawing Exchange Format (DXF)
+    * Design format (Tajima) (DST)
+    * Embroidery file format (Brother) (PES)
+    * Embroidery file format (Melco) (EXP)
+    * Design format (Pfaff home) (PCS)
 ------------------------------------------------------------------------------------
 
 Export filters: 
@@ -131,8 +131,8 @@ Export filters:
     * CGM - Computer Graphics Metafile
     * WMF - Windows Metafile
     * PDF - Portable Document Format
-	* PS  - PostScript
-	* PLT - HPGL for cutting plotter files
+    * PS  - PostScript
+    * PLT - HPGL for cutting plotter files
     
 ------------------------------------------------------------------------------------
 			''',

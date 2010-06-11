@@ -27,10 +27,10 @@ sK1 Team (http://sk1project.org), copyright (C) 2007-2009 by Igor E. Novikov
      SK1 - sK1 vector graphics files
      PLT - HPGL for cutting plotter files
      DXF - Autocad Drawing Exchange Format
-	 DST - Design format (Tajima)
-	 PES - Embroidery file format (Brother)
-	 EXP - Embroidery file format (Melco)
-	 PCS - Design format (Pfaff home)
+     DST - Design format (Tajima)
+     PES - Embroidery file format (Brother)
+     EXP - Embroidery file format (Melco)
+     PCS - Design format (Pfaff home)
      
 
  Allowed output formats:
