@@ -20,7 +20,7 @@
 @echo off
 
 if "%~3"=="" (
-   python -c "from uniconvertor import uniconv_run; uniconv_run();" "%~1" "%~2"
+   pyVM -c "from uniconvertor import uniconv_run; uniconv_run();" "%~1" "%~2"
 ) else (
-   python -c "from uniconvertor import uniconv_run; uniconv_run();" "%~1" "%~2" "%~3"
+   pyVM -c "from uniconvertor import uniconv_run; uniconv_run();" "%~1" "%~2" "%~3"
 )
