@@ -55,7 +55,7 @@ def init_uniconv():
 	app_dir = os.path.join(_pkgdir, 'app')
 	sys.path.insert(1, _pkgdir)
 
-def uniconv():	
+def uniconv_run():	
 	_pkgdir = __path__[0]
 	app_dir = os.path.join(_pkgdir, 'app')
 	app_ver = string.strip(open(os.path.join(app_dir, 'VERSION')).read())
