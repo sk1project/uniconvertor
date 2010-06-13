@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /usr/bin/python
 #
 # Wrapper script to start a UniConvertor application once it is installed
 #
@@ -20,4 +20,5 @@
 #
 
 
-python -c "from uniconvertor import uniconv; uniconv();" "$@"
+from uniconvertor import uniconv_run
+uniconv_run()
