@@ -47,6 +47,9 @@ def CreateCMYKAColor(c, m, y, k, a):
 def CreateSPOTColor(r,g,b,c,m,y,k,name,palette):
 	return SPOT_Color(r,g,b,c,m,y,k, alpha=1, name=name, palette=palette)
 
+def CreateSPOTAColor(r,g,b,c,m,y,k, alpha, name,palette):
+	return SPOT_Color(r,g,b,c,m,y,k, alpha=alpha, name=name, palette=palette)
+
 def CreateSPOT_RGBColor(r,g,b,name,palette):
 	if app.config.preferences.use_cms:
 		c,m,y,k = app.colormanager.convertRGB(r, g, b)
@@ -203,10 +206,12 @@ class RGB_Color(SK1_Color):
 		return R+G+B
 			
 	def toSave(self):
-		R= str(round(self.red, 3))+','
-		G= str(round(self.green, 3))+','
-		B= str(round(self.blue, 3))
-		return '("'+self.model+'",'+R+G+B+')'
+		R= str(round(self.red, 5))+','
+		G= str(round(self.green, 5))+','
+		B= str(round(self.blue, 5))
+		result='"'+self.model+'",'+R+G+B
+		if self.alpha<1: result += ','+ str(round(self.alpha, 5))
+		return '('+result+')'
 
 class CMYK_Color(SK1_Color):
 	
@@ -246,11 +251,13 @@ class CMYK_Color(SK1_Color):
 		return C+M+Y+K
 		
 	def toSave(self):
-		C= str(round(self.c, 3))+','
-		M= str(round(self.m, 3))+','
-		Y= str(round(self.y, 3))+','
-		K= str(round(self.k, 3))
-		return '("'+self.model+'",'+C+M+Y+K+')'
+		C= str(round(self.c, 5))+','
+		M= str(round(self.m, 5))+','
+		Y= str(round(self.y, 5))+','
+		K= str(round(self.k, 5))
+		result='"'+self.model+'",'+C+M+Y+K
+		if self.alpha<1: result += ','+ str(round(self.alpha, 5))
+		return '('+result+')'
 	
 class SPOT_Color(SK1_Color):
 	
@@ -296,14 +303,17 @@ class SPOT_Color(SK1_Color):
 		return self.name
 		
 	def toSave(self):
-		R= str(round(self.r, 3))+','
-		G= str(round(self.g, 3))+','
-		B= str(round(self.b, 3))+','
-		C= str(round(self.c, 3))+','
-		M= str(round(self.m, 3))+','
-		Y= str(round(self.y, 3))+','
-		K= str(round(self.k, 3))
-		return '("'+self.model+'","'+self.palette+'","'+self.name+'",'+R+G+B+C+M+Y+K+')'
+		R= str(round(self.r, 5))+','
+		G= str(round(self.g, 5))+','
+		B= str(round(self.b, 5))+','
+		C= str(round(self.c, 5))+','
+		M= str(round(self.m, 5))+','
+		Y= str(round(self.y, 5))+','
+		K= str(round(self.k, 5))
+		
+		result='"'+self.model+'",'+self.palette+'","'+self.name+'",'+R+G+B+C+M+Y+K
+		if self.alpha<1: result += ','+ str(round(self.alpha, 5))
+		return '('+result+')'
 
 	
 class Registration_Black(SPOT_Color):
