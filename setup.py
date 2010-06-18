@@ -26,8 +26,8 @@
 #  to create source distribution:   python setup.py sdist
 # --------------------------------------------------------------------------
 #  to create binary RPM distribution:  python setup.py bdist_rpm
-#
-#  to create deb package just use alien command (i.e. rpm2deb)
+# --------------------------------------------------------------------------
+#  to create binary DEB package:  python setup.py bdist_deb
 # --------------------------------------------------------------------------
 #  to create Win32 distribution:   python setup.py bdist_wininst
 # --------------------------------------------------------------------------
@@ -35,6 +35,12 @@
 #
 
 from distutils.core import setup, Extension
+import sys
+
+
+COPY=False
+DEBIAN=False
+VERSION='1.1.5'
 
 ########################
 #
@@ -43,6 +49,16 @@ from distutils.core import setup, Extension
 ########################
 
 if __name__ == "__main__":
+		
+	if len(sys.argv)>1 and sys.argv[1]=='build&copy':
+		COPY=True
+		sys.argv[1]='build'
+		
+	if len(sys.argv)>1 and sys.argv[1]=='bdist_deb':
+		DEBIAN=True
+		sys.argv[1]='build'
+	
+	
 	src_path='src/'
 	
 	import os
@@ -87,7 +103,7 @@ if __name__ == "__main__":
 					skmod_src+'curvemisc.c', skmod_src+'skaux.c', skmod_src+'skimage.c', ])
 			
 	setup (name = 'UniConvertor',
-			version = '1.1.5pre',
+			version = VERSION,
 			description = 'Universal vector graphics translator',
 			author = 'Igor E. Novikov',
 			author_email = 'igor.e.novikov@gmail.com',
@@ -101,7 +117,7 @@ UniConvertor is a multiplatform universal vector graphics translator.
 It uses sK1 engine to convert one format to another.
 
 sK1 Team (http://sk1project.org),
-Copyright (C) 2007-2009 by Igor E. Novikov
+Copyright (C) 2007-2010 by Igor E. Novikov
 ------------------------------------------------------------------------------------
 
 Import filters: 
@@ -168,17 +184,79 @@ Export filters:
 			'uniconvertor.app.modules': 'src/app/modules',
 			},
 			
-			package_data={'uniconvertor.app': ['VERSION','modules/*.*'],		
+			package_data={'uniconvertor.app': ['VERSION'],		
 			'uniconvertor': ['GNU_GPL_v2', 'GNU_LGPL_v2', 'COPYRIGHTS',
-						 'share/icc/*.*', 'share/fonts/*.*', 'share/ps_templates/*.*'], 
+							'share/icc/*.*', 'share/fonts/*.*', 'share/ps_templates/*.*'], 			
+			'sk1.app.modules': ['descr.txt',]
 			},
 
 			scripts=[script_name],
 
 			ext_modules = [filter_module, type1mod_module, skread_module, pstokenize_module, skmod_module])
 			
+##############################################
+# This section for developing purpose only
+# Command 'python setup.py build&copy' allows
+# automating build and native extension copying
+# into package directory
+##############################################	
 			
-			
+if COPY:
+	import shutil, string, platform
+	version=(string.split(sys.version)[0])[0:3]
+	
+	shutil.copy('build/lib.linux-'+platform.machine()+'-'+version+'/uniconvertor/app/modules/pstokenize.so','src/app/modules/')
+	print '\n pstokenize.so has been copied to src/ directory'
+	
+	shutil.copy('build/lib.linux-'+platform.machine()+'-'+version+'/uniconvertor/app/modules/_sketch.so','src/app/modules/')
+	print '\n _sketchmodule.so has been copied to src/ directory'
+	
+	shutil.copy('build/lib.linux-'+platform.machine()+'-'+version+'/uniconvertor/app/modules/skread.so','src/app/modules/')
+	print '\n skreadmodule.so has been copied to src/ directory'
+	
+	shutil.copy('build/lib.linux-'+platform.machine()+'-'+version+'/uniconvertor/app/modules/streamfilter.so','src/app/modules/')
+	print '\n streamfilter.so has been copied to src/ directory'
+	
+	shutil.copy('build/lib.linux-'+platform.machine()+'-'+version+'/uniconvertor/app/modules/_type1.so','src/app/modules/')
+	print '\n _type1module.so has been copied to src/ directory'	
+	
+	os.system('rm -rf build')		
+	
+#################################################
+# Implementation of bdist_deb command
+#################################################
+if DEBIAN:
+	print '\nDEBIAN PACKAGE BUILD'
+	print '===================='
+	import shutil, string, platform
+	version=(string.split(sys.version)[0])[0:3]
+	
+	arch,bin = platform.architecture()
+	if arch=='64bit':
+		arch='amd64'
+	else:
+		arch='i386'
+	
+	target='build/deb-root/usr/lib/python'+version+'/dist-packages'
+	
+	if os.path.lexists(os.path.join('build','deb-root')):
+		os.system('rm -rf build/deb-root')
+	os.makedirs(os.path.join('build','deb-root','DEBIAN'))
+	
+	os.system("cat DEBIAN/control |sed 's/<PLATFORM>/"+arch+"/g'|sed 's/<VERSION>/"+VERSION+"/g'> build/deb-root/DEBIAN/control")
+	
+	os.makedirs(target)
+	os.makedirs('build/deb-root/usr/bin')
+	os.system('cp -R build/lib.linux-'+platform.machine()+'-'+version+'/uniconvertor '+target)	
+	os.system('cp src/uniconvertor build/deb-root/usr/bin')
+	os.system('chmod +x build/deb-root/usr/bin/uniconvertor')
+		
+	if os.path.lexists('dist'):	
+		os.system('rm -rf dist/*.deb')
+	else:
+		os.makedirs('dist')
+	
+	os.system('dpkg --build build/deb-root/ dist/python-uniconvertor-'+VERSION+'_'+arch+'.deb')		
 			
 			
 			
