@@ -1,8 +1,8 @@
 Package: python-uniconvertor
-Version: 1.1.5
-Architecture: i386
+Version: <VERSION>
+Architecture: <PLATFORM>
 Maintainer: Igor Novikov <igor.e.novikov@gmail.com>
-Depends: libc6, python (>=2.4), python (<3.0), python-sk1libs
+Depends: libc6, python (>=2.4), python (<<3.0), python-sk1libs
 Section: Python Programming Language
 Priority: extra
 Description: Universal vector graphics translator
@@ -10,7 +10,7 @@ Description: Universal vector graphics translator
  UniConvertor is a multiplatform universal vector graphics translator.
  It uses sK1 engine to convert one format to another.
  sK1 Team (http://sk1project.org), Copyright (C) 2007-2010 by Igor E. Novikov
- 
+ -----------------------------------
  Import filters: 
     * CorelDRAW ver.7-X3,X4 (CDR/CDT/CCX/CDRX/CMX)
     * Adobe Illustrator up to 9 ver. (AI postscript based)
@@ -28,7 +28,7 @@ Description: Universal vector graphics translator
     * Embroidery file format (Brother) (PES)
     * Embroidery file format (Melco) (EXP)
     * Design format (Pfaff home) (PCS)
-
+ -----------------------------------
  Export filters: 
     * AI - Postscript based Adobe Illustrator 5.0 format
     * SVG - Scalable Vector Graphics
