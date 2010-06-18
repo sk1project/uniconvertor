@@ -3,7 +3,7 @@ Version: <VERSION>
 Architecture: <PLATFORM>
 Maintainer: Igor Novikov <igor.e.novikov@gmail.com>
 Depends: libc6, python (>=2.4), python (<<3.0), python-sk1libs
-Section: Python Programming Language
+Section: python
 Priority: extra
 Description: Universal vector graphics translator
  .
