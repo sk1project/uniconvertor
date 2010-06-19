@@ -1,0 +1,12 @@
+Package: python-uniconvw
+Version: <VERSION>
+Architecture: <PLATFORM>
+Maintainer: Igor Novikov <igor.e.novikov@gmail.com>
+Depends: python (>=2.4), python (<<3.0), python-sk1libs, python-uniconvertor, python-gtk2
+Section: graphics
+Priority: extra
+Description: Gtk frontend for UniConvertor
+ .
+ uniconvw is a Gtk frontend for UniConvertor.
+ sK1 Team (http://sk1project.org), copyright (C) 2010 by Igor E. Novikov.
+ .
