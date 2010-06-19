@@ -6,14 +6,14 @@
 # This library is covered by GNU Library General Public License.
 # For more info see COPYRIGHTS file in root directory.
 '''
-USAGE: uniconvw [INPUT FILE]
-
 Gtk frontend for UniConvertor.
 Converts one vector graphics format to another using sK1 engine.
 sK1 Team (http://sk1project.org), copyright (C) 2010 by Igor E. Novikov
 
- Allowed input formats:
-	 AI  - Adobe Illustrator files (postscript based)
+USAGE: uniconvw [INPUT FILE]
+
+Allowed input formats:
+     AI  - Adobe Illustrator files (postscript based)
      CDR - CorelDRAW Graphics files (7-X3,X4 versions)
      CDT - CorelDRAW templates files (7-X3,X4 versions)
      CCX - Corel Compressed Exchange files
