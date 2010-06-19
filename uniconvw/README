@@ -1,0 +1,21 @@
+uniconvw is a Gtk frontend for UniConvertor. 
+UniConvertor is used as a backend library to convert one format to another.
+sK1 Team, copyright (C) 2010 by Igor E. Novikov
+
+How to install: 
+========================================
+ to install package:   python setup.py install
+ (will be installed into Python site-packages/ directory)
+========================================
+ to create source distribution:   python setup.py sdist
+ (creates .tar.gz archive)
+========================================
+ to create binary RPM distribution:  python setup.py bdist_rpm
+========================================
+ to create binary DEB package:  python setup.py bdist_deb
+========================================
+ to create binary Win32 distribution:  python setup.py bdist_wininst
+========================================
+
+help on available distribution formats: 
+python setup.py bdist --help-formats
