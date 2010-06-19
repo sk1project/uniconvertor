@@ -13,8 +13,8 @@ How to install:
  (creates .tar.gz archive)
 ========================================
  to create binary RPM distribution:  python setup.py bdist_rpm
-
- to create deb package just use alien command (i.e. rpm2deb)
+========================================
+ to create binary DEB package:  python setup.py bdist_deb
 ========================================
  to create binary Win32 distribution:  python setup.py bdist_wininst
 ========================================
