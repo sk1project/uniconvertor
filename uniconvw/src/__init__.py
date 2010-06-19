@@ -1,7 +1,7 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2007-2009 by Igor E. Novikov
+# Copyright (C) 2010 by Igor E. Novikov
 #
 # This library is covered by GNU Library General Public License.
 # For more info see COPYRIGHTS file in root directory.
@@ -40,14 +40,14 @@ IMPORTFILETYPES=[
 ('Acorn Draw files - *.aff','*.aff'),
 ]
 
-
-if system.get_os_family()==system.MACOSX:	
-	pass	
-elif system.get_os_family()==system.WINDOWS:
-	pass
-
-else:	
-	from uc_gtk import UniConvw
+def uniconvw_run():
+	if system.get_os_family()==system.MACOSX:	
+		pass	
+	elif system.get_os_family()==system.WINDOWS:
+		pass
 	
-	application = UniConvw(OPTIONS,IMPORTFILETYPES)
-	application.main()
+	else:	
+		from uc_gtk import UniConvw
+		
+		application = UniConvw(OPTIONS,IMPORTFILETYPES)
+		application.main()
