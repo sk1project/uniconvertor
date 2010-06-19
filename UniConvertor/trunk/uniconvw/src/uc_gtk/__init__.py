@@ -13,8 +13,9 @@ class UniConvw:
 	
 	file=None
 	
-	def __init__(self, options, filetypes, file=None):
+	def __init__(self, icon, options, filetypes, file=None):
 		self.options=options
+		exit_message=' '+'Cancel'+' '
 		if not file is None:
 			if os.path.isfile(file): self.file=file
 		self.filetypes=filetypes		
@@ -22,7 +23,7 @@ class UniConvw:
 		#Window creation
 		self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
 		self.window.set_title("UniConvertor")
-		self.window.set_icon_from_file("icon_sk1_48.png")
+		self.window.set_icon_from_file(icon)
 		self.window.set_position(gtk.WIN_POS_CENTER_ALWAYS)
 		self.window.set_resizable(False)
 		
@@ -37,6 +38,7 @@ class UniConvw:
 		
 		#Optional file selection
 		if self.file is None:
+			exit_message='  '+'Exit'+'  '
 			self.buttonConvert.set_sensitive(False)
 			
 			self.file_hbox = gtk.HBox(False, 5)
@@ -84,7 +86,7 @@ class UniConvw:
 		self.buttons_box = gtk.HBox(False, 10)
 		self.win_box.add(self.buttons_box)
 		
-		self.buttonExit = gtk.Button(" Cancel ")
+		self.buttonExit = gtk.Button(exit_message)
 		self.buttonExit.connect_object("clicked", gtk.Widget.destroy, self.window)
 		self.buttons_box.pack_end(self.buttonExit, expand=False, fill=False, padding=0)
 
