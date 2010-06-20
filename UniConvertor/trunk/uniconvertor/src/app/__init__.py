@@ -91,9 +91,11 @@ from events.skexceptions import *
 from events.undo import Undo, UndoList, CreateListUndo, CreateMultiUndo, UndoAfter, UndoRedo, NullUndo
 from events.connector import Connect, Disconnect, Issue, RemovePublisher, Subscribe, Publisher, QueueingPublisher
 
+receiver=None
 
-def updateInfo(inf1=None,inf2=None,inf3=None):
-	pass
+def updateInfo(inf1='',inf2='',inf3=0):
+	if not receiver is None:
+		receiver(inf1,inf2,inf3)
 
 
 command_classes = []
