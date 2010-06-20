@@ -18,9 +18,34 @@ class ConvProgress:
 	
 	def __init__(self, callback,icon):
 		self.callback=callback
+		self.icon=icon
+		
+	def run_dialog(self, msg1, msg2, val=0.0):
+		self.show()
+		while gtk.events_pending():
+			gtk.main_iteration()
+		self.msg_receiver(msg1,msg2,val)
+		self.callback()
+		
+	def msg_receiver(self, msg1, msg2, val=0.0):
+		self.msg1=msg1
+		self.msg2=msg2
+		self.val=val
+		self.label1.set_label(self.msg1)
+		self.label2.set_label(self.msg2)
+		self.progress.set_fraction(self.val/100.0)
+		self.progress.text=str(int(self.val))+"%"
+		while gtk.events_pending():
+			gtk.main_iteration()
+		
+	def hide(self):	
+		self.window.hide()
+		self.msg_receiver('','',0)
+		
+	def show(self):
 		self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
 		self.window.set_title("Translation progress")
-		self.window.set_icon_from_file(icon)
+		self.window.set_icon_from_file(self.icon)
 		self.window.set_position(gtk.WIN_POS_CENTER_ALWAYS)
 		self.window.set_resizable(False)
 		
@@ -58,30 +83,7 @@ class ConvProgress:
 		self.label_box2.show()
 		self.label_box1.show()
 		self.win_box.show()
-		
-	def run_dialog(self, msg1, msg2, val=0.0):
-		self.msg_receiver(msg1,msg2,val)
-		self.show()
+		self.window.show_all()				
 		gtk.gdk.flush()
-		self.callback()
-		self.hide()
-		
-	def msg_receiver(self, msg1, msg2, val=0):
-		self.msg1=msg1
-		self.msg2=msg2
-		self.val=val
-		self.label1.set_label(self.msg1)
-		self.label2.set_label(self.msg2)
-		self.progress.set_fraction(self.val)
-		self.progress.text=str(int(self.val*100))+"%"		
-		
-	def hide(self):	
-#		self.window.hide()
-		self.msg_receiver('','',0)
-		
-	def show(self):
-		self.window.show()
-		gtk.gdk.flush()
-		
 
 

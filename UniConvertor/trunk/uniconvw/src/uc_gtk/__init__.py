@@ -124,7 +124,6 @@ class UniConvw:
 		self.frame.show()
 		self.win_box.show()
 		self.window.show()
-		self.progress_dlg=ConvProgress(self.callback, icon)
 
 		
 	def init_convertor(self):
@@ -140,20 +139,66 @@ class UniConvw:
 			self.buttonConvert.set_sensitive(True)
 		
 	def convert(self, *args):
-		print 'uniconvertor', self.file, self.file+'.'+self.options[self.combo.get_active()][1]
-		self.window.hide()
-		gtk.gdk.flush()
+		self.progress_dlg=ConvProgress(self.callback, self.icon)
 		self.progress_dlg.run_dialog("Start", "UniConvertor initialization")
-		self.destroy()
+		while gtk.events_pending():
+			gtk.main_iteration()
+		self.progress_dlg.window.destroy()
 		
 	def callback(self):
 		self.init_convertor()
-		self.msg_dialog('UniConvertor initialization UniConvertor initialization')
+		while gtk.events_pending():
+			gtk.main_iteration()
+		self.progress_dlg.msg_receiver("Start", "UniConvertor is initialized",0.02)
 		
-	def msg_dialog(self,text):
-		dlg=gtk.MessageDialog(parent=None, 
+		from app.io import load
+		from sk1libs import filters
+		import app
+		
+		app.receiver=self.progress_dlg.msg_receiver
+
+		app.init_lib()
+		
+		self.progress_dlg.msg_receiver("Start", "Loading plugin configuration",0.03)
+		filters.load_plugin_configuration()
+		
+		input_file=self.file
+		output_file=self.file+'.'+self.options[self.combo.get_active()][1]
+		
+		doc=None
+		
+		try:
+			while gtk.events_pending():
+				gtk.main_iteration()
+			self.progress_dlg.msg_receiver("Start", "Parsing document file",0.05)
+			doc = load.load_drawing(input_file)
+			extension = os.path.splitext(output_file)[1]
+			fileformat = filters.guess_export_plugin(extension)
+			
+			while gtk.events_pending():
+				gtk.main_iteration()
+				
+			self.progress_dlg.msg_receiver("", "Saving translated file",0.5)
+			if fileformat:
+				
+				saver = filters.find_export_plugin(fileformat)
+				saver(doc, output_file)
+				while gtk.events_pending():
+					gtk.main_iteration()				
+				self.progress_dlg.msg_receiver("", "Translated file is saved",1.0)
+			else:
+				self.msg_dialog('\nERROR: unrecognized extension %s\n' % extension, gtk.MESSAGE_WARNING)
+		except Exception, value:
+			self.msg_dialog("\nAn error occurred: " + str(value), gtk.MESSAGE_WARNING)
+		finally:
+			if not doc is None:
+				doc.Destroy()
+			return
+				
+	def msg_dialog(self,text, dlg_type=gtk.MESSAGE_WARNING):
+		dlg=gtk.MessageDialog(self.window, 
 						flags=0, 
-						type=gtk.MESSAGE_WARNING, 
+						type=dlg_type, 
 						buttons=gtk.BUTTONS_OK, 
 						message_format=text)
 		dlg.set_title('UniConvertor')
