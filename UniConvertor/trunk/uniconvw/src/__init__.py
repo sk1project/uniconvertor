@@ -97,7 +97,7 @@ def uniconvw_run():
 	
 	else:	
 		from uc_gtk import UniConvw
-		if os.path.isfile(sys.argv[1]): file=sys.argv[1]
+		if len(sys.argv)>1 and os.path.isfile(sys.argv[1]): file=sys.argv[1]
 		icon=os.path.join(dir,'uniconvw_icon_32.png')
 		application = UniConvw(icon,OPTIONS,IMPORTFILETYPES, file=file)
 		application.main()

@@ -149,21 +149,25 @@ class UniConvw:
 		if not self.stand_alone:
 			self.destroy()
 		
-	def callback(self):
-		self.init_convertor()
+	def send_msgs(self,msg1,msg2,val):
 		while gtk.events_pending():
 			gtk.main_iteration()
-		self.progress_dlg.msg_receiver("Start", "UniConvertor is initialized",0.02)
+		self.progress_dlg.msg_receiver(msg1,msg2,val)
+		
+	def callback(self):
+		self.init_convertor()
+		self.send_msgs("Start", "UniConvertor is initialized",0.02)
 		
 		from app.io import load
 		from sk1libs import filters
-		import app
+		import app, time
 		
 		app.receiver=self.progress_dlg.msg_receiver
 
 		app.init_lib()
 		
-		self.progress_dlg.msg_receiver("Start", "Loading plugin configuration",0.03)
+		self.send_msgs("Start", "Loading plugin configuration",0.03)
+		time.sleep(0.3)
 		filters.load_plugin_configuration()
 		
 		input_file=self.file
@@ -172,29 +176,20 @@ class UniConvw:
 		doc=None
 		
 		try:
-			while gtk.events_pending():
-				gtk.main_iteration()
-			self.progress_dlg.msg_receiver("Start", "Parsing document file",0.05)
+			self.send_msgs("Start", "Parsing document file",0.05)
 			doc = load.load_drawing(input_file)
 			extension = os.path.splitext(output_file)[1]
 			
-			while gtk.events_pending():
-				gtk.main_iteration()				
-			self.progress_dlg.msg_receiver("", "Parsing is completed",1.0)
+			self.send_msgs("", "Parsing is completed",1.0)
 			
 			fileformat = filters.guess_export_plugin(extension)
 			
-			while gtk.events_pending():
-				gtk.main_iteration()
-				
-			self.progress_dlg.msg_receiver("", "Saving translated file",0.5)
+			self.send_msgs("", "Saving translated file",0.5)
 			if fileformat:
 				
 				saver = filters.find_export_plugin(fileformat)
 				saver(doc, output_file)
-				while gtk.events_pending():
-					gtk.main_iteration()				
-				self.progress_dlg.msg_receiver("", "Translated file is saved",1.0)
+				self.send_msgs("", "Translated file is saved",1.0)
 			else:
 				self.msg_dialog('\nERROR: unrecognized extension %s\n' % extension, gtk.MESSAGE_WARNING)
 		except Exception, value:
@@ -205,8 +200,6 @@ class UniConvw:
 			return
 				
 	def msg_dialog(self,text, dlg_type=gtk.MESSAGE_WARNING):
-		while gtk.events_pending():
-			gtk.main_iteration()
 		self.progress_dlg.window.destroy()
 		dlg=gtk.MessageDialog(self.window, 
 						flags=gtk.DIALOG_MODAL, 
