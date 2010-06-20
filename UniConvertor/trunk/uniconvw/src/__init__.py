@@ -72,6 +72,7 @@ IMPORTFILETYPES=[
 ]
 
 def uniconvw_run():	
+	file=None
 	_pkgdir = __path__[0]
 	
 	app_ver = string.strip(open(os.path.join(_pkgdir, 'VERSION')).read())
@@ -96,6 +97,7 @@ def uniconvw_run():
 	
 	else:	
 		from uc_gtk import UniConvw
+		if os.path.isfile(sys.argv[1]): file=sys.argv[1]
 		icon=os.path.join(dir,'uniconvw_icon_32.png')
-		application = UniConvw(icon,OPTIONS,IMPORTFILETYPES)
+		application = UniConvw(icon,OPTIONS,IMPORTFILETYPES, file=file)
 		application.main()

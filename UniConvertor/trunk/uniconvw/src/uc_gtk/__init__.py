@@ -72,6 +72,10 @@ class UniConvw:
 			
 			self.file_label=gtk.Label("File:")
 			self.file_hbox.pack_end(self.file_label, expand=False, fill=False, padding=0)
+			
+			self.file_label.show()
+			self.file_hbox.show()
+			self.filechooserbutton.show()
 		
 		#ComboBox creation
 		self.frame=gtk.Frame(" Convert to: ")
@@ -110,9 +114,7 @@ class UniConvw:
 		self.label_box.pack_end(self.link, expand=False, fill=False, padding=0)		
 		
 			
-		self.file_label.show()
-		self.file_hbox.show()
-		self.filechooserbutton.show()
+
 		self.link.show()
 		self.label_box.show()
 		self.combo.show()
@@ -144,6 +146,8 @@ class UniConvw:
 		while gtk.events_pending():
 			gtk.main_iteration()
 		self.progress_dlg.window.destroy()
+		if not self.stand_alone:
+			self.destroy()
 		
 	def callback(self):
 		self.init_convertor()
@@ -173,6 +177,11 @@ class UniConvw:
 			self.progress_dlg.msg_receiver("Start", "Parsing document file",0.05)
 			doc = load.load_drawing(input_file)
 			extension = os.path.splitext(output_file)[1]
+			
+			while gtk.events_pending():
+				gtk.main_iteration()				
+			self.progress_dlg.msg_receiver("", "Parsing is completed",1.0)
+			
 			fileformat = filters.guess_export_plugin(extension)
 			
 			while gtk.events_pending():
@@ -196,12 +205,16 @@ class UniConvw:
 			return
 				
 	def msg_dialog(self,text, dlg_type=gtk.MESSAGE_WARNING):
+		while gtk.events_pending():
+			gtk.main_iteration()
+		self.progress_dlg.window.destroy()
 		dlg=gtk.MessageDialog(self.window, 
-						flags=0, 
+						flags=gtk.DIALOG_MODAL, 
 						type=dlg_type, 
 						buttons=gtk.BUTTONS_OK, 
 						message_format=text)
 		dlg.set_title('UniConvertor')
+		dlg.connect("response", lambda d, r: d.destroy())
 		dlg.run()
 
 	def delete_event(self, widget, event, data=None):

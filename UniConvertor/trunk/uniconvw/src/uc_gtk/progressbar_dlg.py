@@ -83,7 +83,6 @@ class ConvProgress:
 		self.label_box2.show()
 		self.label_box1.show()
 		self.win_box.show()
-		self.window.show_all()				
-		gtk.gdk.flush()
+		self.window.show()
 
 
