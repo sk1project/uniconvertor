@@ -9,11 +9,17 @@ import pygtk, os
 pygtk.require('2.0')
 import gtk
 
+from progressbar_dlg import ConvProgress
+
 class UniConvw:
 	
 	file=None
+	initialized=False
+	stand_alone=False
+	icon=None
 	
 	def __init__(self, icon, options, filetypes, file=None):
+		self.icon=icon
 		self.options=options
 		exit_message=' '+'Cancel'+' '
 		if not file is None:
@@ -38,6 +44,7 @@ class UniConvw:
 		
 		#Optional file selection
 		if self.file is None:
+			self.stand_alone=True
 			exit_message='  '+'Exit'+'  '
 			self.buttonConvert.set_sensitive(False)
 			
@@ -102,6 +109,7 @@ class UniConvw:
 		self.link.set_sensitive(False)
 		self.label_box.pack_end(self.link, expand=False, fill=False, padding=0)		
 		
+			
 		self.file_label.show()
 		self.file_hbox.show()
 		self.filechooserbutton.show()
@@ -116,7 +124,14 @@ class UniConvw:
 		self.frame.show()
 		self.win_box.show()
 		self.window.show()
-	
+		self.progress_dlg=ConvProgress(self.callback, icon)
+
+		
+	def init_convertor(self):
+		if not self.initialized:
+			from uniconvertor import init_uniconv
+			init_uniconv()
+			self.initialized=True	
 		
 	def file_changed(self, *args):
 		file=self.dialog.get_filename()
@@ -126,11 +141,18 @@ class UniConvw:
 		
 	def convert(self, *args):
 		print 'uniconvertor', self.file, self.file+'.'+self.options[self.combo.get_active()][1]
+		self.window.hide()
+		gtk.gdk.flush()
+		self.progress_dlg.run_dialog("Start", "UniConvertor initialization")
+		self.destroy()
+		
+	def callback(self):
+		self.init_convertor()
 
 	def delete_event(self, widget, event, data=None):
 		return False
 
-	def destroy(self, widget, data=None):
+	def destroy(self, *args):
 		gtk.main_quit()
 	
 	def main(self):
