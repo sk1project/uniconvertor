@@ -102,7 +102,7 @@ if __name__ == "__main__":
 					skmod_src+'curvefunc.c', skmod_src+'curveobject.c', skmod_src+'curvelow.c', 
 					skmod_src+'curvemisc.c', skmod_src+'skaux.c', skmod_src+'skimage.c', ])
 			
-	setup (name = 'UniConvertor',
+	setup (name = 'uniconvertor',
 			version = VERSION,
 			description = 'Universal vector graphics translator',
 			author = 'Igor E. Novikov',
