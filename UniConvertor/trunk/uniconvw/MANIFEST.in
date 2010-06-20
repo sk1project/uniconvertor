@@ -1,0 +1,12 @@
+include MANIFEST.in
+include README
+include setup.cfg
+include src/GNU_GPL_v2
+include src/GNU_LGPL_v2
+include src/COPYRIGHTS
+include src/uniconvw
+include src/uniconvw.desktop
+include src/uniconvw.png
+include src/uniconvw.xpm
+include src/VERSION
+recursive-include src/resources *.*
