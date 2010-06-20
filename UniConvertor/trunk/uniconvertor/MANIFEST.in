@@ -1,9 +1,12 @@
 include MANIFEST.in
 include README setup.cfg
+
+include DEBIAN/control
+
 include setup_win32.py
 include src/GNU_GPL_v2 src/GNU_LGPL_v2 src/COPYRIGHTS
-include src/uniconv
-include src/uniconv.cmd
+include src/uniconvertor
+include src/uniconvertor.cmd
 include src/modules/filter/README
 include src/app/modules/descr.txt
 include src/app/VERSION
