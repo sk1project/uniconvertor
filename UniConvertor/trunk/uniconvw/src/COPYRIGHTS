@@ -1,7 +1,6 @@
-UniConvertor - A Python-based universal verctor graphics translator which uses sK1 engine.
-Copyright (C) 2007-2008 by Igor E. Novikov
-
-sK1 is a fork of Sketch/Skencil (1999-2006 (c) Bernhard Herzog)
+uniconvw is a Gtk frontend for UniConvertor. 
+UniConvertor is used as a backend library to convert one format to another.
+sK1 Team, copyright (C) 2010 by Igor E. Novikov
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of GNU Library General Public
