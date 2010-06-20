@@ -148,6 +148,16 @@ class UniConvw:
 		
 	def callback(self):
 		self.init_convertor()
+		self.msg_dialog('UniConvertor initialization UniConvertor initialization')
+		
+	def msg_dialog(self,text):
+		dlg=gtk.MessageDialog(parent=None, 
+						flags=0, 
+						type=gtk.MESSAGE_WARNING, 
+						buttons=gtk.BUTTONS_OK, 
+						message_format=text)
+		dlg.set_title('UniConvertor')
+		dlg.run()
 
 	def delete_event(self, widget, event, data=None):
 		return False
