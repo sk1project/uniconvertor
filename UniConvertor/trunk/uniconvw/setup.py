@@ -134,7 +134,11 @@ if DEBIAN:
 	os.makedirs('build/deb-root/usr/share/applications')
 	os.makedirs('build/deb-root/usr/share/pixmaps')
 	
-	os.system('cp -R build/lib/uniconvw '+target)
+	if os.path.isdir('build/lib'):
+		os.system('cp -R build/lib/uniconvw '+target)
+	else:
+		os.system('cp -R build/lib.linux-'+platform.machine()+'-'+version+'/uniconvw '+target)
+	
 	os.system('cp src/uniconvw.desktop build/deb-root/usr/share/applications')
 	os.system('cp src/uniconvw.png build/deb-root/usr/share/pixmaps')	
 	os.system('cp src/uniconvw.xpm build/deb-root/usr/share/pixmaps')
