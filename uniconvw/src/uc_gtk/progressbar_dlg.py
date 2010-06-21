@@ -16,9 +16,10 @@ class ConvProgress:
 	msg2=''
 	val=0
 	
-	def __init__(self, callback,icon):
+	def __init__(self, parent, callback,icon):
 		self.callback=callback
 		self.icon=icon
+		self.parent=parent
 		
 	def run_dialog(self, msg1, msg2, val=0.0):
 		self.show()
@@ -50,6 +51,7 @@ class ConvProgress:
 		self.window.set_icon_from_file(self.icon)
 		self.window.set_position(gtk.WIN_POS_CENTER_ALWAYS)
 		self.window.set_resizable(False)
+		self.window.set_modal(1)
 		
 		self.window.set_border_width(10)
 		
