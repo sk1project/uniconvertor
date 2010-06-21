@@ -25,6 +25,8 @@ class ConvProgress:
 		while gtk.events_pending():
 			gtk.main_iteration()
 		self.msg_receiver(msg1,msg2,val)
+		while gtk.events_pending():
+			gtk.main_iteration()
 		self.callback()
 		
 	def msg_receiver(self, msg1, msg2, val=0.0):
