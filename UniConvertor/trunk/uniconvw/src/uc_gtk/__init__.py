@@ -155,7 +155,7 @@ class UniConvw:
 			self.buttonConvert.set_sensitive(True)
 		
 	def convert(self, *args):
-		self.progress_dlg=ConvProgress(self.callback, self.icon)
+		self.progress_dlg=ConvProgress(self.window, self.callback, self.icon)
 		self.progress_dlg.run_dialog("Start", "UniConvertor initialization")
 		while gtk.events_pending():
 			gtk.main_iteration()
