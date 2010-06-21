@@ -45,7 +45,7 @@ class UniConvw:
 		#Optional file selection
 		if self.file is None:
 			self.stand_alone=True
-			exit_message='  '+'Exit'+'  '
+			exit_message='  '+'Close'+'  '
 			self.buttonConvert.set_sensitive(False)
 			
 			self.file_hbox = gtk.HBox(False, 5)
@@ -59,11 +59,25 @@ class UniConvw:
 							gtk.STOCK_OPEN, gtk.RESPONSE_OK))
 			self.dialog.set_default_response(gtk.RESPONSE_OK)
 			
+			#All supported formats filter
+			filter = gtk.FileFilter()
+			filter.set_name('All supported formats (*.cdr, *cmx, *.ccx, *.ai, *.svg etc.)')			
+			for item in filetypes:
+				filter.add_pattern(item[1])
+			self.dialog.add_filter(filter)
+				
+			#Fiter per each format
 			for item in filetypes:
 				filter = gtk.FileFilter()
 				filter.set_name(item[0])
 				filter.add_pattern(item[1])
 				self.dialog.add_filter(filter)
+				
+			#All files filter
+			filter = gtk.FileFilter()
+			filter.set_name('All files (*.*)')
+			filter.add_pattern('*')
+			self.dialog.add_filter(filter)
 			
 			self.filechooserbutton = gtk.FileChooserButton(self.dialog)
 			self.filechooserbutton.set_current_folder('/home/igor')

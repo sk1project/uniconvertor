@@ -52,7 +52,6 @@ OPTIONS=[
 ]
 
 IMPORTFILETYPES=[
-("All Files",'*'),
 ('CorelDRAW Graphics files (7-X4 ver.) - *.cdr','*.cdr'),
 ('CorelDRAW Templates files (7-X4 ver.) - *.cdt','*.cdt'),
 ('CorelDRAW Presentation Exchange files - *.cmx','*.cmx'),
