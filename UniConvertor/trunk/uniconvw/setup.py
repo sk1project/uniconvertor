@@ -40,7 +40,7 @@ import sys, os
 
 COPY=False
 DEBIAN=False
-VERSION='1.0'
+VERSION='1.1.5'
 
 ########################
 #
@@ -84,7 +84,7 @@ sK1 Team, copyright (C) 2010 by Igor E. Novikov
 
 			packages = ['uniconvw',
 				'uniconvw.uc_gtk',
-#				'uniconvw.uc_win',
+				'uniconvw.uc_win',
 #				'uniconvw.uc_macosx',
 				'uniconvw.resources'
 			],
