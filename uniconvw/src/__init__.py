@@ -70,6 +70,25 @@ IMPORTFILETYPES=[
 ('Acorn Draw files - *.aff','*.aff'),
 ]
 
+IMPORTFILETYPES_win=[
+('CorelDRAW Graphics files (7-X4 ver.) ','*.cdr'),
+('CorelDRAW Templates files (7-X4 ver.) ','*.cdt'),
+('CorelDRAW Presentation Exchange files ','*.cmx'),
+('CorelDRAW Compressed Exchange files (CDRX format) ','*.ccx'),
+('Adobe Illustrator files (up to ver. 9.0) ','*.ai'),
+('Encapsulated PostScript files  ','*.eps'),
+('sK1 vector graphics files ','*.sk1'),
+('Sketch\Skencil files ','*.sk'),
+('PostScript files ','*.ps'),
+('Computer Graphics Metafile files ','*.cgm'),
+('Scalable Vector Graphics files ','*.svg'),
+('Windows Metafile files ','*.wmf'),
+('HPGL cutting plotter files ','*.plt'),
+('AutoCAD DXF files ','*.dxf'),
+('XFig files ','*.fig'),
+('Acorn Draw files ','*.aff'),
+]
+
 def uniconvw_run():	
 	file=None
 	icon=None
@@ -89,25 +108,22 @@ def uniconvw_run():
 		sys.exit(0)
 		
 	dir=os.path.join(_pkgdir, 'resources')
-	
-#	if system.get_os_family()==system.MACOSX:	
-#		pass	
-#	
-#	elif system.get_os_family()==system.WINDOWS:	
-#		from uc_win import UniConvw	
-#		icon=os.path.join(dir,'uniconvw_icon_16.ico')
-#
-#	else:	
-#		from uc_gtk import UniConvw		
-#		icon=os.path.join(dir,'uniconvw_icon_32.png')
-
-##########For testing
-	from uc_win import UniConvw	
-	icon=os.path.join(dir,'uniconvw_icon_16.ico')
-###############
-		
 	if len(sys.argv)>1 and os.path.isfile(sys.argv[1]): 
-		file=sys.argv[1]	
-		
-	application = UniConvw(icon,OPTIONS,IMPORTFILETYPES, file=file)
-	application.main()
+		file=sys.argv[1]
+	
+	
+	if system.get_os_family()==system.MACOSX:	
+		pass	
+	
+	elif system.get_os_family()==system.WINDOWS:	
+		from uc_win import UniConvw	
+		icon=os.path.join(dir,'uniconvw_icon_16.ico')
+		application = UniConvw(icon,OPTIONS,IMPORTFILETYPES_win32, file=file)
+		application.main()
+
+	else:	
+		from uc_gtk import UniConvw		
+		icon=os.path.join(dir,'uniconvw_icon_32.png')
+		application = UniConvw(icon,OPTIONS,IMPORTFILETYPES, file=file)
+		application.main()
+

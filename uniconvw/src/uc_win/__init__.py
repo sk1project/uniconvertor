@@ -25,14 +25,19 @@ class UniConvw:
 	def __init__(self, icon, options, filetypes, file=None):
 		self.icon=icon
 		self.options=options
+		self.encoding=sys.getfilesystemencoding()
+		if self.encoding is None:
+			self.encoding=sys.getdefaultencoding()
+		
 		exit_message='Cancel'
 		if not file is None:
 			if os.path.isfile(file): self.file=file
 		self.filetypes=filetypes
 		
 		self.window=Tkinter.Tk()
+		self.window.withdraw()
 		self.window.title('UniConvertor')
-#		self.window.tk.call('wm', 'iconbitmap', self.window, self.icon)
+		self.window.tk.call('wm', 'iconbitmap', self.window, self.icon)
 		
 		self.win_panel=TFrame(self.window, borderwidth=10)
 		self.win_panel.pack(side=TOP, fill=Tkinter.BOTH, expand=1)
@@ -70,19 +75,21 @@ class UniConvw:
 		self.format_reference = StringVar(self.window)
 		self.format_reference.set(self.options[1][0])
 		
-		self.format_combo=TCombobox(format_frame, values=formats, width=40, state='readonly', textvariable=self.format_reference)
+		self.format_combo=TCombobox(format_frame, values=formats, width=50, state='readonly', textvariable=self.format_reference)
 		self.format_combo.pack(expand=1, padx=10, pady=10)		
 		
 		#Buttons
 		button_panel=TFrame(self.win_panel)
 		button_panel.pack(side=BOTTOM, fill=X, expand=1, pady=5)
 		
-		self.but_close=TButton(button_panel, text='Close', width=10, command=self.close)
+		self.but_close=TButton(button_panel, text='Cancel', width=10, command=self.close)
 		self.but_close.pack(side=RIGHT)
 		
 		self.but_convert=TButton(button_panel, text='Convert', width=10, command=self.convert)
 		self.but_convert.pack(side=RIGHT, padx=10)
-		if self.file is None: self.but_convert['state']='disabled'
+		if self.file is None: 
+			self.but_convert['state']='disabled'
+			self.but_close['text']='Close'
 			
 		
 		label=TLabel(button_panel, text='http://sk1project.org', state='disabled')
@@ -90,6 +97,7 @@ class UniConvw:
 		
 		self.window.resizable(False,False)
 		self.set_position()
+		self.window.deiconify()
 		
 	def convert(self):
 		self.progress_dlg=ConvProgress(self.window, self.callback, self.icon)
@@ -170,15 +178,16 @@ class UniConvw:
 		opt['parent'] = self.window
 		opt['title'] = 'Select a file for translation...'
 		result=tkFileDialog.askopenfilename(**opt)
+		self.window.update()
 		if result and os.path.isfile(result):
 			self.file_reference.set(result)
-			self.file=result
+			self.file=result.encode(self.encoding)
 			self.but_convert['state']='normal'
 	
 	def set_position(self):
 		self.window.update()
-		width = self.win_panel.winfo_width()
-		height = self.win_panel.winfo_height()
+		width = self.win_panel.winfo_reqwidth()
+		height = self.win_panel.winfo_reqheight()
 		posx = self.window.winfo_screenwidth()/2 - width/2
 		posy = self.window.winfo_screenheight()/2 - height / 2
 		self.window.geometry('%dx%d%+d%+d' % (width, height, posx, posy))
