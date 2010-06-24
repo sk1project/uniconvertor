@@ -77,7 +77,6 @@ def uniconvw_run():
 	
 	
 	app_ver = string.strip(open(os.path.join(_pkgdir, 'VERSION')).read())
-#	 or not os.path.isfile(sys.argv[1])
 	if len(sys.argv)>2:
 		print 'Incorrect argument!\n\n'
 		print '\nuniconvw',app_ver
@@ -96,12 +95,16 @@ def uniconvw_run():
 #	
 #	elif system.get_os_family()==system.WINDOWS:	
 #		from uc_win import UniConvw	
-#	
+#		icon=os.path.join(dir,'uniconvw_icon_16.ico')
+#
 #	else:	
 #		from uc_gtk import UniConvw		
 #		icon=os.path.join(dir,'uniconvw_icon_32.png')
 
+##########For testing
 	from uc_win import UniConvw	
+	icon=os.path.join(dir,'uniconvw_icon_16.ico')
+###############
 		
 	if len(sys.argv)>1 and os.path.isfile(sys.argv[1]): 
 		file=sys.argv[1]	
