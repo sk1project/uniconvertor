@@ -30,7 +30,7 @@ class ConvProgress:
 			self.window.transient(parent)
 			self.window.group(parent)
 			self.window.protocol('WM_DELETE_WINDOW', self.stub)
-#			self.window.tk.call('wm', 'iconbitmap', self.window, self.icon)
+			self.window.tk.call('wm', 'iconbitmap', self.window, self.icon)
 			
 			self.win_panel=TFrame(self.window, borderwidth=10)
 			self.win_panel.pack(side=TOP,fill=BOTH)

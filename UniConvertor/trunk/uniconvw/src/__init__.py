@@ -118,7 +118,7 @@ def uniconvw_run():
 	elif system.get_os_family()==system.WINDOWS:	
 		from uc_win import UniConvw	
 		icon=os.path.join(dir,'uniconvw_icon_16.ico')
-		application = UniConvw(icon,OPTIONS,IMPORTFILETYPES_win32, file=file)
+		application = UniConvw(icon,OPTIONS,IMPORTFILETYPES_win, file=file, app_ver=app_ver)
 		application.main()
 
 	else:	

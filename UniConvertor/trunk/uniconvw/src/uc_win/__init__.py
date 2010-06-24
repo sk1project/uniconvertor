@@ -21,13 +21,17 @@ class UniConvw:
 	stand_alone=False
 	icon=None
 	window=None
+	initialdir=''
+	app_ver=''
 	
-	def __init__(self, icon, options, filetypes, file=None):
+	def __init__(self, icon, options, filetypes, file=None, app_ver=None):
 		self.icon=icon
 		self.options=options
 		self.encoding=sys.getfilesystemencoding()
 		if self.encoding is None:
 			self.encoding=sys.getdefaultencoding()
+		if not app_ver is None:
+			self.app_ver=app_ver
 		
 		exit_message='Cancel'
 		if not file is None:
@@ -36,7 +40,7 @@ class UniConvw:
 		
 		self.window=Tkinter.Tk()
 		self.window.withdraw()
-		self.window.title('UniConvertor')
+		self.window.title('UniConvertor '+self.app_ver)
 		self.window.tk.call('wm', 'iconbitmap', self.window, self.icon)
 		
 		self.win_panel=TFrame(self.window, borderwidth=10)
@@ -49,7 +53,7 @@ class UniConvw:
 		label.pack(side = LEFT, padx=5)
 		
 		self.file_button=TButton(file_panel, text='...', command=self.openFile, width=0)
-		self.file_button.pack(side=RIGHT,padx=1)
+		self.file_button.pack(side=RIGHT)
 		
 		self.file_reference = StringVar(self.window)
 		self.file_reference.set('<None>')
@@ -176,11 +180,13 @@ class UniConvw:
 		
 		opt['filetypes'] = ft
 		opt['parent'] = self.window
+		opt['initialdir']=self.initialdir
 		opt['title'] = 'Select a file for translation...'
 		result=tkFileDialog.askopenfilename(**opt)
 		self.window.update()
 		if result and os.path.isfile(result):
 			self.file_reference.set(result)
+			self.initialdir=os.path.dirname(result)
 			self.file=result.encode(self.encoding)
 			self.but_convert['state']='normal'
 	
