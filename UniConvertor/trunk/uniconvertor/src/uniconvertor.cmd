@@ -1,5 +1,5 @@
 :: --------------------------------------------------------------------
-::  Wrapper script to start a UniConvertor application once it is installed
+::  Wrapper script to execute UniConvertor application once it is installed
 ::
 ::  Copyright (C) 2007-2010 Igor E. Novikov
 ::
