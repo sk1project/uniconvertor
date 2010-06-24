@@ -75,7 +75,7 @@ IMPORTFILETYPES_win=[
 ('CorelDRAW Templates files ver.7-X4 ','*.cdt'),
 ('CorelDRAW Presentation Exchange files ','*.cmx'),
 ('CorelDRAW Compressed Exchange files ','*.ccx'),
-('Adobe Illustrator files ver.3-9 ','*.ai'),
+('Adobe Illustrator files ver.3-8 ','*.ai'),
 ('Encapsulated PostScript files  ','*.eps'),
 ('sK1 vector graphics files ','*.sk1'),
 ('Sketch\Skencil files ','*.sk'),
