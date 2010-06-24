@@ -1,3 +1,12 @@
+'
+' Wrapper script to start a UniConvertor frontend
+'
+' Copyright (C) 2010 Igor E. Novikov
+'
+' This library is covered by GNU Library General Public License.
+' For more info see COPYRIGHTS file in uniconvw root directory.
+'
+
 Set WshShell = WScript.CreateObject("WScript.Shell")
 
 If Wscript.Arguments.Count = 0 Then
