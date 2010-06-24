@@ -72,7 +72,9 @@ IMPORTFILETYPES=[
 
 def uniconvw_run():	
 	file=None
+	icon=None
 	_pkgdir = __path__[0]
+	
 	
 	app_ver = string.strip(open(os.path.join(_pkgdir, 'VERSION')).read())
 #	 or not os.path.isfile(sys.argv[1])
@@ -89,14 +91,20 @@ def uniconvw_run():
 		
 	dir=os.path.join(_pkgdir, 'resources')
 	
-	if system.get_os_family()==system.MACOSX:	
-		pass	
-	elif system.get_os_family()==system.WINDOWS:
-		pass
-	
-	else:	
-		from uc_gtk import UniConvw
-		if len(sys.argv)>1 and os.path.isfile(sys.argv[1]): file=sys.argv[1]
-		icon=os.path.join(dir,'uniconvw_icon_32.png')
-		application = UniConvw(icon,OPTIONS,IMPORTFILETYPES, file=file)
-		application.main()
+#	if system.get_os_family()==system.MACOSX:	
+#		pass	
+#	
+#	elif system.get_os_family()==system.WINDOWS:	
+#		from uc_win import UniConvw	
+#	
+#	else:	
+#		from uc_gtk import UniConvw		
+#		icon=os.path.join(dir,'uniconvw_icon_32.png')
+
+	from uc_win import UniConvw	
+		
+	if len(sys.argv)>1 and os.path.isfile(sys.argv[1]): 
+		file=sys.argv[1]	
+		
+	application = UniConvw(icon,OPTIONS,IMPORTFILETYPES, file=file)
+	application.main()
