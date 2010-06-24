@@ -172,11 +172,11 @@ class UniConvw:
 		opt = {}
 		ft=[]
 		
-		all_supported='All supported files - *.ai *.cdr *.svg *.wmf etc.'
+		all_supported='All supported files'+' '
 		all_sup_ext=()
 		for item in self.filetypes: all_sup_ext+=(item[1],)
 		ft+=[(all_supported,all_sup_ext)]
-		ft+=self.filetypes+[('All files - *.*', '.*')]
+		ft+=self.filetypes+[('All files'+' ', '.*')]
 		
 		opt['filetypes'] = ft
 		opt['parent'] = self.window
