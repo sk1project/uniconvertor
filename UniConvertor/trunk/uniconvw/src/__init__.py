@@ -71,11 +71,11 @@ IMPORTFILETYPES=[
 ]
 
 IMPORTFILETYPES_win=[
-('CorelDRAW Graphics files (7-X4 ver.) ','*.cdr'),
-('CorelDRAW Templates files (7-X4 ver.) ','*.cdt'),
+('CorelDRAW Graphics files ver.7-X4 ','*.cdr'),
+('CorelDRAW Templates files ver.7-X4 ','*.cdt'),
 ('CorelDRAW Presentation Exchange files ','*.cmx'),
-('CorelDRAW Compressed Exchange files (CDRX format) ','*.ccx'),
-('Adobe Illustrator files (up to ver. 9.0) ','*.ai'),
+('CorelDRAW Compressed Exchange files ','*.ccx'),
+('Adobe Illustrator files ver.3-9 ','*.ai'),
 ('Encapsulated PostScript files  ','*.eps'),
 ('sK1 vector graphics files ','*.sk1'),
 ('Sketch\Skencil files ','*.sk'),
