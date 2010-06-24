@@ -6,7 +6,7 @@
 # For more info see COPYRIGHTS file in UniConvertor root directory.
 
 
-import Tkinter, Ttk
+import Tkinter, Ttk, Tkconstants, tkFileDialog
 from Tkinter import BOTH, LEFT, RIGHT, TOP, BOTTOM, X, Y
 from Ttk import TFrame, TButton, TLabel, TLabelframe, TCombobox, TEntry
 
@@ -29,19 +29,20 @@ class UniConvw:
 		
 		self.window=Tkinter.Tk()
 		self.window.title('UniConvertor')
+#		self.window.tk.call('wm', 'iconbitmap', self.window, self.icon)
 		
 		win_panel=TFrame(self.window, borderwidth=10)
 		win_panel.pack(side=TOP, fill=Tkinter.BOTH, expand=1)
 		
 		#File selection
 		file_panel=TFrame(win_panel)
-		file_panel.pack(side = TOP, padx=5, fill=X)
+		file_panel.pack(side = TOP, fill=X)
 		
 		label=TLabel(file_panel, text='File: ')
 		label.pack(side = LEFT, padx=5)
 		
-		self.file_button=TButton(file_panel, text='...', command=self.stub, width=0)
-		self.file_button.pack(side=RIGHT,padx=2)
+		self.file_button=TButton(file_panel, text='...', command=self.openFile, width=0)
+		self.file_button.pack(side=RIGHT,padx=1)
 		
 		self.file_entry=TEntry(file_panel, text='<None>', state='readonly')
 		self.file_entry.pack(side=RIGHT, fill=X, expand=1)
@@ -52,24 +53,33 @@ class UniConvw:
 		label.pack(side = TOP, padx=5)
 		
 		format_frame=TLabelframe(win_panel, labelwidget=label, borderwidth=2)
-		format_frame.pack(side = TOP, fill=Tkinter.X, pady=10, expand=1)
+		format_frame.pack(side = TOP, fill=Tkinter.X, expand=1, pady=2)
 		
 		self.format_combo=TCombobox(format_frame, values=('1','2','3'), width=40, state='readonly')
 		self.format_combo.pack(expand=1, padx=10, pady=10)		
 		
 		#Buttons
 		button_panel=TFrame(win_panel)
-		button_panel.pack(side=BOTTOM, fill=X, expand=1)
+		button_panel.pack(side=BOTTOM, fill=X, expand=1, pady=5)
 		
-		self.but_close=TButton(button_panel, text='Close', width=0, command=self.stub)
+		self.but_close=TButton(button_panel, text='Close', width=10, command=self.stub)
 		self.but_close.pack(side=RIGHT)
 		
-		self.but_convert=TButton(button_panel, text='Convert', width=0, command=self.stub)
+		self.but_convert=TButton(button_panel, text='Convert', width=10, command=self.stub)
 		self.but_convert.pack(side=RIGHT, padx=10)
 		
-		label=TLabel(button_panel, text='http://sk1project.org')
+		label=TLabel(button_panel, text='http://sk1project.org', state='disabled')
 		label.pack(side = LEFT, anchor='sw')
 
+	def openFile(self):
+		self.file_opt = options = {}
+		options['defaultextension'] = '' # couldn't figure out how this works
+		options['filetypes'] = [('all files', '.*'), ('text files', '.txt')]
+		options['initialdir'] = 'C:\\'
+		options['initialfile'] = 'myfile.txt'
+		options['parent'] = root
+		options['title'] = 'This is a title'
+		return tkFileDialog.askopenfile(mode='r')
 	
 	def main(self):
 		self.window.mainloop()	
