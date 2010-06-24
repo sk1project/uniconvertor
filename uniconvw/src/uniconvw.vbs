@@ -1,5 +1,5 @@
 '
-' Wrapper script to start a UniConvertor frontend
+' Wrapper script to launch UniConvertor frontend
 '
 ' Copyright (C) 2010 Igor E. Novikov
 '
