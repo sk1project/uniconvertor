@@ -17,7 +17,12 @@
 ::  License along with this library; if not, write to the Free Software
 ::  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
 :: ---------------------------------------------------------------------
-@echo off
+
+@echo off  
+Set curDir=%~dp0
+
+PATH=%curDir%;%curDir%DLLs;%PATH%
+set PYTHONPATH=
 
 if "%~3"=="" (
    pyVM -c "from uniconvertor import uniconv_run; uniconv_run();" "%~1" "%~2"
