@@ -61,12 +61,6 @@ if __name__ == "__main__":
 	
 	src_path='src/'
 	
-	import os
-	if  os.name == 'nt':
-		script_name='src/uniconvertor.cmd'
-	else:
-		script_name='src/uniconvertor'
-	
 	filter_src=src_path+'modules/filter/'	
 	filter_module = Extension('uniconvertor.app.modules.streamfilter',
 			define_macros = [('MAJOR_VERSION', '1'),
@@ -190,7 +184,7 @@ Export filters:
 			'sk1.app.modules': ['descr.txt',]
 			},
 
-			scripts=[script_name],
+			scripts=['src/uniconvertor'],
 
 			ext_modules = [filter_module, type1mod_module, skread_module, pstokenize_module, skmod_module])
 
