@@ -20,14 +20,21 @@ If objFolder Is Nothing Then
     ret = MsgBox("Patch script is terminated!",48, "Exit")
     Wscript.Quit
 End If
-   
-Dim sPath, target1, target2, source1, source2 
+ 
+
+
+Dim sPath, target1, target2, source1, source2, curDirectory
+
+curDirectory = left(WScript.ScriptFullName,(Len(WScript.ScriptFullName))-(len(WScript.ScriptName)))
+
 sPath = objFolder.self.Path
 source1 = "uniconv-ext.py"
 source2 = "uniconv_output.py"
 targetDir= sPath+"\share\extensions\"
 target1 = targetDir + source1
 target2 = targetDir + source2
+source1 = curDirectory + source1
+source2 = curDirectory + source2
 
 
 Dim fso

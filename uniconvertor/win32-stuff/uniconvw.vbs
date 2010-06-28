@@ -9,6 +9,12 @@
 
 Set WshShell = WScript.CreateObject("WScript.Shell")
 
+Set sysVars = WshShell.Environment("SYSTEM")
+sysVars("PYTHONPATH") = ""
+
+curDirectory = left(WScript.ScriptFullName,(Len(WScript.ScriptFullName))-(len(WScript.ScriptName)))
+sysVars("PATH")=curDirectory+";"+curDirectory+"DLL;"+sysVars("PATH")
+
 If Wscript.Arguments.Count = 0 Then
 	arg = ""
 Else
