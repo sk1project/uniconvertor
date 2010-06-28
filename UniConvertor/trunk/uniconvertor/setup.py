@@ -35,7 +35,7 @@
 #
 
 from distutils.core import setup, Extension
-import sys
+import sys, os
 
 
 COPY=False
