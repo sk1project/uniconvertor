@@ -13,7 +13,7 @@ Converts one vector graphics format to another using sK1 engine.
 sK1 Team (http://sk1project.org), copyright (C) 2007-2009 by Igor E. Novikov
 
  Allowed input formats:
-	 AI  - Adobe Illustrator files (postscript based)
+     AI  - Adobe Illustrator files (postscript based)
      CDR - CorelDRAW Graphics files (7-X3,X4 versions)
      CDT - CorelDRAW templates files (7-X3,X4 versions)
      CCX - Corel Compressed Exchange files
