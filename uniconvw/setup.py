@@ -105,7 +105,14 @@ sK1 Team, copyright (C) 2010 by Igor E. Novikov
 					('/usr/share/pixmaps',['src/uniconvw.png','src/uniconvw.xpm',]),
 					],
 			)
-			
+	
+#################################################
+# .py source compiling
+#################################################
+if sys.argv[1]=='build':
+	import compileall
+	compileall.compile_dir('build/')
+
 #################################################
 # Implementation of bdist_deb command
 #################################################
@@ -134,9 +141,9 @@ if DEBIAN:
 	os.makedirs('build/deb-root/usr/share/applications')
 	os.makedirs('build/deb-root/usr/share/pixmaps')
 	
-	if os.path.isdir('build/lib'):
+	if os.path.isdir('build/lib'):		
 		os.system('cp -R build/lib/uniconvw '+target)
-	else:
+	else:		
 		os.system('cp -R build/lib.linux-'+platform.machine()+'-'+version+'/uniconvw '+target)
 	
 	os.system('cp src/uniconvw.desktop build/deb-root/usr/share/applications')
