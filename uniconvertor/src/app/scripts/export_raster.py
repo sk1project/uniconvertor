@@ -37,7 +37,7 @@
 
 import os, tempfile
 
-from sk1libs import imaging.Image, imaging.ImageChops
+from sk1libs.imaging import Image, ImageChops
 
 import app.Scripting
 from app import _, PostScriptDevice
