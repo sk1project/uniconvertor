@@ -193,6 +193,14 @@ Export filters:
 			scripts=[script_name],
 
 			ext_modules = [filter_module, type1mod_module, skread_module, pstokenize_module, skmod_module])
+
+	
+#################################################
+# .py source compiling
+#################################################
+if sys.argv[1]=='build':
+	import compileall
+	compileall.compile_dir('build/')
 			
 ##############################################
 # This section for developing purpose only
@@ -221,7 +229,7 @@ if COPY:
 	print '\n _type1module.so has been copied to src/ directory'	
 	
 	os.system('rm -rf build')		
-	
+			
 #################################################
 # Implementation of bdist_deb command
 #################################################
