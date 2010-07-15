@@ -31,6 +31,7 @@
 from types import StringType, TupleType
 import os, string
 import time
+from copy import deepcopy
 
 from app import config
 from sk1libs import filters
@@ -38,14 +39,14 @@ from app.utils import locale_utils
 from app.events.warn import warn, INTERNAL, pdebug
 from app.conf.const import ArcPieSlice
 
-from app.Graphics import document, layer, group, text
+from app.Graphics import document, layer, group, text, page
 from app import _, PolyBezier, Rectangle, Ellipse, Trafo, Translation, \
 		Style, PropertyStack, EmptyPattern, Document, SketchLoadError, \
 		ImageData, Image
 
 
 doc_class = Document
-
+page_class = page.Page
 
 class EmptyCompositeError(SketchLoadError):
 	pass
@@ -63,6 +64,7 @@ _dont_handle_exceptions = 0
 class LoaderWithComposites:
 
 	guess_continuity = 0
+	page_layout = None
 
 	def __init__(self):
 		self.composite_stack = None
@@ -201,12 +203,17 @@ class GenericLoader(LoaderWithComposites):
 		self.begin_layer_class(layer.Layer, args, kw)
 		
 	def masterlayer(self, *args, **kw):
+		while not issubclass(self.composite_class, doc_class):
+			self.end_composite()
 		kw['is_MasterLayer']=1
 		self.begin_layer_class(layer.Layer, args, kw)
 		
-	def page(self, *args, **kw):
-		kw['is_Page']=1
-		self.begin_layer_class(layer.Layer, args, kw)
+	def begin_page(self, *args, **kw):
+		while not issubclass(self.composite_class, doc_class):
+			self.end_composite()
+		if not len(args):
+			args=["", deepcopy(self.page_layout)]
+		self.begin_composite(page.Page, args, kw)
 
 	def end_layer(self):
 		self.end_composite()
@@ -214,7 +221,7 @@ class GenericLoader(LoaderWithComposites):
 	def begin_layer_class(self, layer_class, args, kw = None):
 		if issubclass(self.composite_class, layer.Layer):
 			self.end_composite()
-		if issubclass(self.composite_class, doc_class):
+		if issubclass(self.composite_class, doc_class) or issubclass(self.composite_class, page_class):
 			self.begin_composite(layer_class, args, kw)
 		else:
 			raise SketchLoadError('self.composite_class is %s, not a document',
@@ -327,7 +334,6 @@ def load_drawing_from_file(file, filename = '', doc_class = None):
 	# might contain newline characters.
 	if line[:4] == 'RIFF' and len(line) < 12:
 		line = line + file.read(12 - len(line))
-	#print line
 	for info in filters.import_plugins:
 		match = info.rx_magic.match(line)
 		if match:
@@ -351,7 +357,7 @@ def load_drawing_from_file(file, filename = '', doc_class = None):
 						doc.meta.load_messages = messages
 					return doc
 				except Exception, value:
-					raise SketchLoadError(_("Parsing error: ")+ str(value))
+					raise SketchLoadError(_("Parsing error:")+" "+ str(value))
 								
 			finally:
 				info.UnloadPlugin()
@@ -375,38 +381,3 @@ def load_drawing(filename):
 		file = filename
 		filename = ''
 	return load_drawing_from_file(file, filename)
-
-
-###########################################
-
-def parse_drawing_from_file(file, filename, doc_class = None):
-	line = file.readline()
-	if line[:4] == 'RIFF' and len(line) < 12:
-		line = line + file.read(12 - len(line))
-	for info in filters.parsing_plugins:
-		match = info.rx_magic.match(line)
-		if match:
-			parser = info(file, filename, match)
-			try:
-				try:
-					parser.Load()
-					return
-				except Exception, value:
-					raise SketchLoadError(_("Parsing error: ")+ str(value))
-								
-			finally:
-				info.UnloadPlugin()
-	else:
-		raise SketchLoadError(_("Unrecognised file type"))
-
-def parse_drawing(filename,output_filename):
-	
-	name=locale_utils.utf_to_locale(filename)
-	try:
-		file = open(name, 'rb')
-	except IOError, value:
-		message = value.strerror
-		raise SketchLoadError(_("Cannot open %(filename)s:\n%(message)s") % locals())
-
-	return parse_drawing_from_file(file, output_filename)
-	
