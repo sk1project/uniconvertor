@@ -33,6 +33,7 @@
 
 from types import ListType, IntType, StringType, TupleType
 from string import join
+from copy import deepcopy
 
 from app.events.warn import pdebug, warn, warn_tb, USER, INTERNAL
 from app import SketchInternalError
@@ -48,6 +49,8 @@ import app
 import color, selinfo, pagelayout
 
 from base import Protocols
+from page import Page
+from pagelayout import PageLayout
 from layer import Layer, GuideLayer, GridLayer
 from group import Group
 from bezier import CombineBeziers
@@ -77,6 +80,7 @@ class SketchDocument(Protocols):
 
 	def __init__(self, create_layer = 0):
 		self.pages = []
+		self.doc_page_layout=PageLayout()
 		self.active_page=0
 		self.snap_grid = GridLayer()
 		self.snap_grid.SetDocument(self)
@@ -91,12 +95,15 @@ class SketchDocument(Protocols):
 			self.active_layer = Layer(_("Layer 1"))
 			self.active_layer.SetDocument(self)
 			self.layers = [self.snap_grid]+[self.active_layer] + self.master_layers + [self.guide_layer]
-			self.pages.append([self.active_layer])
+			self.pages.append(Page("", PageLayout()))
+			self.pages[0].objects.append(self.active_layer)
+			self.setActivePage(0)
+#			self.pages.append([self.active_layer])
 		else:
 			# we're being created by the load module
 			self.active_layer = None
 			self.layers = []
-			self.pages.append(self.layers)
+			self.pages = []
 
 	def __del__(self):
 		if __debug__:
@@ -171,19 +178,23 @@ class SketchDocument(Protocols):
 				self.setActivePage(index+1)	
 			
 	def setActivePage(self, index):
-		self.pages[self.active_page]=self.getRegularLayers()
-		self.layers=[self.snap_grid] + self.pages[index] + self.getMasterLayers() + [self.guide_layer]
+		if self.active_page:
+			self.updateActivePage()
+		self.layers=[self.snap_grid] + self.pages[index].objects + self.getMasterLayers() + [self.guide_layer]
 		self.active_page=index
-		self.active_layer=(self.pages[index])[0]
+		self.active_layer=(self.pages[index]).objects[0]
+		self.page_layout=self.pages[index].page_layout
 
 	def updateActivePage(self):
-		self.pages[self.active_page]=self.getRegularLayers()
+		self.pages[self.active_page].objects=self.getRegularLayers()
+		self.pages[self.active_page].page_layout=self.page_layout
 		
 	def NewPage(self):
-		page=[]
+		page_layout=deepcopy(self.doc_page_layout)
+		page=Page("",page_layout)
 		new_layer=Layer(_("Layer 1"))
 		new_layer.SetDocument(self)
-		page.append(new_layer)
+		page.objects.append(new_layer)
 		return page				
 	
 	def delete_page(self, index=0):
@@ -294,14 +305,13 @@ class SketchDocument(Protocols):
 		info.append('%d layers' % len(self.layers))
 		for idx in range(len(self.layers)):
 			layer = self.layers[idx]
-			info.append('%d: %s,\t%d objects' % (idx + 1, layer.name,
-													len(layer.objects)))
+			info.append('%d: %s,\t%d objects' % (idx + 1, layer.name, len(layer.objects)))
 		return join(info, '\n')
 
 	def SaveToFile(self, file):
 		self.updateActivePage()
 		file.BeginDocument()
-		self.page_layout.SaveToFile(file)
+		self.doc_page_layout.SaveToFile(file)
 		self.write_styles(file)
 		self.snap_grid.SaveToFile(file)
 		
@@ -309,19 +319,19 @@ class SketchDocument(Protocols):
 		pagecount=0
 		interval=100/pagesnum			
 		for page in self.pages:
-			file.Page()
+			page.SaveToFile(file)
 			pagecount+=1
-			app.updateInfo(inf2=_('Saving page %u of %u')%(pagecount,pagesnum),
-						 inf3=interval*pagecount)			
-			layercount=0
-			layersnum=len(page)
-			l_interval=interval/layersnum
-			for layer in page:
-				layercount+=1
-				app.updateInfo(inf2=_('Saving page %u of %u, layer %u of %u')%
-							(pagecount,pagesnum,layercount,layersnum),
-							 inf3=interval*pagecount)
-				layer.SaveToFile(file)			
+			app.updateInfo(inf2=_('Saving page %u of %u')%(pagecount,pagesnum), inf3=interval*pagecount)
+						
+#			layercount=0
+#			layersnum=len(page)
+#			l_interval=interval/layersnum
+#			for layer in page:
+#				layercount+=1
+#				app.updateInfo(inf2=_('Saving page %u of %u, layer %u of %u')%
+#							(pagecount,pagesnum,layercount,layersnum),
+#							 inf3=interval*pagecount)
+#				layer.SaveToFile(file)			
 
 		for layer in self.getMasterLayers():
 			layer.SaveToFile(file)			
@@ -337,6 +347,12 @@ class SketchDocument(Protocols):
 	def load_Completed(self):
 		if not self.layers:
 			self.layers = [Layer(_("Layer 1"))]
+		else:
+			for obj in self.layers:
+				if obj.is_Page:
+					self.pages.append(obj)
+			for page in self.pages:
+				self.layers.remove(page)
 		if self.active_layer is None:
 			for layer in self.layers:
 				if layer.CanSelect():
@@ -355,8 +371,29 @@ class SketchDocument(Protocols):
 			self.layers.append(self.guide_layer)
 		if add_grid_layer:
 			self.layers.append(self.snap_grid)
-		self.extract_pages()
+		self.doc_page_layout=self.page_layout
+		if len(self.pages):
+			self.setActivePage(0)
+		else:
+			self.pages.append(Page("", deepcopy(self.doc_page_layout)))
+			self.updateActivePage()
 		self.RearrangeLayers()
+		for page in self.pages:
+			for object in page.objects:
+				object.SetDocument(self)
+		
+	def _print_document_structure(self):
+		print "-------------------------------"
+		print "DOCUMENT", self
+		for layer in self.layers:
+			print "\tLAYER",layer
+		
+		print "+++++++++++++++++++++++++++++++"
+		for page in self.pages:
+			print "\tPAGE", page
+			for layer in page.objects:
+				print "\t\t",layer
+		print "-------------------------------"
 		
 	def extract_pages(self):
 		layers=self.getRegularLayers()
@@ -376,8 +413,8 @@ class SketchDocument(Protocols):
 			self.pages=[]
 			self.pages.append(layers)
 		self.active_page=0
-		self.layers=[self.snap_grid] + self.pages[0] + self.getMasterLayers() + [self.guide_layer]
-		self.active_layer=(self.pages[0])[0]
+		self.layers=[self.snap_grid] + self.pages[0].objects + self.getMasterLayers() + [self.guide_layer]
+		self.active_layer=(self.pages[0]).objects[0]
 
 #
 #	Class MetaInfo
@@ -2155,8 +2192,9 @@ class EditDocument(SketchDocument, QueueingPublisher):
 				self.end_transaction()
 
 	def CanSplitBeziers(self):
-		return len(self.selection) == 1 \
-				and self.selection.GetObjects()[0].is_Bezier
+		return len(self.selection) == 1 and \
+				 self.selection.GetObjects()[0].is_Bezier and \
+				 len(self.selection.GetObjects()[0].paths)>1
 
 	def SplitBeziers(self):
 		if self.CanSplitBeziers():
@@ -2177,17 +2215,13 @@ class EditDocument(SketchDocument, QueueingPublisher):
 				self.end_transaction()
 
 	def CanConvertToCurve(self):
-		check_crv = 0
-		if len(self.selection) >0:
-				check_crv = 1
-#		for a  in range(len(self.selection)):
-#			if self.selection.GetObjects()[a].is_curve:
-#				pass
-#			else:
-#				check_crv = 0
-		return check_crv
-		# return len(self.selection) == 1 \
-				#and self.selection.GetObjects()[0].is_curve
+		result = 0
+		for a in range(len(self.selection)):
+			if self.selection.GetObjects()[a].is_Rectangle or \
+			self.selection.GetObjects()[a].is_Ellipse or \
+			self.selection.GetObjects()[a].is_Text:
+				result = 1
+		return result
 
 	def ConvertToCurve(self):
 		if self.CanConvertToCurve():
