@@ -93,7 +93,7 @@ def uniconv_run():
 		sys.exit(0)
 	else:
 		doc = load.load_drawing(input_file)
-		extension = os.path.splitext(output_file)[1]
+		extension = os.path.splitext(output_file)[1].lower()
 		fileformat = filters.guess_export_plugin(extension)
 		if fileformat:
 			saver = filters.find_export_plugin(fileformat)
