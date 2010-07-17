@@ -2377,6 +2377,36 @@ class EditDocument(SketchDocument, QueueingPublisher):
 		self.issue(PAGE)
 		return (self._insert_pages,number,index,is_before)
 	
+	def AddImportedPages(self, pages):
+		if len(pages)>1:
+			self.begin_transaction(_("Add Imported Pages"), clear_selection_rect = 0)
+		else:
+			self.begin_transaction(_("Add imported Page"), clear_selection_rect = 0)	
+		try:
+			try:
+				self.add_undo((self._remove_added_pages,pages))
+				self._add_imported_pages(pages)
+			except:
+				self.abort_transaction()
+		finally:
+			self.end_transaction()			
+			self.issue(PAGE)
+			
+	def _add_imported_pages(self,pages):
+		self.pages+=pages
+		for page in pages:
+			for layer in page.objects:
+				layer.SetDocument(self)
+		self.issue(PAGE)
+		return (self._remove_added_pages,pages)
+		
+	
+	def _remove_added_pages(self,pages):
+		for page in pages:
+			self.pages.remove(page)
+		self.issue(PAGE)
+		return (self._add_imported_pages,pages)
+				
 ############
 	def CanDeletePage(self,index):
 		return 0 <= index < len(self.pages) and len(self.pages) > 1
