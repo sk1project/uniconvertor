@@ -40,7 +40,7 @@ import sys, os
 
 COPY=False
 DEBIAN=False
-VERSION='1.1.5'
+VERSION='1.1.6pre'
 
 ########################
 #
