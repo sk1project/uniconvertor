@@ -56,7 +56,6 @@ class XmlConfigParser:
 			return
 	
 		writer = XMLGenerator(out=file, encoding=self.system_encoding)
-		print '=========\n encoding', self.system_encoding
 		writer.startDocument()	
 		defaults = XmlConfigParser.__dict__
 		items = self.__dict__.items()
@@ -68,7 +67,6 @@ class XmlConfigParser:
 				continue
 			writer.characters('	')
 			writer.startElement('%s' % key, {})
-			print type(value)
 			if not type(value) == types.UnicodeType:
 				value = '%s' % `value`
 			
