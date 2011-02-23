@@ -7,7 +7,7 @@
 
 from uc2 import events
 
-import os, sys
+import os, sys, types
 
 from xml.sax import handler
 		
@@ -56,6 +56,7 @@ class XmlConfigParser:
 			return
 	
 		writer = XMLGenerator(out=file, encoding=self.system_encoding)
+		print '=========\n encoding', self.system_encoding
 		writer.startDocument()	
 		defaults = XmlConfigParser.__dict__
 		items = self.__dict__.items()
@@ -67,11 +68,12 @@ class XmlConfigParser:
 				continue
 			writer.characters('	')
 			writer.startElement('%s' % key, {})
-#			if type(value) == PointType:
-#				to_write = '(%g, %g)' % tuple(value)
-#				writer.characters('Point%s' % to_write)
-#			else:
-			writer.characters('%s' % `value`)
+			print type(value)
+			if not type(value) == types.UnicodeType:
+				value = '%s' % `value`
+			
+			print 'WRITTEN:', value
+			writer.characters(value)
 				
 			writer.endElement('%s' % key)
 			writer.characters('\n')
@@ -91,12 +93,34 @@ class XMLPrefReader(handler.ContentHandler):
 
 	def endElement(self, name):
 		if name != 'preferences':
-			code = compile('self.value=' + self.value, '<string>', 'exec')
-			exec code
-			self.pref.__dict__[self.key] = self.value
+			try:
+				if self.is_int(self.value):
+					self.value = int(self.value)
+				elif self.is_float(self.value):
+					self.value = float(self.value)									
+				self.pref.__dict__[self.key] = self.value
+			except Exception:
+				print sys.exc_info()[0]
+
 
 	def characters(self, data):
 		self.value = data
+		
+	def is_int(self, value):
+		res = True
+		for letter in value:
+			if not letter in '0123456789':
+				res = False
+				break
+		return res
+	
+	def is_float(self, value):
+		res = True
+		for letter in value:
+			if not letter in '.,0123456789':
+				res = False
+				break
+		return res
 
 class ErrorHandler(handler.ErrorHandler): pass
 class EntityResolver(handler.EntityResolver): pass
