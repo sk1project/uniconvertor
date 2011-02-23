@@ -70,7 +70,6 @@ class XmlConfigParser:
 			if not type(value) == types.UnicodeType:
 				value = '%s' % `value`
 			
-			print 'WRITTEN:', value
 			writer.characters(value)
 				
 			writer.endElement('%s' % key)
