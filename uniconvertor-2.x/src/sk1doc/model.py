@@ -15,15 +15,15 @@ class Document:
 	"""
 	is_doc = True
 	
+	page_format = []
 	guide_layer = None
 	grid_layer = None
 	master_layers = []
 	pages = []
 	
-	current_page = None
-	active_layer = None
-	selection = None 
-	undo = None
+	active_page = None
+	
+	page_count = 0
 
 class DocumentObject:
 	"""
@@ -32,14 +32,39 @@ class DocumentObject:
 	"""
 	is_doc = False
 	is_selectable = False
+	parent = None
 
+#----------------------------------------------------
 class StructuralObject(DocumentObject):
 	"""
 	Abstract parent class for structural objects. 
 	Provides common structural object properties.
 	"""	
+	is_printable = True
+	is_editable = True
+	is_visible = True
 	objects = []
 	name = ''
+
+#================Structural Objects==================
+
+class Page(StructuralObject):
+	format = []
+	active_layer = None
+	layer_count = 0
+
+class Layer(StructuralObject):
+	color = []
+
+class GuideLayer(Layer):
+	name = 'Guide Layer'
+
+class GridLayer(Layer):
+	name = 'Grid Layer'
+	grid = []
+
+
+#----------------------------------------------------
 
 class SelectableObject(DocumentObject):
 	"""
@@ -48,27 +73,6 @@ class SelectableObject(DocumentObject):
 	"""
 	is_selectable = True
 	bbox = []
-
-#================Structural Objects==================
-
-PORTRAIT = 0
-LANDSCAPE = 1
-
-class Page(StructuralObject):
-	format = []
-	orientaion = PORTRAIT
-
-class Layer(StructuralObject):
-	color = []
-
-class GuideLayer(Layer):
-	name = 'Guide Layer'
-	color = []
-
-class GridLayer(Layer):
-	name = 'Grid Layer'
-	color = []
-
 #================Selectable Objects==================
 
 class Rectangle(SelectableObject):
