@@ -6,51 +6,80 @@
 # This library is covered by GNU Library General Public License.
 # For more info see COPYRIGHTS file in root directory.
 
-import model
 
-in_to_pt = 72.0
-cm_to_pt = in_to_pt / 2.54
-mm_to_pt = cm_to_pt / 10
-m_to_pt	 = 100 * cm_to_pt
+import uc2, model
+from uc2 import _, uc_conf
 
-pt_to_in = 1.0 / 72.0
-pt_to_cm = 2.54 * pt_to_in
-pt_to_mm = pt_to_cm * 10
-pt_to_m	 = pt_to_cm / 100
+                                               
 
-
-unit_dict = {'pt': 1.0, 'in': in_to_pt, 'cm': cm_to_pt, 'mm': mm_to_pt}
-unit_names = ['pt', 'in', 'cm', 'mm']
-
-PAGE_FORMATS = {  
-			'A0': (2383.9370078740158, 3370.3937007874015),
-			'A1': (1683.7795275590549, 2383.9370078740158), 
-			'A2': (1190.5511811023621, 1683.7795275590549), 
-			'A3': (841.88976377952747, 1190.5511811023621), 
-			'A4': (595.27559055118104, 841.88976377952747), 
-			'A5': (419.52755905511805, 595.27559055118104),
-			'A6': (297.63779527559052, 419.52755905511805),
-			'B1 (ISO)': (2004.0944881889761, 2834.6456692913384),  
-			'B4 (ISO)': (708.66141732283461, 1000.6299212598424),
-			'B5 (ISO)': (498.89763779527556, 708.66141732283461),
-			'C3': (918.42519685039372, 1298.267716535433), 
-			'C4': (649.1338582677165, 918.42519685039372), 
-			'C5': (459.21259842519686, 649.1338582677165), 
-			'C6': (323.14960629921262, 459.21259842519686),  
-			'Envelope C4': (649.1338582677165, 918.42519685039372), 
-			'Envelope C5': (459.21259842519686, 649.1338582677165),
-			'Envelope C6': (323.14960629921262, 459.21259842519686),
-			'Envelope E65/DL': (311.81102362204723, 623.62204724409446), 
-			'Executive': (522.0, 756.0), 
-			'Legal': (612.0, 1008.0), 
-			'Letter': (612.0, 792.0),   
-			'Half Letter': (396.0, 612.0), 
-			'Visit card #1': (141.73228346456693, 255.11811023622045),
-			'Visit card #2': (155.90551181102362, 240.94488188976379), 
-			}                                                    
-
-def create_new_document():
+def create_new_document(config = uc2.config):
 	
 	doc = model.Document()
+	set_page_format(doc, None, config.page_format, config.page_orientation)
+	
+	doc.guide_layer = model.GuideLayer()
+	doc.guide_layer.objects = []
+	# FIXME: layer should have default color 
+	
+	doc.grid_layer = model.GridLayer()
+	doc.grid_layer.objects = []
+	# FIXME: layer should have default color and grid value
+	
+	doc.master_layers = []
+	doc.pages = []
+	
+	add_new_page(doc)	
+	return doc
+	
+	
+def set_page_format(doc=None, page=None, format=None, orientation=None, config=uc2.config):
+	data = []
+	
+	if not format or not uc_conf.PAGE_FORMATS.has_key(format):
+		format = config.page_format
+	data.append(format)
+	data.append(uc_conf.PAGE_FORMATS[format])
+	
+	if orientation is None:
+		orientation = config.page_orientation
+	data.append(orientation)
+	
+	if page is None:
+		doc.page_format = data
+	else:
+		page.format = data
+	return data
+		
+def add_new_page(doc, position=None):
+	page = model.Page()
+	page.format = [] + doc.page_format
+	page.name = _('Page') + ' %s'%(doc.page_count + 1)
+	
+	#FIXME: add page inserting
+	doc.pages.append(page)
+	
+	page.parent = doc
+	doc.active_page = page
+	doc.page_count += 1
+	page.objects = []
+	add_new_layer(page)
+	return page
+	
+def add_new_layer(page, position=None):
+	layer = model.Layer()
+	layer.name = _('Layer') + ' %s'%(page.layer_count + 1)
+	# FIXME: layer should have default color
+	
+	#FIXME: add layer inserting
+	page.objects.append(layer)
+	
+	layer.parent = page
+	layer.objects = []
+	page.active_layer = layer
+	page.layer_count += 1
+	return layer
+	
+	
+		
 	
 	
