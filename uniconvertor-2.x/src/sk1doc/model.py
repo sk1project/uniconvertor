@@ -49,6 +49,11 @@ class StructuralObject(DocumentObject):
 #================Structural Objects==================
 
 class Page(StructuralObject):
+	'''
+	PAGE OBJECT
+	All child layers are in objects list.
+	Page format: [format name, (width, height), orientation]
+	'''
 	format = []
 	active_layer = None
 	layer_count = 0
