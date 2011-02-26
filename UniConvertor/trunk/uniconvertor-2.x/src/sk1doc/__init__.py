@@ -7,7 +7,8 @@
 # For more info see COPYRIGHTS file in root directory.
 
 
-import uc2, model
+import uc2
+import model
 from uc2 import _, uc_conf
 
                                                
