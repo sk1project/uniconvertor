@@ -50,6 +50,13 @@ def set_page_format(doc=None, page=None, format=None, orientation=None, config=u
 	else:
 		page.format = data
 	return data
+
+def get_page_size(doc):
+	if doc.active_page.format[2]:
+		h, w = doc.active_page.format[1]
+	else:
+		w, h = doc.active_page.format[1]
+	return w, h
 		
 def add_new_page(doc, position=None):
 	page = model.Page()
