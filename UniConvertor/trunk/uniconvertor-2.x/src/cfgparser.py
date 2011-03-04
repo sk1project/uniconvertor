@@ -65,7 +65,7 @@ class XmlConfigParser:
 		for key, value in items:
 			if defaults.has_key(key) and defaults[key] == value:
 				continue
-			writer.characters('	')
+			writer.characters('\t')
 			writer.startElement('%s' % key, {})
 			if not type(value) == types.UnicodeType:
 				value = '%s' % `value`
