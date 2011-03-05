@@ -22,7 +22,7 @@ from uc2 import _, uc_conf
 
                                                
 
-def create_new_document(config = uc2.config):
+def create_new_document(config=uc2.config):
 	
 	doc = model.Document()
 	set_page_format(doc, None, config.page_format, config.page_orientation)
@@ -70,7 +70,7 @@ def get_page_size(doc):
 def add_new_page(doc, position=None):
 	page = model.Page()
 	page.format = [] + doc.page_format
-	page.name = _('Page') + ' %s'%(doc.page_count + 1)
+	page.name = _('Page') + ' %s' % (doc.page_count + 1)
 	
 	#FIXME: add page inserting
 	doc.pages.append(page)
@@ -84,7 +84,7 @@ def add_new_page(doc, position=None):
 	
 def add_new_layer(page, position=None):
 	layer = model.Layer()
-	layer.name = _('Layer') + ' %s'%(page.layer_count + 1)
+	layer.name = _('Layer') + ' %s' % (page.layer_count + 1)
 	# FIXME: layer should have default color
 	
 	#FIXME: add layer inserting

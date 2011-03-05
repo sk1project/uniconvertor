@@ -15,7 +15,11 @@
 #	You should have received a copy of the GNU General Public License
 #	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import platform, os, string, re, stat
+import platform
+import os
+import string
+import re
+import stat
 
 WINDOWS = 'Windows'
 LINUX = 'Linux'
@@ -47,7 +51,7 @@ def get_os_arch():
 	"""
 	Detects OS architecture and returns module predefined architecture type.
 	"""
-	arch,bin = platform.architecture()
+	arch, bin = platform.architecture()
 	if arch == p32bit:
 		return p32bit
 	elif arch == p64bit:
@@ -114,50 +118,7 @@ def get_os_name():
 		
 	else:
 		return Unix
-	
-	
-# Return the value of the environment variable S if present, None
-# otherwise. In Python 1.5 one might use os.environ.get(S) instead...
-def getenv(s):
-	if os.environ.has_key(s):
-		return os.environ[s]
-	return None
 
 
-# Return the current local date and time as a string. The optional
-# parameter format is used as the format parameter of time.strftime and
-# defaults to '%c'.
-# Currently this is used for the CreationTime comment in a PostScript
-# file.
-def current_date(format = '%c'):
-	import time
-	return time.strftime(format, time.localtime(time.time()))
-
-# Return the pwd entry for the current user in the format of
-# pwd.getpwuid.
-def get_pwd():
-	import pwd
-	user = getenv("USER") or getenv("LOGNAME")
-	if not user:
-		return pwd.getpwuid(os.getuid())
-	else:
-		return pwd.getpwnam(user)
 
 
-# Return the real user name (the gecos field of passwd)
-def get_real_username():
-	try:
-		return get_pwd()[4]
-	except:
-		return None
-
-# Return the hostname
-def gethostname():
-	name = getenv('HOSTNAME')
-	if not name:
-		try:
-			import socket
-			name = socket.gethostname()
-		except:
-			pass
-	return name
