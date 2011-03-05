@@ -79,4 +79,4 @@ class UCConfig(XmlConfigParser):
 	#============== DOCUMENT SECTION ==================
 	page_format = 'A4'
 	page_orientation = PORTRAIT
-	default_unit = 'mm'
+	
