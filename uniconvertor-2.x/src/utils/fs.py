@@ -20,9 +20,6 @@
 #
 
 import os
-import string
-import re
-import stat
 import system
 
 #Return directory list for provided path
