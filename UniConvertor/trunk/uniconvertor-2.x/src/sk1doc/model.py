@@ -29,8 +29,11 @@ METAINFO = 10
 STYLES = 11
 STYLE = 12
 PROFILES = 13
-FONTS = 14
-IMAGES = 15
+PROFILE = 14
+FONTS = 15
+FONT = 16
+IMAGES = 17
+IMAGE = 18
 
 STRUCTURAL_CLASS = 50
 PAGES = 51
@@ -38,7 +41,6 @@ PAGE = 52
 LAYER_GROUP = 53
 MASTER_LAYERS = 54
 LAYER = 55
-MASTER_LAYER = 56
 GRID_LAYER = 57
 GUIDE_LAYER = 58
 
@@ -55,8 +57,64 @@ CIRCLE = 202
 POLYGON = 203
 CURVE = 204
 CHAR = 205
-IMAGE = 206
+PIXMAP = 206
 
+CID_TO_NAME = {
+	DOCUMENT: _('Document'),
+	
+	METAINFO: _('Metainfo'), STYLES: _('Styles'), STYLE: _('Style'), 
+	PROFILES: _('Profiles'), PROFILE: _('Profile'), FONTS: _('Fonts'), 
+	FONT: _('Font'),IMAGES: _('Images'), IMAGE: _('Image'),
+	
+	PAGES: _('Pages'), PAGE: _('Page'), LAYER_GROUP: _('Layer group'), 
+	MASTER_LAYERS: _('Master layers'), LAYER: _('Layer'), 
+	GRID_LAYER: _('Grid layer'), GUIDE_LAYER: _('Guide layer'),
+	
+	GROUP: _('Group'), CLIP_GROUP: _('Clip group'), 
+	TEXT_BLOCK: _('Text block'), TEXT_COLUMN: _('Text column'),
+	
+	RECTANGLE: _('Rectangle'), CIRCLE: _('Ellipse'), 
+	POLYGON: _('Polygon'), CURVE: _('Curve'),
+	CHAR: _('Char'), PIXMAP: _('Pixmap'),
+	}
+
+CID_TO_CLASS = {
+	DOCUMENT: Document,
+	
+	METAINFO: None, STYLES: None, STYLE: None, 
+	PROFILES: None, PROFILE: None, FONTS: None, 
+	FONT: None,IMAGES: None, IMAGE: None,
+	
+	PAGES: Pages, PAGE: Page, LAYER_GROUP: LayerGroup, 
+	MASTER_LAYERS: MasterLayers, LAYER: Layer, 
+	GRID_LAYER: GridLayer, GUIDE_LAYER: GuideLayer,
+	
+	GROUP: Group, CLIP_GROUP: ClipGroup, 
+	TEXT_BLOCK: TextBlock, TEXT_COLUMN: TextColumn,
+	
+	RECTANGLE: Rectangle, CIRCLE: Circle, 
+	POLYGON: Polygon, CURVE: Curve,
+	CHAR: Char, PIXMAP: Pixmap,
+	}
+
+CID_TO_TAGNAME = {
+	DOCUMENT: 'Document',
+	
+	METAINFO: 'Metainfo', STYLES: 'Styles', STYLE: 'Style', 
+	PROFILES: 'Profiles', PROFILE: 'Profile', FONTS: 'Fonts', 
+	FONT: 'Font',IMAGES: 'Images', IMAGE: 'Image',
+	
+	PAGES: 'Pages', PAGE: 'Page', LAYER_GROUP: 'LayerGroup', 
+	MASTER_LAYERS: 'MasterLayers', LAYER: 'Layer', 
+	GRID_LAYER: 'GridLayer', GUIDE_LAYER: 'GuideLayer',
+	
+	GROUP: 'Group', CLIP_GROUP: 'ClipGroup', 
+	TEXT_BLOCK: 'TextBlock', TEXT_COLUMN: 'TextColumn',
+	
+	RECTANGLE: 'Rectangle', CIRCLE: 'Ellipse', 
+	POLYGON: 'Polygon', CURVE: 'Curve',
+	CHAR: 'Char', PIXMAP: 'Pixmap',
+	}
 
 class DocumentObject:
 	"""
@@ -207,7 +265,7 @@ class SelectableObject(DocumentObject):
 class Group(SelectableObject):pass
 class ClipGroup(SelectableObject):pass
 class TextBlock(SelectableObject):pass
-class ColumnText(SelectableObject):pass
+class TextColumn(SelectableObject):pass
 
 #---------------Primitives---------------------------
 class Rectangle(SelectableObject):pass
@@ -215,4 +273,4 @@ class Circle(SelectableObject):pass
 class Polygon(SelectableObject):pass
 class Curve(SelectableObject):pass
 class Char(SelectableObject):pass
-class Image(SelectableObject):pass
+class Pixmap(SelectableObject):pass
