@@ -15,89 +15,203 @@
 #	You should have received a copy of the GNU General Public License
 #	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from copy import deepcopy
+
+import uc2
+from uc2 import uc_conf
+from uc2 import _ 
+
 
 # Document object enumeration
 DOCUMENT = 0
 
+METAINFO = 10
+STYLES = 11
+STYLE = 12
+PROFILES = 13
+FONTS = 14
+IMAGES = 15
+
 STRUCTURAL_CLASS = 50
+PAGES = 51
+PAGE = 52
+LAYER_GROUP = 53
+MASTER_LAYERS = 54
+LAYER = 55
+MASTER_LAYER = 56
+GRID_LAYER = 57
+GUIDE_LAYER = 58
 
 SELECTABLE_CLASS = 100
 COMPOUND_CLASS = 101
+GROUP = 102
+CLIP_GROUP = 103
+TEXT_BLOCK = 104
+TEXT_COLUMN = 105
 
 PRIMITIVE_CLASS = 200
+RECTANGLE = 201
+CIRCLE = 202
+POLYGON = 203
+CURVE = 204
+CHAR = 205
+IMAGE = 206
 
-
-class Document:
-	"""
-	Represents sK1 Document object.
-	This is a root DOM instance.
-	"""
-	is_doc = True
-	
-	page_format = []
-	guide_layer = None
-	grid_layer = None
-	master_layers = []
-	pages = []
-	
-	active_page = None
-	
-	page_count = 0
 
 class DocumentObject:
 	"""
 	Abstract parent class for all document 
-	child objects. Provides common object properties.
-	"""
-	is_doc = False
-	is_selectable = False
-	parent = None
-
-#----------------------------------------------------
-class StructuralObject(DocumentObject):
-	"""
-	Abstract parent class for structural objects. 
-	Provides common structural object properties.
+	objects. Provides common object properties.
 	"""	
-	is_printable = True
-	is_editable = True
-	is_visible = True
-	objects = []
-	name = ''
+	cid = 0
+	parent = None
+	config = None
+	childs = []
+
+
+class Document(DocumentObject):
+	"""
+	Represents sK1 Document object.
+	This is a root DOM instance.
+	"""	
+	cid = DOCUMENT
+	metainfo = None
+	styles = []
+	profiles = []
+	
+	
+	def __init__(self, config):
+		self.config = config
+		self.childs = [Pages(self.config, self),
+					MasterLayers(self.config, self),
+					GridLayer(self.config, self),
+					GuideLayer(self.config, self)]
+		
+
+class Pages(DocumentObject):
+	"""
+	Container for pages.
+	Page format: [format name, (width, height), orientation]
+	"""
+	cid = PAGES
+	page_format = []
+	page_counter = 0
+	
+	def __init__(self, config, parent=None):
+		self.parent = parent
+		self.config = config		 
+		format = '' + self.config.page_format
+		size = uc_conf.PAGE_FORMATS[format]
+		orient = config.page_orientation
+		self.page_format = [format, size, orient]
+		name = _('Page') + ' %s' % (page_counter + 1)
+		self.childs = [Page(self, name, self.config)]
+		self.page_counter += 1
+
 
 #================Structural Objects==================
 
+class StructuralObject(DocumentObject):
+	"""
+	Abstract parent for structural objects.
+	"""
+	cid = STRUCTURAL_CLASS
+	name = ''
+
 class Page(StructuralObject):
-	'''
+	"""
 	PAGE OBJECT
-	All child layers are in objects list.
+	All child layers are in childs list.
 	Page format: [format name, (width, height), orientation]
-	'''
+	"""
+	cid = PAGE
 	format = []
-	active_layer = None
-	layer_count = 0
+	name = ''
+	
+	layer_counter = 0
+	
+	def __init__(self, config, parent=None , name=_('Page')):
+		self.parent = parent
+		self.config = config
+		self.name = name
+		if parent is None:
+			format = '' + self.config.page_format
+			size = uc_conf.PAGE_FORMATS[format]
+			orient = config.page_orientation
+			self.format = [format, size, orient]
+		else:
+			self.format = deepcopy(parent.page_format)
+		name = _('Layer') + ' %s' % (layer_counter + 1)
+		self.childs = [Layer(self.config, self, name)]
+		self.layer_counter += 1
 
 class Layer(StructuralObject):
-	color = []
-
+	cid = LAYER
+	color = ''
+	name = ''
+	
+	def __init__(self, config, parent=None, name=_('Layer')):
+		self.parent = parent
+		self.config = config
+		self.name = name
+		self.color = '' + self.config.layer_color
+		self.childs = []
+		
 class GuideLayer(Layer):
-	name = 'Guide Layer'
+	cid = GUIDE_LAYER
+	
+	def __init__(self, config, parent=None, name=_('GuideLayer')):
+		super(GuideLayer, self).__init__(config, parent, name)
+		self.color = '' + self.config.guide_color
 
 class GridLayer(Layer):
-	name = 'Grid Layer'
+	cid = GRID_LAYER
 	grid = []
+	
+	def __init__(self, config, parent=None, name=_('GridLayer')):
+		super(GridLayer, self).__init__(config, parent, name)
+		self.color = '' + self.config.grid_color
+		self.grid = [] + self.config.grid_geometry
+		
+class LayerGroup(StructuralObject):
+	cid = LAYER_GROUP
+	layer_counter = 0
+	
+	def __init__(self, config, parent=None):
+		self.parent = parent
+		self.config = config
+		self.childs = []	
+
+class MasterLayers(LayerGroup):
+	cid = MASTER_LAYERS
+	
+	def __init__(self, config, parent=None):
+		super(MasterLayers, self).__init__(config, parent)
+	
 
 
-#----------------------------------------------------
-
+#================Selectable Objects==================
 class SelectableObject(DocumentObject):
 	"""
 	Abstract parent class for selectable objects. 
 	Provides common selectable object properties.
 	"""
-	is_selectable = True
+	cid = SELECTABLE_CLASS
+	trafo = []
 	bbox = []
-#================Selectable Objects==================
+	style = None
+	
 
-class Rectangle(SelectableObject):
-	pass
+#---------------Compound objects---------------------
+class Group(SelectableObject):pass
+class ClipGroup(SelectableObject):pass
+class TextBlock(SelectableObject):pass
+class ColumnText(SelectableObject):pass
+
+#---------------Primitives---------------------------
+class Rectangle(SelectableObject):pass
+class Circle(SelectableObject):pass
+class Polygon(SelectableObject):pass
+class Curve(SelectableObject):pass
+class Char(SelectableObject):pass
+class Image(SelectableObject):pass

@@ -20,9 +20,12 @@ import uc2
 import model
 from uc2 import _, uc_conf
 
-                                               
 
 def create_new_document(config=uc2.config):
+	model.Document(config)
+	return doc                     
+
+def _create_new_document(config=uc2.config):
 	
 	doc = model.Document()
 	set_page_format(doc, None, config.page_format, config.page_orientation)

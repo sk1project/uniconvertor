@@ -18,6 +18,8 @@
 import uc2
 import sk1doc
 
+from uc2.sk1doc import model
+
 class UCDocPresenter:	
 	
 	config = None
@@ -25,16 +27,24 @@ class UCDocPresenter:
 	model = None
 	renderer = None
 	doc_file = ''
-	doc_name = ''
+	
+	active_page = None
+	active_layer = None
 	
 	def __init__(self, config=uc2.config):
 		self.config = config
 		
 	def new(self):
-		pass
+		self.model = model.Document(self.config)
+		self.active_page = self.model.childs[0].childs[0]
+		self.active_layer = self.active_page.childs[0]
 	
-	def load(self):
-		pass
+	def load(self, filename):
+		self.doc_file = filename
+		#FIXME: Here should be file loading
+		self.model = model.Document(self.config)
+		self.active_page = self.model.childs[0].childs[0]
+		self.active_layer = self.active_page.childs[0]
 	
 	def save(self):
 		pass
@@ -43,4 +53,8 @@ class UCDocPresenter:
 		pass
 	
 	def close(self):
-		pass
+		self.doc_file = ''
+		self.active_page = None
+		self.active_layer = None
+		self.model = None
+		
