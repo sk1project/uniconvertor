@@ -58,3 +58,10 @@ class UCDocPresenter:
 		self.active_layer = None
 		self.model = None
 		
+	def get_page_size(self):
+		if self.active_page.format[2]:
+			h, w = self.active_page.format[1]
+		else:
+			w, h = self.active_page.format[1]
+		return w, h
+		
