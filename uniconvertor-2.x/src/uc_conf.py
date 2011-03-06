@@ -86,6 +86,12 @@ class UCConfig(XmlConfigParser):
 	system_encoding = 'utf-8'	# default encoding for sK1 (GUI uses utf-8 only)
 	
 	#============== DOCUMENT SECTION ==================
+	
+	# 0 - page center
+	# 1 - lower-left page corner
+	# 2 - upper-left page corner 
+	doc_origin = 1
+	
 	page_format = 'A4'
 	page_orientation = PORTRAIT
 	

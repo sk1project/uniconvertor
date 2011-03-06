@@ -78,10 +78,11 @@ class Document(DocumentObject):
 	metainfo = None
 	styles = []
 	profiles = []
-	
+	doc_origin = 1
 	
 	def __init__(self, config):
 		self.config = config
+		self.doc_origin = self.config.doc_origin
 		self.childs = [Pages(self.config, self),
 					MasterLayers(self.config, self),
 					GridLayer(self.config, self),
