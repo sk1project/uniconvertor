@@ -78,24 +78,6 @@ CID_TO_NAME = {
 	CHAR: _('Char'), PIXMAP: _('Pixmap'),
 	}
 
-CID_TO_CLASS = {
-	DOCUMENT: Document,
-	
-	METAINFO: None, STYLES: None, STYLE: None, 
-	PROFILES: None, PROFILE: None, FONTS: None, 
-	FONT: None,IMAGES: None, IMAGE: None,
-	
-	PAGES: Pages, PAGE: Page, LAYER_GROUP: LayerGroup, 
-	MASTER_LAYERS: MasterLayers, LAYER: Layer, 
-	GRID_LAYER: GridLayer, GUIDE_LAYER: GuideLayer,
-	
-	GROUP: Group, CLIP_GROUP: ClipGroup, 
-	TEXT_BLOCK: TextBlock, TEXT_COLUMN: TextColumn,
-	
-	RECTANGLE: Rectangle, CIRCLE: Circle, 
-	POLYGON: Polygon, CURVE: Curve,
-	CHAR: Char, PIXMAP: Pixmap,
-	}
 
 CID_TO_TAGNAME = {
 	DOCUMENT: 'Document',
@@ -274,3 +256,24 @@ class Polygon(SelectableObject):pass
 class Curve(SelectableObject):pass
 class Char(SelectableObject):pass
 class Pixmap(SelectableObject):pass
+
+
+
+CID_TO_CLASS = {
+	DOCUMENT: Document,
+	
+	METAINFO: None, STYLES: None, STYLE: None, 
+	PROFILES: None, PROFILE: None, FONTS: None, 
+	FONT: None,IMAGES: None, IMAGE: None,
+	
+	PAGES: Pages, PAGE: Page, LAYER_GROUP: LayerGroup, 
+	MASTER_LAYERS: MasterLayers, LAYER: Layer, 
+	GRID_LAYER: GridLayer, GUIDE_LAYER: GuideLayer,
+	
+	GROUP: Group, CLIP_GROUP: ClipGroup, 
+	TEXT_BLOCK: TextBlock, TEXT_COLUMN: TextColumn,
+	
+	RECTANGLE: Rectangle, CIRCLE: Circle, 
+	POLYGON: Polygon, CURVE: Curve,
+	CHAR: Char, PIXMAP: Pixmap,
+	}
