@@ -104,8 +104,8 @@ class Pages(DocumentObject):
 		size = uc_conf.PAGE_FORMATS[format]
 		orient = config.page_orientation
 		self.page_format = [format, size, orient]
-		name = _('Page') + ' %s' % (page_counter + 1)
-		self.childs = [Page(self, name, self.config)]
+		name = _('Page') + ' %s' % (self.page_counter + 1)
+		self.childs = [Page(self.config, self, name)]
 		self.page_counter += 1
 
 
@@ -141,7 +141,7 @@ class Page(StructuralObject):
 			self.format = [format, size, orient]
 		else:
 			self.format = deepcopy(parent.page_format)
-		name = _('Layer') + ' %s' % (layer_counter + 1)
+		name = _('Layer') + ' %s' % (self.layer_counter + 1)
 		self.childs = [Layer(self.config, self, name)]
 		self.layer_counter += 1
 
@@ -161,7 +161,7 @@ class GuideLayer(Layer):
 	cid = GUIDE_LAYER
 	
 	def __init__(self, config, parent=None, name=_('GuideLayer')):
-		super(GuideLayer, self).__init__(config, parent, name)
+		Layer.__init__(self, config, parent, name)
 		self.color = '' + self.config.guide_color
 
 class GridLayer(Layer):
@@ -169,7 +169,7 @@ class GridLayer(Layer):
 	grid = []
 	
 	def __init__(self, config, parent=None, name=_('GridLayer')):
-		super(GridLayer, self).__init__(config, parent, name)
+		Layer.__init__(self, config, parent, name)
 		self.color = '' + self.config.grid_color
 		self.grid = [] + self.config.grid_geometry
 		
@@ -186,7 +186,7 @@ class MasterLayers(LayerGroup):
 	cid = MASTER_LAYERS
 	
 	def __init__(self, config, parent=None):
-		super(MasterLayers, self).__init__(config, parent)
+		LayerGroup.__init__(self, config, parent)
 	
 
 
