@@ -15,20 +15,13 @@
 #	You should have received a copy of the GNU General Public License
 #	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import uc2
-from uc_conf import UCConfig, dummy_translate
 
 
-config = UCConfig()
-setattr(uc2, "_", dummy_translate)
-
-def uc2_run():
+class Application:
+	path = ''
 	
-	"""UniConvertor launch routine."""
-	
-	_pkgdir = __path__[0]
-	
-	from application import Application
-	
-	app = Application(_pkgdir)
-	app.run()
+	def __init__(self, path):
+		self.path = path
+		
+	def run(self):
+		pass
