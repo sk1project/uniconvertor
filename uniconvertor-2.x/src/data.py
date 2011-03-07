@@ -19,9 +19,11 @@ from uc2 import _
 
 #Formats enumeration
 
-SKX = 0
-SK1 = 1
-SK = 2
+ALL_FORMATS = 0
+
+SKX = 1
+SK1 = 2
+SK = 3
 
 SVG = 5
 SVGZ = 6
@@ -33,9 +35,10 @@ FIG = 10
 CDR = 50
 CDT = 51
 CDRZ = 52
-CMX = 53
-CCX = 54
-CDRX = 55
+CDTZ = 53
+CMX = 54
+CCX = 55
+CDRX = 56
 
 XAR = 66
 
@@ -58,21 +61,22 @@ DXF = 120
 DWG = 121
 
 FORMAT_DESCRIPTION = {
-SKX : _("sK1 graphics (ver.1.0 and newer)"),
-SK1 : _("sK1 graphics (ver.0.9 and older)"),
-SK : _("Sketch\Skencil files"),
+ALL_FORMATS : _("All supported formats"),
+SKX : _("sK1 graphics /ver.1.0 and newer/"),
+SK1 : _("sK1 graphics /ver.0.9 and older/"),
+SK : _("Sketch/Skencil files"),
 SVG : _("Scalable Vector Graphics files"),
 SVGZ : _("Compressed Scalable Vector Graphics files"),
 ORA : _("Open Raster Format files"),
 XCF : _("GIMP files"),
 SLA : _("Scribus documents"),
-CDR : _("CorelDRAW Graphics files (7-X3 ver.)"),
-CDT : _("CorelDRAW Templates files (7-X3 ver.)"),
-CDRZ : _("CorelDRAW Graphics files (X4-X5 ver.)"),
-CDTZ : _("CorelDRAW Templates files (X4-X5 ver.)"),
+CDR : _("CorelDRAW Graphics files /7-X3 ver./"),
+CDT : _("CorelDRAW Templates files /7-X3 ver./"),
+CDRZ : _("CorelDRAW Graphics files /X4-X5 ver./"),
+CDTZ : _("CorelDRAW Templates files /X4-X5 ver./"),
 CMX : _("CorelDRAW Presentation Exchange files"),
-CCX : _("CorelDRAW Compressed Exchange files (CDRX format)"),
-CDRX : _("CorelDRAW Compressed Exchange files (CDRX format)"),
+CCX : _("CorelDRAW Compressed Exchange files /CDRX format/"),
+CDRX : _("CorelDRAW Compressed Exchange files /CDRX format/"),
 XAR : _("Xara graphics files"),
 FIG : _("XFig files"),
 AI_PS : _("Adobe Illustrator files"),
@@ -93,13 +97,14 @@ DWG : _("AutoCAD DWG files"),
 }
 
 FORMAT_EXTENSION = {
-SKX : ("skx",), SK1 : ("sk1",), SK : ("sk",),
-SVG : ("svg",), SVGZ : ("svgz",), ORA : ("ora",), XCF : ("xcf",), SLA : ("sla",),FIG : ("fig",),
-CDR : ("cdr",), CDT : ("cdt",), CDRZ : ("cdr",), CMX : ("cmx",), CCX : ("ccx",), CDRX : ("cdr",),
-XAR : ("xar",),
-AI_PS : ("ai",), AI_PDF : ("ai",), PS : ("ps",), EPS : ("eps",), PDF : ("pdf",), PSD : ("psd",),
-CGM : ("cgm",), WMF : ("wmf",), EMF : ("emf",), XPS : ("xps",), VSD : ("vsd",),
-PLT : ("plt",), HPGL : ("hgl",), DXF : ("dxf",), DWG : ("dwg",),
+ALL_FORMATS : '',
+SKX : 'skx', SK1 : 'sk1', SK : 'sk',
+SVG : 'svg', SVGZ : 'svgz', ORA : 'ora', XCF : 'xcf', SLA : 'sla',FIG : 'fig',
+CDR : 'cdr', CDT : 'cdt', CDRZ : 'cdr', CDTZ : 'cdt', CMX : 'cmx', CCX : 'ccx', CDRX : 'cdr',
+XAR : 'xar',
+AI_PS : 'ai', AI_PDF : 'ai', PS : 'ps', EPS : 'eps', PDF : 'pdf', PSD : 'psd',
+CGM : 'cgm', WMF : 'wmf', EMF : 'emf', XPS : 'xps', VSD : 'vsd',
+PLT : 'plt', HPGL : 'hgl', DXF : 'dxf', DWG : 'dwg',
 }
 
 LOADER_FORMATS = [SKX, SK1, SK]
