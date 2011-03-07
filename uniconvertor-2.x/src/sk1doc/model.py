@@ -18,6 +18,7 @@
 from copy import deepcopy
 
 import uc2
+from uc2 import config
 from uc2 import uc_conf
 from uc2 import _ 
 
@@ -105,7 +106,6 @@ class DocumentObject:
 	"""	
 	cid = 0
 	parent = None
-	config = None
 	childs = []
 
 
@@ -120,13 +120,12 @@ class Document(DocumentObject):
 	profiles = []
 	doc_origin = 1
 	
-	def __init__(self, config):
-		self.config = config
-		self.doc_origin = self.config.doc_origin
-		self.childs = [Pages(self.config, self),
-					MasterLayers(self.config, self),
-					GridLayer(self.config, self),
-					GuideLayer(self.config, self)]
+	def __init__(self):
+		self.doc_origin = config.doc_origin
+		self.childs = [Pages(self),
+					MasterLayers(self),
+					GridLayer(self),
+					GuideLayer(self)]
 		
 
 class Pages(DocumentObject):
@@ -138,15 +137,14 @@ class Pages(DocumentObject):
 	page_format = []
 	page_counter = 0
 	
-	def __init__(self, config, parent=None):
-		self.parent = parent
-		self.config = config		 
-		format = '' + self.config.page_format
+	def __init__(self, parent=None):
+		self.parent = parent		 
+		format = '' + config.page_format
 		size = uc_conf.PAGE_FORMATS[format]
 		orient = config.page_orientation
 		self.page_format = [format, size, orient]
 		name = _('Page') + ' %s' % (self.page_counter + 1)
-		self.childs = [Page(self.config, self, name)]
+		self.childs = [Page(self, name)]
 		self.page_counter += 1
 
 
@@ -171,19 +169,18 @@ class Page(StructuralObject):
 	
 	layer_counter = 0
 	
-	def __init__(self, config, parent=None , name=_('Page')):
+	def __init__(self, parent=None , name=_('Page')):
 		self.parent = parent
-		self.config = config
 		self.name = name
 		if parent is None:
-			format = '' + self.config.page_format
+			format = '' + config.page_format
 			size = uc_conf.PAGE_FORMATS[format]
 			orient = config.page_orientation
 			self.format = [format, size, orient]
 		else:
 			self.format = deepcopy(parent.page_format)
 		name = _('Layer') + ' %s' % (self.layer_counter + 1)
-		self.childs = [Layer(self.config, self, name)]
+		self.childs = [Layer(self, name)]
 		self.layer_counter += 1
 
 class Layer(StructuralObject):
@@ -191,43 +188,41 @@ class Layer(StructuralObject):
 	color = ''
 	name = ''
 	
-	def __init__(self, config, parent=None, name=_('Layer')):
+	def __init__(self, parent=None, name=_('Layer')):
 		self.parent = parent
-		self.config = config
 		self.name = name
-		self.color = '' + self.config.layer_color
+		self.color = '' + config.layer_color
 		self.childs = []
 		
 class GuideLayer(Layer):
 	cid = GUIDE_LAYER
 	
-	def __init__(self, config, parent=None, name=_('GuideLayer')):
-		Layer.__init__(self, config, parent, name)
-		self.color = '' + self.config.guide_color
+	def __init__(self, parent=None, name=_('GuideLayer')):
+		Layer.__init__(self, parent, name)
+		self.color = '' + config.guide_color
 
 class GridLayer(Layer):
 	cid = GRID_LAYER
 	grid = []
 	
-	def __init__(self, config, parent=None, name=_('GridLayer')):
-		Layer.__init__(self, config, parent, name)
-		self.color = '' + self.config.grid_color
-		self.grid = [] + self.config.grid_geometry
+	def __init__(self, parent=None, name=_('GridLayer')):
+		Layer.__init__(self, parent, name)
+		self.color = '' + config.grid_color
+		self.grid = [] + config.grid_geometry
 		
 class LayerGroup(StructuralObject):
 	cid = LAYER_GROUP
 	layer_counter = 0
 	
-	def __init__(self, config, parent=None):
+	def __init__(self, parent=None):
 		self.parent = parent
-		self.config = config
 		self.childs = []	
 
 class MasterLayers(LayerGroup):
 	cid = MASTER_LAYERS
 	
-	def __init__(self, config, parent=None):
-		LayerGroup.__init__(self, config, parent)
+	def __init__(self, parent=None):
+		LayerGroup.__init__(self, parent)
 	
 
 

@@ -23,6 +23,7 @@ for internal events processing.
 #Signal channels
 
 CONFIG_MODIFIED = ['CONFIG_MODIFIED']
+FILTER_INFO = ['FILTER_INFO']
 
 def connect(channel, receiver):
 	"""

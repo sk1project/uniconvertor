@@ -16,10 +16,11 @@
 #	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import uc2
-from uc_conf import UCConfig, dummy_translate
+from uc_conf import UCData, UCConfig, dummy_translate
 
 
 config = UCConfig()
+app_conf = UCData()
 setattr(uc2, "_", dummy_translate)
 
 def uc2_run():
