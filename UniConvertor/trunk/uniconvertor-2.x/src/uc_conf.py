@@ -68,7 +68,7 @@ PAGE_FORMATS = {
 PORTRAIT = 0
 LANDSCAPE = 1 
 
-class UCData():
+class UCData:
 		
 	app_name = 'UniConvertor'
 	app_icon = None
