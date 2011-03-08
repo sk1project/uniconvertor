@@ -24,7 +24,7 @@ class AbstractLoader:
 	def __init__(self):
 		pass
 	
-	def load(self, path):
+	def load(self, presenter, path):
 		#Should return doc instance
 		return None
 	
@@ -50,7 +50,7 @@ class AbstractSaver:
 	def __init__(self):
 		pass
 	
-	def save(self, doc, path):
+	def save(self, presenter, path):
 		pass
 	
 	def get_options(self):
