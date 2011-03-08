@@ -42,14 +42,13 @@ class UCDocPresenter:
 		self.config = config
 		self.appdata = appdata
 		self.doc_id = utils.generate_id()
-		doc_cache_dir = os.path.join(self.appdata.app_config_dir, 'docs_cache')
-		self.doc_dir = os.path.join(doc_cache_dir, 'doc_' + self.doc_id)
-		os.makedirs(self.doc_dir)
+
 		
 	def new(self):
 		self.model = model.Document(self.config)
 		self.active_page = self.model.childs[0].childs[0]
 		self.active_layer = self.active_page.childs[0]
+		self.create_cache_structure()
 	
 	def load(self, filename):
 		self.doc_file = filename
@@ -70,16 +69,8 @@ class UCDocPresenter:
 		self.active_layer = None
 		self.model = None
 		try:
-			files=fs.get_files_tree(self.doc_dir)
-			for file in files: os.remove(file)
-			files=fs.get_files_tree(self.doc_dir, '')
-			for file in files: os.remove(file)
-			
-			dirs = fs.get_dirs_tree(self.doc_dir)
-			for dir in dirs: os.rmdir(dir)
-			
-			os.removedirs(self.doc_dir)
-		except:
+			fs.xremove_dir(self.doc_dir)
+		except IOError:
 			pass
 		
 	def get_page_size(self):
@@ -88,4 +79,15 @@ class UCDocPresenter:
 		else:
 			w, h = self.active_page.format[1]
 		return w, h
+		
+	def create_cache_structure(self):
+		doc_cache_dir = os.path.join(self.appdata.app_config_dir, 'docs_cache')
+		self.doc_dir = os.path.join(doc_cache_dir, 'doc_' + self.doc_id)
+		for dir in sk1doc.DOC_STRUCTURE:
+			path = os.path.join(self.doc_dir, dir)
+			os.makedirs(path)
+		mime = open(os.path.join(self.doc_dir, 'mimetype') , 'wb')
+		mime.write(sk1doc.DOC_MIME)
+		mime.close()
+		
 		

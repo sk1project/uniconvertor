@@ -110,3 +110,28 @@ PLT : 'plt', HPGL : 'hgl', DXF : 'dxf', DWG : 'dwg',
 LOADER_FORMATS = [SKX, SK1, SK]
 
 SAVER_FORMATS = [SKX, SK1, SK]
+
+from skx import SKX_Loader, SKX_Saver
+from sk1 import SK1_Loader, SK1_Saver
+from sk import SK_Loader, SK_Saver
+
+
+LOADERS = {
+SKX : SKX_Loader, SK1 : SK1_Loader, SK : SK_Loader,
+SVG : None, SVGZ : None, ORA : None, XCF : None, SLA : None, FIG : None,
+CDR : None, CDT : None, CDRZ : None, CDTZ : None, CMX : None, CCX : None, CDRX : None,
+XAR : None,
+AI_PS : None, AI_PDF : None, PS : None, EPS : None, PDF : None, PSD : None,
+CGM : None, WMF : None, EMF : None, XPS : None, VSD : None,
+PLT : None, HPGL : None, DXF : None, DWG : None,
+		}
+
+SAVERS = {
+SKX : SKX_Saver, SK1 : SK1_Saver, SK : SK_Saver,
+SVG : None, SVGZ : None, ORA : None, XCF : None, SLA : None, FIG : None, 
+CDR : None, CDT : None, CDRZ : None, CDTZ : None, CMX : None, CCX : None, CDRX : None,
+XAR : None,
+AI_PS : None, AI_PDF : None, PS : None, EPS : None, PDF : None, PSD : None,
+CGM : None, WMF : None, EMF : None, XPS : None, VSD : None,
+PLT : None,  HPGL : None, DXF : None, DWG : None,
+}

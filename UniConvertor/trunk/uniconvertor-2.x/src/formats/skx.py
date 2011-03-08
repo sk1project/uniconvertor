@@ -15,19 +15,8 @@
 #	You should have received a copy of the GNU General Public License
 #	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+class SKX_Loader:
+	pass
 
-DOC_MIME = 'application/vnd.sk1project.skx-graphics'
-
-DOC_STRUCTURE = [
-'Fonts', 
-'Images', 
-'META-INF', 
-'Palettes', 
-'Previews', 
-'Profiles', 
-'Thumbnails', 
-]
-	
-		
-	
-	
+class SKX_Saver:
+	pass
