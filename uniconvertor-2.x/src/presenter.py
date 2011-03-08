@@ -16,6 +16,7 @@
 #	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import sys
 
 import uc2
 import sk1doc
@@ -23,6 +24,7 @@ import sk1doc
 from uc2.sk1doc import model
 from uc2 import utils
 from uc2.utils import fs
+from uc2 import formats
 
 class UCDocPresenter:	
 	
@@ -50,16 +52,34 @@ class UCDocPresenter:
 		self.active_layer = self.active_page.childs[0]
 		self.create_cache_structure()
 	
-	def load(self, filename):
-		self.doc_file = filename
-		#FIXME: Here should be file loading
-		self.model = model.Document(self.config)
-		self.active_page = self.model.childs[0].childs[0]
-		self.active_layer = self.active_page.childs[0]
+	def load(self, path):
+		if path and os.path.lexists(path):
+			try:
+				loader = formats.get_loader(path)
+				self.model = loader.load(self, path)
+			except:
+				raise IOError(_('Error while loading')+ ' ' + path,
+							sys.exc_info())
+				
+			self.doc_file = path				
+			self.active_page = self.model.childs[0].childs[0]
+			self.active_layer = self.active_page.childs[0]
+		else:
+			raise IOError(_('Error while loading:')+ ' ',
+							_('Empty file name'))		
 	
-	def save(self):
-		pass
-	
+	def save(self, path):
+		if path:
+			try:
+				saver = formats.get_saver(path)
+				saver.save(self, path)
+			except:
+				raise IOError(_('Error while saving')+ ' ' + filename,
+							sys.exc_info())
+		else:
+			raise IOError(_('Error while saving:')+ ' ',
+							_('Empty file name'))
+			
 	def merge(self):
 		pass
 	
