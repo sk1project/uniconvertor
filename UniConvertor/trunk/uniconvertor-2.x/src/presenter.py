@@ -15,13 +15,19 @@
 #	You should have received a copy of the GNU General Public License
 #	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import os
+
 import uc2
 import sk1doc
 
 from uc2.sk1doc import model
 from uc2 import utils
+from uc2.utils import fs
 
 class UCDocPresenter:	
+	
+	config = None
+	doc_dir = ''
 	
 	model = None
 	renderer = None
@@ -31,18 +37,24 @@ class UCDocPresenter:
 	active_page = None
 	active_layer = None
 	
-	def __init__(self):
+	
+	def __init__(self, config=uc2.config, appdata=uc2.appdata):
+		self.config = config
+		self.appdata = appdata
 		self.doc_id = utils.generate_id()
+		doc_cache_dir = os.path.join(self.appdata.app_config_dir, 'docs_cache')
+		self.doc_dir = os.path.join(doc_cache_dir, 'doc_' + self.doc_id)
+		os.makedirs(self.doc_dir)
 		
 	def new(self):
-		self.model = model.Document()
+		self.model = model.Document(self.config)
 		self.active_page = self.model.childs[0].childs[0]
 		self.active_layer = self.active_page.childs[0]
 	
 	def load(self, filename):
 		self.doc_file = filename
 		#FIXME: Here should be file loading
-		self.model = model.Document()
+		self.model = model.Document(self.config)
 		self.active_page = self.model.childs[0].childs[0]
 		self.active_layer = self.active_page.childs[0]
 	
@@ -57,6 +69,18 @@ class UCDocPresenter:
 		self.active_page = None
 		self.active_layer = None
 		self.model = None
+		try:
+			files=fs.get_files_tree(self.doc_dir)
+			for file in files: os.remove(file)
+			files=fs.get_files_tree(self.doc_dir, '')
+			for file in files: os.remove(file)
+			
+			dirs = fs.get_dirs_tree(self.doc_dir)
+			for dir in dirs: os.rmdir(dir)
+			
+			os.removedirs(self.doc_dir)
+		except:
+			pass
 		
 	def get_page_size(self):
 		if self.active_page.format[2]:
