@@ -14,3 +14,35 @@
 #	
 #	You should have received a copy of the GNU General Public License
 #	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+import os
+
+from uc2 import _
+
+import data
+
+
+def get_loader(path):
+	pass
+
+def get_saver(path):
+	root, ext = os.path.splitext(path)
+	ext = ext.lower().replace('.', '')
+	saver = None
+	for format in data.SAVER_FORMATS:
+		if ext == data.FORMAT_EXTENSION[format]:
+			saver = data.SAVERS[format]()
+			break
+	if saver is None:
+		raise IOError(_('Cannot find export filter for %s format')%(ext.upper()))
+	else:
+		return saver 
+		
+		
+def _test():
+	print get_saver('/home/user/morf.skx')
+	
+		
+if __name__ == '__main__':
+    _test()
+	

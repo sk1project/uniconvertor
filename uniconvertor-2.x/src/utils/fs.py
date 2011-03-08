@@ -74,7 +74,12 @@ def get_files(path='.', ext='*'):
 def get_files_withpath(path='.', ext='*'):
 	import glob
 	if ext:
-		list = glob.glob(os.path.join(path, "*." + ext))
+		if ext == '*':
+			list = glob.glob(os.path.join(path, "*." + ext))
+			list += glob.glob(os.path.join(path, "*"))
+			list += glob.glob(os.path.join(path, ".*"))
+		else:
+			list = glob.glob(os.path.join(path, "*." + ext))
 	else:
 		list = glob.glob(os.path.join(path, "*"))
 	list.sort()
@@ -130,6 +135,29 @@ def find_files_in_path(paths, files):
 			fullname = os.path.join(path, file)
 			if os.path.isfile(fullname):
 				return fullname
+			
+def xclear_dir(path):
+	"""
+	Remove recursively all files and subdirectories from path.
+	path directory is not removed. 
+	"""
+	files=get_files_tree(path)
+	for file in files: 
+		if os.path.lexists(file):
+			os.remove(file)
+	
+	dirs = get_dirs_tree(path)
+	for dir in dirs: 
+		if os.path.lexists(dir):
+			os.rmdir(dir)
+
+def xremove_dir(path):	
+	"""
+	Remove recursively all files and subdirectories from path
+	including path directory. 
+	"""
+	xclear_dir(path)
+	os.removedirs(path)
 
 
 def get_system_fontdirs():
