@@ -27,10 +27,12 @@ SK = 3
 
 SVG = 5
 SVGZ = 6
-ORA = 7
-XCF = 8
-SLA = 9
-FIG = 10
+ODG = 7
+ORA = 8
+XCF = 9
+SLA = 10
+FIG = 11
+
 
 CDR = 50
 CDT = 51
@@ -67,6 +69,7 @@ SK1 : _("sK1 graphics /ver.0.9 and older/"),
 SK : _("Sketch/Skencil files"),
 SVG : _("Scalable Vector Graphics files"),
 SVGZ : _("Compressed Scalable Vector Graphics files"),
+ODG : _("Open Document Drawing files"),
 ORA : _("Open Raster Format files"),
 XCF : _("GIMP files"),
 SLA : _("Scribus documents"),
@@ -99,7 +102,7 @@ DWG : _("AutoCAD DWG files"),
 FORMAT_EXTENSION = {
 ALL_FORMATS : '',
 SKX : 'skx', SK1 : 'sk1', SK : 'sk',
-SVG : 'svg', SVGZ : 'svgz', ORA : 'ora', XCF : 'xcf', SLA : 'sla',FIG : 'fig',
+SVG : 'svg', SVGZ : 'svgz', ODG : 'odg', ORA : 'ora', XCF : 'xcf', SLA : 'sla',FIG : 'fig',
 CDR : 'cdr', CDT : 'cdt', CDRZ : 'cdr', CDTZ : 'cdt', CMX : 'cmx', CCX : 'ccx', CDRX : 'cdr',
 XAR : 'xar',
 AI_PS : 'ai', AI_PDF : 'ai', PS : 'ps', EPS : 'eps', PDF : 'pdf', PSD : 'psd',
