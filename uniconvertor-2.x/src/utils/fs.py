@@ -73,7 +73,10 @@ def get_files(path='.', ext='*'):
 #Return full file names list for provided path
 def get_files_withpath(path='.', ext='*'):
 	import glob
-	list = glob.glob(os.path.join(path, "*." + ext))
+	if ext:
+		list = glob.glob(os.path.join(path, "*." + ext))
+	else:
+		list = glob.glob(os.path.join(path, "*"))
 	list.sort()
 	result = []
 	for file in list:

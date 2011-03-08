@@ -19,5 +19,5 @@ import base64
 import time
 
 def generate_id():
-	return base64.b64encode(time.time().__str__().replace('.',''))
+	return base64.b64encode(str(int(time.time()*100000)))
 
