@@ -18,6 +18,8 @@
 
 DOC_MIME = 'application/vnd.sk1project.skx-graphics'
 
+DOC_EXTENSION = '.skx'
+
 DOC_STRUCTURE = [
 'Fonts', 
 'Images', 
