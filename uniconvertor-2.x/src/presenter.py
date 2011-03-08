@@ -21,6 +21,7 @@ import sys
 import uc2
 import sk1doc
 
+from uc2 import _
 from uc2.sk1doc import model
 from uc2 import utils
 from uc2.utils import fs
@@ -56,6 +57,7 @@ class UCDocPresenter:
 		if path and os.path.lexists(path):
 			try:
 				loader = formats.get_loader(path)
+				
 				self.model = loader.load(self, path)
 			except:
 				raise IOError(_('Error while loading')+ ' ' + path,
@@ -72,6 +74,10 @@ class UCDocPresenter:
 		if path:
 			try:
 				saver = formats.get_saver(path)
+				if saver is None:
+					root, ext = os.path.splitext(path)
+					ext = ext.lower().replace('.', '')
+					raise IOError(_('Cannot find export filter for %s format')%(ext.upper()))
 				saver.save(self, path)
 			except:
 				raise IOError(_('Error while saving')+ ' ' + filename,
@@ -111,3 +117,13 @@ class UCDocPresenter:
 		mime.close()
 		
 		
+		
+def _test():
+	pass
+#	doc = UCDocPresenter()
+#	doc.load('/home/user/morf.cdr')
+#	doc.save('/home/user/morf.svg')
+	
+		
+if __name__ == '__main__':
+    _test()	

@@ -23,7 +23,8 @@ import data
 
 
 def get_loader(path):
-	pass
+	loader = None
+	return loader
 
 def get_saver(path):
 	root, ext = os.path.splitext(path)
@@ -33,14 +34,11 @@ def get_saver(path):
 		if ext == data.FORMAT_EXTENSION[format]:
 			saver = data.SAVERS[format]()
 			break
-	if saver is None:
-		raise IOError(_('Cannot find export filter for %s format')%(ext.upper()))
-	else:
-		return saver 
+	return saver 
 		
 		
 def _test():
-	print get_saver('/home/user/morf.skx')
+	print get_saver('/home/user/morf.cdr')
 	
 		
 if __name__ == '__main__':
