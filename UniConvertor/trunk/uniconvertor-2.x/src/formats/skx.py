@@ -15,8 +15,27 @@
 #	You should have received a copy of the GNU General Public License
 #	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-class SKX_Loader:
-	pass
+from abstract import AbstractLoader, AbstractSaver
 
-class SKX_Saver:
-	pass
+class SKX_Loader(AbstractLoader):
+	name = 'SKX_Loader'
+	options = {}
+	
+	def __init__(self):
+		AbstractLoader.__init__(self)
+		
+	def load(self, presenter, path):
+		self.presenter = presenter
+		self.path = path
+
+class SKX_Saver(AbstractSaver):
+	name = 'SKX_Saver'
+	options = {}
+	
+	def __init__(self):
+		AbstractSaver.__init__(self)
+		
+	def save(self, presenter, path):
+		self.presenter = presenter
+		self.path = path
+		
