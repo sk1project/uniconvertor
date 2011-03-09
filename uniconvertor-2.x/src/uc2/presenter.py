@@ -61,7 +61,7 @@ class UCDocPresenter:
 				self.model = loader.load(self, path)
 			except:
 				raise IOError(_('Error while loading')+ ' ' + path,
-							sys.exc_info())
+							sys.exc_info()[1], sys.exc_info()[2])
 				
 			self.doc_file = path				
 			self.active_page = self.model.childs[0].childs[0]
@@ -75,13 +75,14 @@ class UCDocPresenter:
 			try:
 				saver = formats.get_saver(path)
 				if saver is None:
-					root, ext = os.path.splitext(path)
-					ext = ext.lower().replace('.', '')
-					raise IOError(_('Cannot find export filter for %s format')%(ext.upper()))
+					ext = os.path.splitext(path)[1]
+					ext = ext.upper().replace('.', '')
+					msg = _('Cannot find export filter for %s format')%(ext)
+					raise IOError(msg)
 				saver.save(self, path)
 			except:
-				raise IOError(_('Error while saving')+ ' ' + filename,
-							sys.exc_info())
+				raise IOError(_('Error while saving')+ ' ' + path,
+							sys.exc_info()[1], sys.exc_info()[2])
 		else:
 			raise IOError(_('Error while saving:')+ ' ',
 							_('Empty file name'))
