@@ -21,6 +21,7 @@ from uc_conf import UCData, UCConfig, dummy_translate
 
 config = UCConfig()
 appdata = UCData()
+_ = None
 setattr(uc2, "_", dummy_translate)
 
 def uc2_run():

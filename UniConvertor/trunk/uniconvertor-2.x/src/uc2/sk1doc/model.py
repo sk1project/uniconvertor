@@ -121,6 +121,8 @@ class Document(DocumentObject):
 	doc_origin = 1
 	
 	def __init__(self, config):
+		self.cid = DOCUMENT
+		self.metainfo = None
 		self.config = config
 		self.doc_origin = self.config.doc_origin
 		self.childs = [Pages(self.config, self),
@@ -139,6 +141,8 @@ class Pages(DocumentObject):
 	page_counter = 0
 	
 	def __init__(self, config, parent=None):
+		self.cid = PAGES
+		self.page_counter = 0
 		self.parent = parent
 		self.config = config		 
 		format = '' + self.config.page_format
@@ -172,6 +176,8 @@ class Page(StructuralObject):
 	layer_counter = 0
 	
 	def __init__(self, config, parent=None , name=_('Page')):
+		self.cid = PAGE
+		self.layer_counter = 0
 		self.parent = parent
 		self.config = config
 		self.name = name
@@ -192,6 +198,7 @@ class Layer(StructuralObject):
 	name = ''
 	
 	def __init__(self, config, parent=None, name=_('Layer')):
+		self.cid = LAYER
 		self.parent = parent
 		self.config = config
 		self.name = name
@@ -203,6 +210,7 @@ class GuideLayer(Layer):
 	
 	def __init__(self, config, parent=None, name=_('GuideLayer')):
 		Layer.__init__(self, config, parent, name)
+		self.cid = GUIDE_LAYER
 		self.color = '' + self.config.guide_color
 
 class GridLayer(Layer):
@@ -211,6 +219,7 @@ class GridLayer(Layer):
 	
 	def __init__(self, config, parent=None, name=_('GridLayer')):
 		Layer.__init__(self, config, parent, name)
+		self.cid = GRID_LAYER
 		self.color = '' + self.config.grid_color
 		self.grid = [] + self.config.grid_geometry
 		
@@ -219,6 +228,7 @@ class LayerGroup(StructuralObject):
 	layer_counter = 0
 	
 	def __init__(self, config, parent=None):
+		self.cid = LAYER_GROUP
 		self.parent = parent
 		self.config = config
 		self.childs = []	
@@ -228,6 +238,7 @@ class MasterLayers(LayerGroup):
 	
 	def __init__(self, config, parent=None):
 		LayerGroup.__init__(self, config, parent)
+		self.cid = MASTER_LAYERS
 	
 
 
