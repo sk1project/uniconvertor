@@ -67,8 +67,7 @@ class UCDocPresenter:
 			self.active_page = self.model.childs[0].childs[0]
 			self.active_layer = self.active_page.childs[0]
 		else:
-			raise IOError(_('Error while loading:')+ ' ',
-							_('Empty file name'))		
+			raise IOError(_('Error while loading:')+ ' ', _('Empty file name'))		
 	
 	def save(self, path):
 		if path:
@@ -81,11 +80,11 @@ class UCDocPresenter:
 					raise IOError(msg)
 				saver.save(self, path)
 			except:
+				print sys.exc_info()
 				raise IOError(_('Error while saving')+ ' ' + path,
 							sys.exc_info()[1], sys.exc_info()[2])
 		else:
-			raise IOError(_('Error while saving:')+ ' ',
-							_('Empty file name'))
+			raise IOError(_('Error while saving:')+ ' ', _('Empty file name'))
 			
 	def merge(self):
 		pass

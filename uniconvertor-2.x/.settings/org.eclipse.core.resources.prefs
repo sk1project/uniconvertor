@@ -1,8 +1,14 @@
-#Wed Mar 09 08:16:17 EET 2011
+#Wed Mar 09 16:23:41 EET 2011
 eclipse.preferences.version=1
+encoding//src/uc2/__init__.py=utf-8
 encoding//src/uc2/application.py=utf-8
+encoding//src/uc2/cfgparser.py=utf-8
 encoding//src/uc2/events.py=utf-8
+encoding//src/uc2/formats/skx.py=utf-8
 encoding//src/uc2/presenter.py=utf-8
 encoding//src/uc2/sk1doc/__init__.py=utf-8
+encoding//src/uc2/sk1doc/model.py=utf-8
+encoding//src/uc2/uc_conf.py=utf-8
+encoding//src/uc2/utils/fs.py=utf-8
 encoding//src/uc2/utils/system.py=utf-8
 encoding//unittests/testsuite.py=utf-8
