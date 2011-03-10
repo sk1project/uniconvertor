@@ -48,7 +48,7 @@ class UCDocPresenter:
 
 		
 	def new(self):
-		self.model = model.Document(self.config)
+		self.model = sk1doc.create_new_doc(self.config)
 		self.active_page = self.model.childs[0].childs[0]
 		self.active_layer = self.active_page.childs[0]
 		self.create_cache_structure()
@@ -57,9 +57,11 @@ class UCDocPresenter:
 		if path and os.path.lexists(path):
 			try:
 				loader = formats.get_loader(path)
-				
+				self.create_cache_structure()
 				self.model = loader.load(self, path)
 			except:
+				self.close()
+				print sys.exc_info()
 				raise IOError(_('Error while loading')+ ' ' + path,
 							sys.exc_info()[1], sys.exc_info()[2])
 				
@@ -97,13 +99,14 @@ class UCDocPresenter:
 		try:
 			fs.xremove_dir(self.doc_dir)
 		except IOError:
+			print 'error',sys.exc_info()
 			pass
 		
 	def get_page_size(self):
-		if self.active_page.format[2]:
-			h, w = self.active_page.format[1]
+		if self.active_page.page_format[2]:
+			h, w = self.active_page.page_format[1]
 		else:
-			w, h = self.active_page.format[1]
+			w, h = self.active_page.page_format[1]
 		return w, h
 		
 	def create_cache_structure(self):

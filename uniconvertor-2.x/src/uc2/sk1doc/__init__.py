@@ -15,6 +15,8 @@
 #	You should have received a copy of the GNU General Public License
 #	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import uc2
+import model
 
 DOC_MIME = 'application/vnd.sk1project.skx-graphics'
 
@@ -30,6 +32,33 @@ DOC_STRUCTURE = [
 'Thumbnails', 
 ]
 	
-		
+def create_new_doc(config=uc2.config):
+	doc = model.Document(config)
+	
+	layer = model.Layer(config)
+	page = model.Page(config)
+	add_child(page, layer)
+	page.layer_counter += 1
+	
+	pages = model.Pages(config)
+	add_child(pages, page)
+	pages.page_counter += 1
+	
+	ml = model.MasterLayers(config)
+	gl = model.GridLayer(config)
+	guide = model.GuideLayer(config)
+	add_childs(doc, [pages, ml, gl, guide])
+	
+	return doc
+	
+	
+def add_childs(parent, childs=[]):
+	if childs:
+		for child in childs:
+			parent.childs.append(child)
+			child.parent = parent
+			
+def add_child(parent, child):
+	add_childs(parent, [child,])
 	
 	

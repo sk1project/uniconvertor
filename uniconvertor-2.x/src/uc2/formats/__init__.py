@@ -23,11 +23,17 @@ import data
 
 
 def get_loader(path):
+	ext = os.path.splitext(path)[1]
+	ext = ext.lower().replace('.', '')
 	loader = None
+	for format in data.LOADER_FORMATS:
+		if ext == data.FORMAT_EXTENSION[format]:
+			loader = data.LOADERS[format]()
+			break	
 	return loader
 
 def get_saver(path):
-	root, ext = os.path.splitext(path)
+	ext = os.path.splitext(path)[1]
 	ext = ext.lower().replace('.', '')
 	saver = None
 	for format in data.SAVER_FORMATS:

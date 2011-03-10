@@ -17,8 +17,9 @@
 
 import os
 
-from cfgparser import XmlConfigParser
+from uc2.utils.fs import expanduser_unicode
 
+from cfgparser import XmlConfigParser
 
 def dummy_translate(str):
 	return str
@@ -73,10 +74,10 @@ class UCData:
 	app_name = 'UniConvertor'
 	app_icon = None
 	
-	app_config_dir = os.path.expanduser(os.path.join('~', '.config', 'uc2'))
+	app_config_dir = expanduser_unicode(os.path.join('~', '.config', 'uc2'))
 	if not os.path.lexists(app_config_dir):
 		os.makedirs(app_config_dir)
-	app_config = os.path.expanduser(os.path.join('~', '.config', 'uc2', 'preferences.cfg'))
+	app_config = expanduser_unicode(os.path.join('~', '.config', 'uc2', 'preferences.cfg'))
 	
 	
 class UCConfig(XmlConfigParser):
