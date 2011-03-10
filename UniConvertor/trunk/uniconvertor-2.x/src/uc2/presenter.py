@@ -118,15 +118,3 @@ class UCDocPresenter:
 		mime = open(os.path.join(self.doc_dir, 'mimetype') , 'wb')
 		mime.write(sk1doc.DOC_MIME)
 		mime.close()
-		
-		
-		
-def _test():
-	pass
-#	doc = UCDocPresenter()
-#	doc.load('/home/user/morf.cdr')
-#	doc.save('/home/user/morf.svg')
-	
-		
-if __name__ == '__main__':
-    _test()	

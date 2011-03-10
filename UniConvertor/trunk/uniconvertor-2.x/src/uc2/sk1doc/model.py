@@ -291,3 +291,5 @@ CID_TO_CLASS = {
 	POLYGON: Polygon, CURVE: Curve,
 	CHAR: Char, PIXMAP: Pixmap,
 	}
+
+CID_TO_PROPNAME = {}
