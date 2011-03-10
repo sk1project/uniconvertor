@@ -20,9 +20,9 @@ from uc2 import events
 import os, sys, types
 
 from xml.sax import handler
-		
+
+
 class XmlConfigParser:
-	
 	"""
 	Represents parent class for application config.
 	"""
@@ -31,11 +31,11 @@ class XmlConfigParser:
 		if not hasattr(self, attr) or getattr(self, attr) != value:
 			self.__dict__[attr] = value
 			events.emit(events.CONFIG_MODIFIED, attr, value)
-			
+
 	def load(self, filename=None):
 		import xml.sax
 		from xml.sax.xmlreader import InputSource
-		
+
 		content_handler = XMLPrefReader(pref=self)
 		error_handler = ErrorHandler()
 		entity_resolver = EntityResolver()
@@ -62,11 +62,12 @@ class XmlConfigParser:
 		try:
 			file = open(filename, 'w')
 		except (IOError, os.error), value:
-			sys.stderr('cannot write preferences into %s: %s' % (`filename`, value[1]))
+			sys.stderr('cannot write preferences into %s: %s' % (`filename`,
+																 value[1]))
 			return
-	
+
 		writer = XMLGenerator(out=file, encoding=self.system_encoding)
-		writer.startDocument()	
+		writer.startDocument()
 		defaults = XmlConfigParser.__dict__
 		items = self.__dict__.items()
 		items.sort()
@@ -79,15 +80,15 @@ class XmlConfigParser:
 			writer.startElement('%s' % key, {})
 			if not type(value) == types.UnicodeType:
 				value = '%s' % `value`
-			
+
 			writer.characters(value)
-				
+
 			writer.endElement('%s' % key)
 			writer.characters('\n')
 		writer.endElement('preferences')
 		writer.endDocument()
 		file.close
-		
+
 class XMLPrefReader(handler.ContentHandler):
 	"""Handler for xml file reading"""
 	def __init__(self, pref=None):
@@ -104,7 +105,7 @@ class XMLPrefReader(handler.ContentHandler):
 				if self.is_int(self.value):
 					self.value = int(self.value)
 				elif self.is_float(self.value):
-					self.value = float(self.value)									
+					self.value = float(self.value)
 				self.pref.__dict__[self.key] = self.value
 			except Exception:
 				print sys.exc_info()[0]
@@ -112,7 +113,7 @@ class XMLPrefReader(handler.ContentHandler):
 
 	def characters(self, data):
 		self.value = data
-		
+
 	def is_int(self, value):
 		res = True
 		for letter in value:
@@ -120,7 +121,7 @@ class XMLPrefReader(handler.ContentHandler):
 				res = False
 				break
 		return res
-	
+
 	def is_float(self, value):
 		res = True
 		for letter in value:

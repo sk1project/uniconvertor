@@ -18,8 +18,12 @@
 import os
 import sys
 
-from zipfile import ZipFile
 import zipfile
+from zipfile import ZipFile
+
+import xml.sax
+from xml.sax.xmlreader import InputSource
+from xml.sax import handler
 
 from uc2 import _
 from uc2.sk1doc import model
@@ -49,6 +53,7 @@ def escape_quote(line):
 class SKX_Loader(AbstractLoader):
 	name = 'SKX_Loader'
 	options = {}
+	model = None
 
 	def __init__(self):
 		AbstractLoader.__init__(self)
@@ -56,14 +61,15 @@ class SKX_Loader(AbstractLoader):
 	def load(self, presenter, path):
 		self.presenter = presenter
 		self.path = path
-		
+
 		if not zipfile.is_zipfile(self.path):
 			raise IOError(2, _('It seems the file is not SKX file'))
-		
+
 		self._extract_content()
-		return self._build_model()
-		
-	def _extract_content(self):		
+		self._build_model()
+		return self.model
+
+	def _extract_content(self):
 		skx = ZipFile(self.path, 'r')
 		try:
 			fl = skx.namelist()
@@ -73,22 +79,85 @@ class SKX_Loader(AbstractLoader):
 									'\n' + value, traceback)
 		if not 'mimetype' in fl or not skx.read('mimetype') == sk1doc.DOC_MIME:
 			raise IOError(2, _('The file is corrupted or not SKX file'))
-		
+
 		filelist = []
 		for item in fl:
 			if item == 'mimetype' or item[-1] == '/':
 				continue
 			filelist.append(item)
-			
+
 		for item in filelist:
 			source = skx.read(item)
-			dest = open(os.path.join(self.presenter.doc_dir, item),'wb')
+			dest = open(os.path.join(self.presenter.doc_dir, item), 'wb')
 			dest.write(source)
 			dest.close()
-	
-	def _build_model(self):
-		return None
 
+	def _build_model(self):
+		content_handler = XMLDocReader(self.presenter)
+		error_handler = ErrorHandler()
+		entity_resolver = EntityResolver()
+		dtd_handler = DTDHandler()
+		try:
+			filename = os.path.join(self.presenter.doc_dir, 'content.xml')
+			input = open(filename, "r")
+			input_source = InputSource()
+			input_source.setByteStream(input)
+			xml_reader = xml.sax.make_parser()
+			xml_reader.setContentHandler(content_handler)
+			xml_reader.setErrorHandler(error_handler)
+			xml_reader.setEntityResolver(entity_resolver)
+			xml_reader.setDTDHandler(dtd_handler)
+			xml_reader.parse(input_source)
+			input.close
+		except:
+			pass		
+		self.model = content_handler.model
+
+
+class XMLDocReader(handler.ContentHandler):
+
+	def __init__(self, presenter):
+		self.model = None
+		self.presenter = presenter
+		self.parent_stack = []
+
+	def startElement(self, name, attrs):
+		if name == 'Content':
+			self.parent_stack[-1][1] = True
+		else:
+			cid = int(attrs._attrs['cid'])
+			obj = model.CID_TO_CLASS[cid](self.presenter.config)
+			for item in attrs._attrs.keys():
+				line = 'self.value=' + attrs._attrs[item]
+				code = compile(line, '<string>', 'exec')
+				exec code
+				obj.__dict__[item] = self.value
+				
+			if self.parent_stack:
+				parent = self.parent_stack[-1][0]
+				if self.parent_stack[-1][1]:
+					sk1doc.add_child(parent, obj)
+				else:
+					if model.CID_TO_PROPNAME.has_key(cid):
+						parent.__dict__[model.CID_TO_PROPNAME[cid]] = obj
+			else:
+				self.model = obj
+
+			self.parent_stack.append([obj, False])
+
+	def endElement(self, name):
+		if name == 'Content':
+			self.parent_stack[-1][1] = False
+		else:
+			self.parent_stack = self.parent_stack[:-1]
+
+	def characters(self, data):
+		pass
+
+
+class ErrorHandler(handler.ErrorHandler): pass
+class EntityResolver(handler.EntityResolver): pass
+class DTDHandler(handler.DTDHandler): pass
 
 
 class SKX_Saver(AbstractSaver):
@@ -104,6 +173,7 @@ class SKX_Saver(AbstractSaver):
 	def save(self, presenter, path):
 		self.presenter = presenter
 		self.path = path
+		self.content = []
 		self._save_content()
 		self._write_manifest()
 		self._pack_content()
@@ -134,12 +204,12 @@ class SKX_Saver(AbstractSaver):
 		self._open_tag(tag, params, item.childs)
 		if item.childs:
 			self.ident += 1
-			self.file.write('%s<Content>\n'%(self.ident * IDENT))
+			self.file.write('%s<Content>\n' % (self.ident * IDENT))
 			self.ident += 1
 			for child in item.childs:
 				self._write_tree(child)
 			self.ident -= 1
-			self.file.write('%s</Content>\n'%(self.ident * IDENT))
+			self.file.write('%s</Content>\n' % (self.ident * IDENT))
 			self.ident -= 1
 			self._close_tag(tag)
 
@@ -147,23 +217,23 @@ class SKX_Saver(AbstractSaver):
 		result = []
 		props = child.__dict__
 		items = props.keys()
-		items.sort()		
+		items.sort()
 		for item in ['cid', 'childs', 'parent', 'config']:
 			if item in items:
 				items.remove(item)
-		items = ['cid'] + items	
+		items = ['cid'] + items
 		for item in items:
 			item_str = props[item].__str__()
 			if isinstance(props[item], str):
-				item_str = "'%s'"%(escape_quote(item_str))
+				item_str = "'%s'" % (escape_quote(item_str))
 			result.append((item, encode_quotes(item_str)))
-		return result		
+		return result
 
 	def _open_tag(self, tag, params, len):
 		self.file.write('%s<%s ' % (self.ident * IDENT, tag))
 		for item in params:
 			param, value = item
-			self.file.write('\n%s %s="%s"'%(self.ident * IDENT,param, value))		
+			self.file.write('\n%s %s="%s"' % (self.ident * IDENT, param, value))
 		if len:
 			self.file.write('>\n')
 		else:
@@ -174,7 +244,7 @@ class SKX_Saver(AbstractSaver):
 
 	def _finish(self):
 		self.file.close()
-		
+
 	def _write_manifest(self):
 		xml = os.path.join(self.presenter.doc_dir, 'META-INF', 'manifest.xml')
 		try:
@@ -182,17 +252,17 @@ class SKX_Saver(AbstractSaver):
 		except:
 			errtype, value, traceback = sys.exc_info()
 			raise IOError(errtype,
-						_('Cannot open %s file for writing') % (xml) + 
+						_('Cannot open %s file for writing') % (xml) +
 						'\n' + value, traceback)
 		self._start()
 		self.file.write('<manifest>\n')
 		self._write_manifest_entries()
 		self.file.write('</manifest>\n')
 		self._finish()
-		
+
 	def _write_manifest_entries(self):
 		content = []
-		
+
 		for path in sk1doc.DOC_STRUCTURE:
 			pt = os.path.join(self.presenter.doc_dir, path)
 			self.content.append((pt, path + '/'))
@@ -203,26 +273,26 @@ class SKX_Saver(AbstractSaver):
 					filetype = 'text/xml'
 				if not path == 'META-INF':
 					content.append((filetype, path + '/' + file))
-				pt = os.path.join(self.presenter.doc_dir, path, file)	
+				pt = os.path.join(self.presenter.doc_dir, path, file)
 				self.content.append((pt, path + '/' + file))
-			if not path == 'META-INF':			
+			if not path == 'META-INF':
 				content.append(('', path + '/'))
 
 		pt = os.path.join(self.presenter.doc_dir, 'content.xml')
 		self.content.append((pt, 'content.xml'))
 		pt = os.path.join(self.presenter.doc_dir, 'mimetype')
 		self.content.append((pt, 'mimetype'))
-		
-		main = [('application/vnd.sk1project.skx-graphics','/')] 
-		main += [('text/xml','content.xml')] 
+
+		main = [(sk1doc.DOC_MIME, '/')]
+		main += [('text/xml', 'content.xml')]
 		content = main + content
-			
+
 		for item in content:
 			tp, pt = item
-			ln = '\t<file-entry media-type="%s" full-path="%s"/>\n'%(tp, pt)
+			ln = '\t<file-entry media-type="%s" full-path="%s"/>\n' % (tp, pt)
 			self.file.write(ln)
-			
-	
+
+
 	def _pack_content(self):
 		skx = ZipFile(self.presenter.doc_file, 'w')
 		for item in self.content:
