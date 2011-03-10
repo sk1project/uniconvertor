@@ -19,6 +19,7 @@ import os
 import sys
 
 from zipfile import ZipFile
+import zipfile
 
 from uc2 import _
 from uc2.sk1doc import model
@@ -26,7 +27,7 @@ from uc2 import sk1doc
 from uc2.utils import fs
 
 from abstract import AbstractLoader, AbstractSaver
-import zipfile
+
 
 IDENT = '\t'
 
@@ -43,6 +44,8 @@ def decode_quotes(line):
 def escape_quote(line):
 	return line.replace("'", "\\'")
 
+
+
 class SKX_Loader(AbstractLoader):
 	name = 'SKX_Loader'
 	options = {}
@@ -53,6 +56,39 @@ class SKX_Loader(AbstractLoader):
 	def load(self, presenter, path):
 		self.presenter = presenter
 		self.path = path
+		
+		if not zipfile.is_zipfile(self.path):
+			raise IOError(2, _('It seems the file is not SKX file'))
+		
+		self._extract_content()
+		return self._build_model()
+		
+	def _extract_content(self):		
+		skx = ZipFile(self.path, 'r')
+		try:
+			fl = skx.namelist()
+		except:
+			errtype, value, traceback = sys.exc_info()
+			raise IOError(errtype, _('It seems the SKX file is corrupted') + \
+									'\n' + value, traceback)
+		if not 'mimetype' in fl or not skx.read('mimetype') == sk1doc.DOC_MIME:
+			raise IOError(2, _('The file is corrupted or not SKX file'))
+		
+		filelist = []
+		for item in fl:
+			if item == 'mimetype' or item[-1] == '/':
+				continue
+			filelist.append(item)
+			
+		for item in filelist:
+			source = skx.read(item)
+			dest = open(os.path.join(self.presenter.doc_dir, item),'wb')
+			dest.write(source)
+			dest.close()
+	
+	def _build_model(self):
+		return None
+
 
 
 class SKX_Saver(AbstractSaver):
@@ -79,7 +115,7 @@ class SKX_Saver(AbstractSaver):
 		except:
 			errtype, value, traceback = sys.exc_info()
 			raise IOError(errtype,
-						_('Cannot open %s file for writing') % (content_xml) +
+						_('Cannot open %s file for writing') % (content_xml) + \
 						'\n' + value, traceback)
 
 		doc = self.presenter.model
@@ -98,8 +134,12 @@ class SKX_Saver(AbstractSaver):
 		self._open_tag(tag, params, item.childs)
 		if item.childs:
 			self.ident += 1
+			self.file.write('%s<Content>\n'%(self.ident * IDENT))
+			self.ident += 1
 			for child in item.childs:
 				self._write_tree(child)
+			self.ident -= 1
+			self.file.write('%s</Content>\n'%(self.ident * IDENT))
 			self.ident -= 1
 			self._close_tag(tag)
 

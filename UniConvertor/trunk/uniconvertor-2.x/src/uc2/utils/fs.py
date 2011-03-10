@@ -20,6 +20,7 @@
 #
 
 import os
+import sys
 import system
 
 #Return directory list for provided path
@@ -158,6 +159,13 @@ def xremove_dir(path):
 	"""
 	xclear_dir(path)
 	os.removedirs(path)
+	
+def expanduser_unicode(path):
+	"""
+	Fixes expanduser functionality for non-unicode platforms.
+	"""
+	path = os.path.expanduser(path.encode(sys.getfilesystemencoding()))
+	return path.decode(sys.getfilesystemencoding())
 
 
 def get_system_fontdirs():
