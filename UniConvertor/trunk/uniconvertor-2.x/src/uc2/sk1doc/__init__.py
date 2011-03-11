@@ -31,6 +31,11 @@ DOC_STRUCTURE = [
 'Profiles', 
 'Thumbnails', 
 ]
+
+DOC_ORIGIN_CENTER = 0
+DOC_ORIGIN_LL = 1
+DOC_ORIGIN_LU = 2
+ORIGINS = [DOC_ORIGIN_CENTER, DOC_ORIGIN_LL, DOC_ORIGIN_LU]
 	
 def create_new_doc(config=uc2.config):
 	doc = model.Document(config)
