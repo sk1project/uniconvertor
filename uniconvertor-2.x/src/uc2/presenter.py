@@ -26,6 +26,7 @@ from uc2.sk1doc import model
 from uc2 import utils
 from uc2.utils import fs
 from uc2 import formats
+from uc2.methods import UCMethods
 
 class UCDocPresenter:	
 	
@@ -33,6 +34,7 @@ class UCDocPresenter:
 	doc_dir = ''
 	
 	model = None
+	methods = None
 	renderer = None
 	doc_file = ''
 	doc_id = ''
@@ -51,6 +53,7 @@ class UCDocPresenter:
 		self.model = sk1doc.create_new_doc(self.config)
 		self.active_page = self.model.childs[0].childs[0]
 		self.active_layer = self.active_page.childs[0]
+		self.methods = UCMethods(self)
 		self.create_cache_structure()
 	
 	def load(self, path):
@@ -68,6 +71,7 @@ class UCDocPresenter:
 			self.doc_file = path				
 			self.active_page = self.model.childs[0].childs[0]
 			self.active_layer = self.active_page.childs[0]
+			self.methods = UCMethods(self)
 		else:
 			raise IOError(_('Error while loading:')+ ' ', _('Empty file name'))		
 	
