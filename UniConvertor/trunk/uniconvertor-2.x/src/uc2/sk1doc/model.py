@@ -23,7 +23,7 @@ from uc2 import _
 
 
 # Document object enumeration
-DOCUMENT = 0
+DOCUMENT = 1
 
 METAINFO = 10
 STYLES = 11
@@ -147,10 +147,7 @@ class Pages(DocumentObject):
 		size = uc_conf.PAGE_FORMATS[format]
 		orient = config.page_orientation
 		self.page_format = [format, size, orient]
-		
-#		name = _('Page') + ' %s' % (self.page_counter + 1)
-#		self.childs = [Page(self.config, self, name)]
-#		self.page_counter += 1
+
 
 
 #================Structural Objects==================
@@ -253,7 +250,6 @@ class SelectableObject(DocumentObject):
 	"""
 	cid = SELECTABLE_CLASS
 	trafo = []
-	bbox = []
 	style = None
 	
 
@@ -264,7 +260,28 @@ class TextBlock(SelectableObject):pass
 class TextColumn(SelectableObject):pass
 
 #---------------Primitives---------------------------
-class Rectangle(SelectableObject):pass
+class Rectangle(SelectableObject):
+	
+	cid = RECTANGLE
+	start = []
+	width = 10
+	height = 10
+	corners = []
+		
+	def __init__(self, config=uc2.config, parent=None, 
+				rect = [0.0, 0.0, 10, 10]):
+		self.cid = RECTANGLE
+		self.parent = parent
+		self.config = config
+		self.start = [rect[0], rect[1]]
+		self.width = rect[2]
+		self.height = rect[3]
+		self.trafo = [1.0, 0.0, 0.0, 1.0, 0.0, 0.0]
+		self.corners = [0.0, 0.0, 0.0, 0.0]
+		
+		
+
+
 class Circle(SelectableObject):pass
 class Polygon(SelectableObject):pass
 class Curve(SelectableObject):pass
