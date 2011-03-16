@@ -19,7 +19,7 @@ from copy import deepcopy
 
 import uc2
 from uc2 import uc_conf
-from uc2 import _ 
+from uc2 import _
 
 
 # Document object enumeration
@@ -61,19 +61,19 @@ PIXMAP = 206
 
 CID_TO_NAME = {
 	DOCUMENT: _('Document'),
-	
-	METAINFO: _('Metainfo'), STYLES: _('Styles'), STYLE: _('Style'), 
-	PROFILES: _('Profiles'), PROFILE: _('Profile'), FONTS: _('Fonts'), 
-	FONT: _('Font'),IMAGES: _('Images'), IMAGE: _('Image'),
-	
-	PAGES: _('Pages'), PAGE: _('Page'), LAYER_GROUP: _('Layer group'), 
-	MASTER_LAYERS: _('Master layers'), LAYER: _('Layer'), 
+
+	METAINFO: _('Metainfo'), STYLES: _('Styles'), STYLE: _('Style'),
+	PROFILES: _('Profiles'), PROFILE: _('Profile'), FONTS: _('Fonts'),
+	FONT: _('Font'), IMAGES: _('Images'), IMAGE: _('Image'),
+
+	PAGES: _('Pages'), PAGE: _('Page'), LAYER_GROUP: _('Layer group'),
+	MASTER_LAYERS: _('Master layers'), LAYER: _('Layer'),
 	GRID_LAYER: _('Grid layer'), GUIDE_LAYER: _('Guide layer'),
-	
-	GROUP: _('Group'), CLIP_GROUP: _('Clip group'), 
+
+	GROUP: _('Group'), CLIP_GROUP: _('Clip group'),
 	TEXT_BLOCK: _('Text block'), TEXT_COLUMN: _('Text column'),
-	
-	RECTANGLE: _('Rectangle'), CIRCLE: _('Ellipse'), 
+
+	RECTANGLE: _('Rectangle'), CIRCLE: _('Ellipse'),
 	POLYGON: _('Polygon'), CURVE: _('Curve'),
 	CHAR: _('Char'), PIXMAP: _('Pixmap'),
 	}
@@ -81,19 +81,19 @@ CID_TO_NAME = {
 
 CID_TO_TAGNAME = {
 	DOCUMENT: 'Document',
-	
-	METAINFO: 'Metainfo', STYLES: 'Styles', STYLE: 'Style', 
-	PROFILES: 'Profiles', PROFILE: 'Profile', FONTS: 'Fonts', 
-	FONT: 'Font',IMAGES: 'Images', IMAGE: 'Image',
-	
-	PAGES: 'Pages', PAGE: 'Page', LAYER_GROUP: 'LayerGroup', 
-	MASTER_LAYERS: 'MasterLayers', LAYER: 'Layer', 
+
+	METAINFO: 'Metainfo', STYLES: 'Styles', STYLE: 'Style',
+	PROFILES: 'Profiles', PROFILE: 'Profile', FONTS: 'Fonts',
+	FONT: 'Font', IMAGES: 'Images', IMAGE: 'Image',
+
+	PAGES: 'Pages', PAGE: 'Page', LAYER_GROUP: 'LayerGroup',
+	MASTER_LAYERS: 'MasterLayers', LAYER: 'Layer',
 	GRID_LAYER: 'GridLayer', GUIDE_LAYER: 'GuideLayer',
-	
-	GROUP: 'Group', CLIP_GROUP: 'ClipGroup', 
+
+	GROUP: 'Group', CLIP_GROUP: 'ClipGroup',
 	TEXT_BLOCK: 'TextBlock', TEXT_COLUMN: 'TextColumn',
-	
-	RECTANGLE: 'Rectangle', CIRCLE: 'Ellipse', 
+
+	RECTANGLE: 'Rectangle', CIRCLE: 'Ellipse',
 	POLYGON: 'Polygon', CURVE: 'Curve',
 	CHAR: 'Char', PIXMAP: 'Pixmap',
 	}
@@ -102,7 +102,7 @@ class DocumentObject:
 	"""
 	Abstract parent class for all document 
 	objects. Provides common object properties.
-	"""	
+	"""
 	cid = 0
 	parent = None
 	config = None
@@ -113,20 +113,20 @@ class Document(DocumentObject):
 	"""
 	Represents sK1 Document object.
 	This is a root DOM instance.
-	"""	
+	"""
 	cid = DOCUMENT
 	metainfo = None
 	styles = []
 	profiles = []
 	doc_origin = 1
-	
+
 	def __init__(self, config=uc2.config):
 		self.cid = DOCUMENT
 		self.childs = []
 		self.metainfo = None
 		self.config = config
 		self.doc_origin = self.config.doc_origin
-		
+
 
 class Pages(DocumentObject):
 	"""
@@ -136,13 +136,13 @@ class Pages(DocumentObject):
 	cid = PAGES
 	page_format = []
 	page_counter = 0
-	
+
 	def __init__(self, config=uc2.config, parent=None):
 		self.cid = PAGES
 		self.childs = []
 		self.page_counter = 0
 		self.parent = parent
-		self.config = config		 
+		self.config = config
 		format = '' + self.config.page_format
 		size = uc_conf.PAGE_FORMATS[format]
 		orient = config.page_orientation
@@ -168,9 +168,9 @@ class Page(StructuralObject):
 	cid = PAGE
 	page_format = []
 	name = ''
-	
+
 	layer_counter = 0
-	
+
 	def __init__(self, config=uc2.config, parent=None , name=_('Page') + ' 1'):
 		self.cid = PAGE
 		self.childs = []
@@ -191,7 +191,7 @@ class Layer(StructuralObject):
 	cid = LAYER
 	color = ''
 	name = ''
-	
+
 	def __init__(self, config=uc2.config, parent=None, name=_('Layer') + ' 1'):
 		self.cid = LAYER
 		self.childs = []
@@ -200,10 +200,10 @@ class Layer(StructuralObject):
 		self.name = name
 		self.color = '' + self.config.layer_color
 		self.childs = []
-		
+
 class GuideLayer(Layer):
 	cid = GUIDE_LAYER
-	
+
 	def __init__(self, config=uc2.config, parent=None, name=_('GuideLayer')):
 		Layer.__init__(self, config, parent, name)
 		self.cid = GUIDE_LAYER
@@ -213,33 +213,33 @@ class GuideLayer(Layer):
 class GridLayer(Layer):
 	cid = GRID_LAYER
 	grid = []
-	
+
 	def __init__(self, config=uc2.config, parent=None, name=_('GridLayer')):
 		Layer.__init__(self, config, parent, name)
 		self.cid = GRID_LAYER
 		self.childs = []
 		self.color = '' + self.config.grid_color
 		self.grid = [] + self.config.grid_geometry
-		
+
 class LayerGroup(StructuralObject):
 	cid = LAYER_GROUP
 	layer_counter = 0
-	
+
 	def __init__(self, config=uc2.config, parent=None):
 		self.cid = LAYER_GROUP
 		self.childs = []
 		self.parent = parent
 		self.config = config
-		self.childs = []	
+		self.childs = []
 
 class MasterLayers(LayerGroup):
 	cid = MASTER_LAYERS
-	
+
 	def __init__(self, config=uc2.config, parent=None):
 		LayerGroup.__init__(self, config, parent)
 		self.cid = MASTER_LAYERS
 		self.childs = []
-	
+
 
 
 #================Selectable Objects==================
@@ -251,7 +251,7 @@ class SelectableObject(DocumentObject):
 	cid = SELECTABLE_CLASS
 	trafo = []
 	style = None
-	
+
 
 #---------------Compound objects---------------------
 class Group(SelectableObject):pass
@@ -261,15 +261,15 @@ class TextColumn(SelectableObject):pass
 
 #---------------Primitives---------------------------
 class Rectangle(SelectableObject):
-	
+
 	cid = RECTANGLE
 	start = []
 	width = 10
 	height = 10
 	corners = []
-		
-	def __init__(self, config=uc2.config, parent=None, 
-				rect = [0.0, 0.0, 10, 10]):
+
+	def __init__(self, config=uc2.config, parent=None,
+				rect=[0.0, 0.0, 10, 10]):
 		self.cid = RECTANGLE
 		self.parent = parent
 		self.config = config
@@ -278,8 +278,8 @@ class Rectangle(SelectableObject):
 		self.height = rect[3]
 		self.trafo = [1.0, 0.0, 0.0, 1.0, 0.0, 0.0]
 		self.corners = [0.0, 0.0, 0.0, 0.0]
-		
-		
+
+
 
 
 class Circle(SelectableObject):pass
@@ -292,19 +292,19 @@ class Pixmap(SelectableObject):pass
 
 CID_TO_CLASS = {
 	DOCUMENT: Document,
-	
-	METAINFO: None, STYLES: None, STYLE: None, 
-	PROFILES: None, PROFILE: None, FONTS: None, 
-	FONT: None,IMAGES: None, IMAGE: None,
-	
-	PAGES: Pages, PAGE: Page, LAYER_GROUP: LayerGroup, 
-	MASTER_LAYERS: MasterLayers, LAYER: Layer, 
+
+	METAINFO: None, STYLES: None, STYLE: None,
+	PROFILES: None, PROFILE: None, FONTS: None,
+	FONT: None, IMAGES: None, IMAGE: None,
+
+	PAGES: Pages, PAGE: Page, LAYER_GROUP: LayerGroup,
+	MASTER_LAYERS: MasterLayers, LAYER: Layer,
 	GRID_LAYER: GridLayer, GUIDE_LAYER: GuideLayer,
-	
-	GROUP: Group, CLIP_GROUP: ClipGroup, 
+
+	GROUP: Group, CLIP_GROUP: ClipGroup,
 	TEXT_BLOCK: TextBlock, TEXT_COLUMN: TextColumn,
-	
-	RECTANGLE: Rectangle, CIRCLE: Circle, 
+
+	RECTANGLE: Rectangle, CIRCLE: Circle,
 	POLYGON: Polygon, CURVE: Curve,
 	CHAR: Char, PIXMAP: Pixmap,
 	}
