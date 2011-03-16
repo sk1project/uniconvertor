@@ -106,11 +106,15 @@ class UCDocPresenter:
 			print 'error',sys.exc_info()
 			pass
 		
-	def get_page_size(self):
-		if self.active_page.page_format[2]:
-			h, w = self.active_page.page_format[1]
+	def get_page_size(self, page=None):
+		if page is None:
+			page_format = self.active_page.page_format
 		else:
-			w, h = self.active_page.page_format[1]
+			page_format = page.page_format
+		if page_format[2]:
+			h, w = page_format[1]
+		else:
+			w, h = page_format[1]
 		return w, h
 		
 	def create_cache_structure(self):
