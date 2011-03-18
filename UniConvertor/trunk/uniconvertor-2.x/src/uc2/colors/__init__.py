@@ -24,7 +24,7 @@ def rgb_to_hexcolor(color):
 	For example: [1.0, 0.0, 1.0] => #ff00ff
 	"""
 	r, g, b = color
-	return '#%04x%04x%04x' % (65535 * r, 65535 * g, 65535 * b)
+	return '#%02x%02x%02x' % (int(255 * r), int(255 * g), int(255 * b))
 
 def rgba_to_hexcolor(color):
 	"""
@@ -32,7 +32,8 @@ def rgba_to_hexcolor(color):
 	For example: [1.0, 0.0, 1.0, 1.0] => #ff00ffff
 	"""
 	r, g, b, a = color
-	return '#%04x%04x%04x%04x' % (65535 * r, 65535 * g, 65535 * b, 65535 * a)
+	return '#%02x%02x%02x%02x' % (int(255 * r), int(255 * g), 
+								int(255 * b), int(65535 * a))
 
 def hexcolor_to_rgb(hexcolor):
 	"""
@@ -65,6 +66,14 @@ def rgb_to_cmyk(color):
 	k = min(c, m, y)
 	return [c - k, m - k, y - k, k]
 
+class Color:
+	type = []
+	value = []
+	name = ''
+	
+	def __init__(self, val=[cms.TYPE_RGB_8, [0,0,0], 'Black']):
+		self.type, self.value, self.name = val
+
 class ColorManager:
 
 	use_cms = False
@@ -78,16 +87,13 @@ class ColorManager:
 	def get_qcolor(self, color):
 		if self.qcolor_cache.has_key(color):
 			return self.qcolor_cache[color]
-		color_type = color[0]
-		if color_type == cms.TYPE_RGB_8:
-			data = color[1]
-			hex = rgb_to_hexcolor(data)
-			qcolor = self.qcolor_creator(hex)
+		if color.type == cms.TYPE_RGB_8:
+			hex = rgb_to_hexcolor(color.value)
+			qcolor = self.qcolor_creator(hex)			
 			self.qcolor_cache[color] = qcolor
 			return qcolor
-		if color_type == cms.TYPE_CMYK_8:
-			data = color[1]
-			data = cmyk_to_rgb(data)
+		if color.type == cms.TYPE_CMYK_8:
+			data = cmyk_to_rgb(color.value)
 			hex = rgb_to_hexcolor(data)
 			qcolor = self.qcolor_creator(hex)
 			self.qcolor_cache[color] = qcolor
