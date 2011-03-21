@@ -27,3 +27,11 @@ class UCMethods:
 		
 	def set_doc_origin(self, origin):
 		self.model.doc_origin = origin
+		
+	def delete_object(self, obj):
+		parent = obj.parent
+		parent.childs.remove(obj)
+	
+	def insert_object(self, obj, parent, index):
+		parent.childs.insert(index, obj)
+		obj.parent = parent
