@@ -278,7 +278,15 @@ class Rectangle(SelectableObject):
 		self.height = rect[3]
 		self.trafo = [1.0, 0.0, 0.0, 1.0, 0.0, 0.0]
 		self.corners = [0.0, 0.0, 0.0, 0.0]
-
+		
+	def copy(self):
+		rect = Rectangle(self.config)
+		rect.start = [self.start[0], self.start[1]]
+		rect.width = self.width
+		rect.height = self.height
+		rect.trafo = [] + self.trafo
+		rect.corners = [] + self.corners
+		return rect
 
 
 
