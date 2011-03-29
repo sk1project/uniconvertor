@@ -15,7 +15,7 @@
 #	You should have received a copy of the GNU General Public License
 #	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import cms
+import libcms
 
 
 def rgb_to_hexcolor(color):
@@ -71,7 +71,7 @@ class Color:
 	value = []
 	name = ''
 	
-	def __init__(self, val=[cms.TYPE_RGB_8, [0,0,0], 'Black']):
+	def __init__(self, val=[libcms.TYPE_RGB_8, [0,0,0], 'Black']):
 		self.type, self.value, self.name = val
 
 class ColorManager:
@@ -87,12 +87,12 @@ class ColorManager:
 	def get_qcolor(self, color):
 		if self.qcolor_cache.has_key(color):
 			return self.qcolor_cache[color]
-		if color.type == cms.TYPE_RGB_8:
+		if color.type == libcms.TYPE_RGB_8:
 			hex = rgb_to_hexcolor(color.value)
 			qcolor = self.qcolor_creator(hex)			
 			self.qcolor_cache[color] = qcolor
 			return qcolor
-		if color.type == cms.TYPE_CMYK_8:
+		if color.type == libcms.TYPE_CMYK_8:
 			data = cmyk_to_rgb(color.value)
 			hex = rgb_to_hexcolor(data)
 			qcolor = self.qcolor_creator(hex)
