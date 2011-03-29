@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+	<mime-type type="application/vnd.sk1project.skx-graphics">
+		<comment xml:lang="ara">تصميم SKX</comment>
+		<comment xml:lang="be">Rysunak SKX</comment>
+		<comment xml:lang="be@latin">Rysunak SKX</comment>
+		<comment xml:lang="bg">Чертеж — SKX</comment>
+		<comment xml:lang="ca">dibuix SKX</comment>
+		<comment xml:lang="cs">Kresba SKX</comment>
+		<comment xml:lang="da">SKX-tegning</comment>
+		<comment xml:lang="de">SKX-Zeichnung</comment>
+		<comment xml:lang="en_GB">SKX drawing</comment>
+		<comment xml:lang="es">Dibujo SKX</comment>
+		<comment xml:lang="eu">SKX marrazkia</comment>
+		<comment xml:lang="fi">SKX-piirros</comment>
+		<comment xml:lang="fr">dessin SKX</comment>
+		<comment xml:lang="ga">líníocht SKX</comment>
+		<comment xml:lang="hu">SKX-rajz</comment>
+		<comment xml:lang="id">Gambar SKX</comment>
+		<comment xml:lang="it">Disegno SKX</comment>
+		<comment xml:lang="ja">SKX ドロー</comment>
+		<comment xml:lang="kk">SKX суреті</comment>
+		<comment xml:lang="ko">SKX 드로잉</comment>
+		<comment xml:lang="lt">SKX piešinys</comment>
+		<comment xml:lang="lv">SKX zīmējums</comment>
+		<comment xml:lang="nb">SKX-tegning</comment>
+		<comment xml:lang="nl">SKX-tekening</comment>
+		<comment xml:lang="nn">SKX-teikning</comment>
+		<comment xml:lang="oc">dessenh SKX</comment>
+		<comment xml:lang="pl">Rysunek SKX</comment>
+		<comment xml:lang="pt">Desenho SKX</comment>
+		<comment xml:lang="pt_BR">Desenho SKX</comment>
+		<comment xml:lang="ro">Desen SKX</comment>
+		<comment xml:lang="ru">изображение SKX</comment>
+		<comment xml:lang="sk">Kresba SKX</comment>
+		<comment xml:lang="sq">Vizatim SKX</comment>
+		<comment xml:lang="sv">SKX-teckning</comment>
+		<comment xml:lang="tr">SKX çizimi</comment>
+		<comment xml:lang="uk">малюнок SKX</comment>
+		<comment xml:lang="vi">Bản vẽ SKX</comment>
+		<comment xml:lang="zh_CN">SKX 绘图</comment>
+		<acronym>SKX</acronym>
+		<expanded-acronym>sK1/Skencil graphics</expanded-acronym>
+		<sub-class-of type="application/vnd.oasis.opendocument.graphics"/>
+		<icon name="application-vnd.oasis.opendocument.graphics"/>
+		<glob pattern="*.skx"/>
+	</mime-type>
+</mime-info>
