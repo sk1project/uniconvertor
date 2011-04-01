@@ -32,7 +32,7 @@ def rgba_to_hexcolor(color):
 	For example: [1.0, 0.0, 1.0, 1.0] => #ff00ffff
 	"""
 	r, g, b, a = color
-	return '#%02x%02x%02x%02x' % (int(255 * r), int(255 * g), 
+	return '#%02x%02x%02x%02x' % (int(255 * r), int(255 * g),
 								int(255 * b), int(65535 * a))
 
 def hexcolor_to_rgb(hexcolor):
@@ -70,8 +70,8 @@ class Color:
 	type = []
 	value = []
 	name = ''
-	
-	def __init__(self, val=[libcms.TYPE_RGB_8, [0,0,0], 'Black']):
+
+	def __init__(self, val=[libcms.TYPE_RGB_8, [0, 0, 0], 'Black']):
 		self.type, self.value, self.name = val
 
 class ColorManager:
@@ -84,12 +84,18 @@ class ColorManager:
 		self.qcolor_cache = {}
 		self.qcolor_creator = creator
 
+	def get_cairo_color(self, color):
+		if color.type == libcms.TYPE_RGB_8:
+			return [] + color.value
+		if color.type == libcms.TYPE_CMYK_8:
+			return cmyk_to_rgb(color.value)
+
 	def get_qcolor(self, color):
 		if self.qcolor_cache.has_key(color):
 			return self.qcolor_cache[color]
 		if color.type == libcms.TYPE_RGB_8:
 			hex = rgb_to_hexcolor(color.value)
-			qcolor = self.qcolor_creator(hex)			
+			qcolor = self.qcolor_creator(hex)
 			self.qcolor_cache[color] = qcolor
 			return qcolor
 		if color.type == libcms.TYPE_CMYK_8:
@@ -98,5 +104,5 @@ class ColorManager:
 			qcolor = self.qcolor_creator(hex)
 			self.qcolor_cache[color] = qcolor
 			return qcolor
-		
+
 
