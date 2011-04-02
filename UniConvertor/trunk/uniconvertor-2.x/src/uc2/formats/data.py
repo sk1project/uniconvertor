@@ -64,7 +64,7 @@ DWG = 121
 
 FORMAT_DESCRIPTION = {
 ALL_FORMATS : _("All supported formats"),
-SKX : _("sK1 graphics /ver.1.0 and newer/"),
+SKX : _("SKX graphics /sK1 ver.1.0 and Skencil 2.0/"),
 SK1 : _("sK1 graphics /ver.0.9 and older/"),
 SK : _("Sketch/Skencil files"),
 SVG : _("Scalable Vector Graphics files"),
@@ -102,7 +102,7 @@ DWG : _("AutoCAD DWG files"),
 FORMAT_EXTENSION = {
 ALL_FORMATS : '',
 SKX : 'skx', SK1 : 'sk1', SK : 'sk',
-SVG : 'svg', SVGZ : 'svgz', ODG : 'odg', ORA : 'ora', XCF : 'xcf', SLA : 'sla',FIG : 'fig',
+SVG : 'svg', SVGZ : 'svgz', ODG : 'odg', ORA : 'ora', XCF : 'xcf', SLA : 'sla', FIG : 'fig',
 CDR : 'cdr', CDT : 'cdt', CDRZ : 'cdr', CDTZ : 'cdt', CMX : 'cmx', CCX : 'ccx', CDRX : 'cdr',
 XAR : 'xar',
 AI_PS : 'ai', AI_PDF : 'ai', PS : 'ps', EPS : 'eps', PDF : 'pdf', PSD : 'psd',
@@ -131,10 +131,10 @@ PLT : None, HPGL : None, DXF : None, DWG : None,
 
 SAVERS = {
 SKX : SKX_Saver, SK1 : SK1_Saver, SK : SK_Saver,
-SVG : None, SVGZ : None, ORA : None, XCF : None, SLA : None, FIG : None, 
+SVG : None, SVGZ : None, ORA : None, XCF : None, SLA : None, FIG : None,
 CDR : None, CDT : None, CDRZ : None, CDTZ : None, CMX : None, CCX : None, CDRX : None,
 XAR : None,
 AI_PS : None, AI_PDF : None, PS : None, EPS : None, PDF : None, PSD : None,
 CGM : None, WMF : None, EMF : None, XPS : None, VSD : None,
-PLT : None,  HPGL : None, DXF : None, DWG : None,
+PLT : None, HPGL : None, DXF : None, DWG : None,
 }
