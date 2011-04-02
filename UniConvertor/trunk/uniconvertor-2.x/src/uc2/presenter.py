@@ -28,34 +28,34 @@ from uc2.utils import fs
 from uc2 import formats
 from uc2.methods import UCMethods
 
-class UCDocPresenter:	
-	
+class UCDocPresenter:
+
 	config = None
 	doc_dir = ''
-	
+
 	model = None
 	methods = None
 	renderer = None
 	doc_file = ''
 	doc_id = ''
-	
+
 	active_page = None
 	active_layer = None
-	
-	
+
+
 	def __init__(self, config=uc2.config, appdata=uc2.appdata):
 		self.config = config
 		self.appdata = appdata
 		self.doc_id = utils.generate_id()
 
-		
+
 	def new(self):
 		self.model = sk1doc.create_new_doc(self.config)
 		self.active_page = self.model.childs[0].childs[0]
 		self.active_layer = self.active_page.childs[0]
 		self.methods = UCMethods(self)
 		self.create_cache_structure()
-	
+
 	def load(self, path):
 		if path and os.path.lexists(path):
 			try:
@@ -64,17 +64,16 @@ class UCDocPresenter:
 				self.model = loader.load(self, path)
 			except:
 				self.close()
-				print sys.exc_info()
-				raise IOError(_('Error while loading')+ ' ' + path,
+				raise IOError(_('Error while loading') + ' ' + path,
 							sys.exc_info()[1], sys.exc_info()[2])
-				
-			self.doc_file = path				
+
+			self.doc_file = path
 			self.active_page = self.model.childs[0].childs[0]
 			self.active_layer = self.active_page.childs[0]
 			self.methods = UCMethods(self)
 		else:
-			raise IOError(_('Error while loading:')+ ' ', _('Empty file name'))		
-	
+			raise IOError(_('Error while loading:') + ' ', _('Empty file name'))
+
 	def save(self, path):
 		if path:
 			try:
@@ -82,19 +81,18 @@ class UCDocPresenter:
 				if saver is None:
 					ext = os.path.splitext(path)[1]
 					ext = ext.upper().replace('.', '')
-					msg = _('Cannot find export filter for %s format')%(ext)
+					msg = _('Cannot find export filter for %s format') % (ext)
 					raise IOError(msg)
 				saver.save(self, path)
 			except:
-				print sys.exc_info()
-				raise IOError(_('Error while saving')+ ' ' + path,
+				raise IOError(_('Error while saving') + ' ' + path,
 							sys.exc_info()[1], sys.exc_info()[2])
 		else:
-			raise IOError(_('Error while saving:')+ ' ', _('Empty file name'))
-			
+			raise IOError(_('Error while saving:') + ' ', _('Empty file name'))
+
 	def merge(self):
 		pass
-	
+
 	def close(self):
 		self.doc_file = ''
 		self.active_page = None
@@ -103,9 +101,9 @@ class UCDocPresenter:
 		try:
 			fs.xremove_dir(self.doc_dir)
 		except IOError:
-			print 'error',sys.exc_info()
+			print 'error', sys.exc_info()
 			pass
-		
+
 	def get_page_size(self, page=None):
 		if page is None:
 			page_format = self.active_page.page_format
@@ -116,7 +114,7 @@ class UCDocPresenter:
 		else:
 			w, h = page_format[1]
 		return w, h
-		
+
 	def create_cache_structure(self):
 		doc_cache_dir = os.path.join(self.appdata.app_config_dir, 'docs_cache')
 		self.doc_dir = os.path.join(doc_cache_dir, 'doc_' + self.doc_id)
