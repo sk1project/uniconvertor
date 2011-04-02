@@ -106,6 +106,13 @@ class XMLPrefReader(handler.ContentHandler):
 					self.value = int(self.value)
 				elif self.is_float(self.value):
 					self.value = float(self.value)
+				else:
+					try:
+						line = 'self.value=' + self.value
+						code = compile(line, '<string>', 'exec')
+						exec code
+					except:
+						pass
 				self.pref.__dict__[self.key] = self.value
 			except Exception:
 				print sys.exc_info()[0]
