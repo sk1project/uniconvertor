@@ -206,19 +206,19 @@ if COPY:
 	import shutil, string, platform
 	version = (string.split(sys.version)[0])[0:3]
 
-	shutil.copy('build/lib.linux-' + platform.machine() + '-' + version + '/uniconvertor/app/modules/pstokenize.so', 'src/app/modules/')
+	shutil.copy('build/lib.linux-' + platform.machine() + '-' + version + '/uniconvertor/app/modules/pstokenize.so', src + 'app/modules/')
 	print '\n pstokenize.so has been copied to src/ directory'
 
-	shutil.copy('build/lib.linux-' + platform.machine() + '-' + version + '/uniconvertor/app/modules/_sketch.so', 'src/app/modules/')
+	shutil.copy('build/lib.linux-' + platform.machine() + '-' + version + '/uniconvertor/app/modules/_sketch.so', src + 'app/modules/')
 	print '\n _sketchmodule.so has been copied to src/ directory'
 
-	shutil.copy('build/lib.linux-' + platform.machine() + '-' + version + '/uniconvertor/app/modules/skread.so', 'src/app/modules/')
+	shutil.copy('build/lib.linux-' + platform.machine() + '-' + version + '/uniconvertor/app/modules/skread.so', src + 'app/modules/')
 	print '\n skreadmodule.so has been copied to src/ directory'
 
-	shutil.copy('build/lib.linux-' + platform.machine() + '-' + version + '/uniconvertor/app/modules/streamfilter.so', 'src/app/modules/')
+	shutil.copy('build/lib.linux-' + platform.machine() + '-' + version + '/uniconvertor/app/modules/streamfilter.so', src + 'app/modules/')
 	print '\n streamfilter.so has been copied to src/ directory'
 
-	shutil.copy('build/lib.linux-' + platform.machine() + '-' + version + '/uniconvertor/app/modules/_type1.so', 'src/app/modules/')
+	shutil.copy('build/lib.linux-' + platform.machine() + '-' + version + '/uniconvertor/app/modules/_type1.so', src + 'app/modules/')
 	print '\n _type1module.so has been copied to src/ directory'
 
 	os.system('rm -rf build')
