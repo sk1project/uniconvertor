@@ -18,7 +18,7 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
 #
-# Usage: 
+# Usage:
 # --------------------------------------------------------------------------
 #  to build package:   python setup.py build
 #  to install package:   python setup.py install
@@ -38,9 +38,9 @@ from distutils.core import setup, Extension
 import sys, os
 
 
-COPY=False
-DEBIAN=False
-VERSION='1.1.6pre'
+COPY = False
+DEBIAN = False
+VERSION = '1.1.6pre'
 
 ########################
 #
@@ -49,64 +49,64 @@ VERSION='1.1.6pre'
 ########################
 
 if __name__ == "__main__":
-		
-	if len(sys.argv)>1 and sys.argv[1]=='build&copy':
-		COPY=True
-		sys.argv[1]='build'
-		
-	if len(sys.argv)>1 and sys.argv[1]=='bdist_deb':
-		DEBIAN=True
-		sys.argv[1]='build'
-	
-	
-	src_path='src/'
-	
-	filter_src=src_path+'modules/filter/'	
-	filter_module = Extension('uniconvertor.app.modules.streamfilter',
-			define_macros = [('MAJOR_VERSION', '1'),
-						('MINOR_VERSION', '1')],
-			sources = [filter_src+'streamfilter.c', filter_src+'filterobj.c', filter_src+'linefilter.c', 
-					filter_src+'subfilefilter.c', filter_src+'base64filter.c', filter_src+'nullfilter.c', 
-					filter_src+'stringfilter.c', filter_src+'binfile.c', filter_src+'hexfilter.c'])
- 
- 	type1mod_src=src_path+'modules/type1mod/'				
-	type1mod_module = Extension('uniconvertor.app.modules._type1',
-			define_macros = [('MAJOR_VERSION', '1'),
-						('MINOR_VERSION', '1')],
-			sources = [type1mod_src+'_type1module.c'])
- 
- 	skread_src=src_path+'modules/skread/'				
-	skread_module = Extension('uniconvertor.app.modules.skread',
-			define_macros = [('MAJOR_VERSION', '1'),
-						('MINOR_VERSION', '1')],
-			sources = [skread_src+'skreadmodule.c'])
 
- 	pstokenize_src=src_path+'modules/pstokenize/'				
+	if len(sys.argv) > 1 and sys.argv[1] == 'build&copy':
+		COPY = True
+		sys.argv[1] = 'build'
+
+	if len(sys.argv) > 1 and sys.argv[1] == 'bdist_deb':
+		DEBIAN = True
+		sys.argv[1] = 'build'
+
+
+	src = 'src/uniconvertor/'
+
+	filter_src = src + 'modules/filter/'
+	filter_module = Extension('uniconvertor.app.modules.streamfilter',
+			define_macros=[('MAJOR_VERSION', '1'),
+						('MINOR_VERSION', '1')],
+			sources=[filter_src + 'streamfilter.c', filter_src + 'filterobj.c', filter_src + 'linefilter.c',
+					filter_src + 'subfilefilter.c', filter_src + 'base64filter.c', filter_src + 'nullfilter.c',
+					filter_src + 'stringfilter.c', filter_src + 'binfile.c', filter_src + 'hexfilter.c'])
+
+ 	type1mod_src = src + 'modules/type1mod/'
+	type1mod_module = Extension('uniconvertor.app.modules._type1',
+			define_macros=[('MAJOR_VERSION', '1'),
+						('MINOR_VERSION', '1')],
+			sources=[type1mod_src + '_type1module.c'])
+
+ 	skread_src = src + 'modules/skread/'
+	skread_module = Extension('uniconvertor.app.modules.skread',
+			define_macros=[('MAJOR_VERSION', '1'),
+						('MINOR_VERSION', '1')],
+			sources=[skread_src + 'skreadmodule.c'])
+
+ 	pstokenize_src = src + 'modules/pstokenize/'
 	pstokenize_module = Extension('uniconvertor.app.modules.pstokenize',
-			define_macros = [('MAJOR_VERSION', '1'),
+			define_macros=[('MAJOR_VERSION', '1'),
 						('MINOR_VERSION', '1')],
-			sources = [pstokenize_src+'pstokenize.c', pstokenize_src+'pschartab.c'])
-			
- 	skmod_src=src_path+'modules/skmod/'				
+			sources=[pstokenize_src + 'pstokenize.c', pstokenize_src + 'pschartab.c'])
+
+ 	skmod_src = src + 'modules/skmod/'
 	skmod_module = Extension('uniconvertor.app.modules._sketch',
-			define_macros = [('MAJOR_VERSION', '1'),
+			define_macros=[('MAJOR_VERSION', '1'),
 						('MINOR_VERSION', '1')],
-			sources = [skmod_src+'_sketchmodule.c', skmod_src+'skpoint.c', skmod_src+'skcolor.c', 
-					skmod_src+'sktrafo.c', skmod_src+'skrect.c', skmod_src+'skfm.c', 
-					skmod_src+'curvefunc.c', skmod_src+'curveobject.c', skmod_src+'curvelow.c', 
-					skmod_src+'curvemisc.c', skmod_src+'skaux.c', skmod_src+'skimage.c', ])
-			
-	setup (name = 'uniconvertor',
-			version = VERSION,
-			description = 'Universal vector graphics translator',
-			author = 'Igor E. Novikov',
-			author_email = 'igor.e.novikov@gmail.com',
-			maintainer = 'Igor E. Novikov',
-			maintainer_email = 'igor.e.novikov@gmail.com',
-			license = 'LGPL v2, GPL v2 (some packages)',
-			url = 'http://sk1project.org',
-			download_url = 'http://sk1project.org/modules.php?name=Products&product=uniconvertor',
-			long_description = '''
+			sources=[skmod_src + '_sketchmodule.c', skmod_src + 'skpoint.c', skmod_src + 'skcolor.c',
+					skmod_src + 'sktrafo.c', skmod_src + 'skrect.c', skmod_src + 'skfm.c',
+					skmod_src + 'curvefunc.c', skmod_src + 'curveobject.c', skmod_src + 'curvelow.c',
+					skmod_src + 'curvemisc.c', skmod_src + 'skaux.c', skmod_src + 'skimage.c', ])
+
+	setup (name='uniconvertor',
+			version=VERSION,
+			description='Universal vector graphics translator',
+			author='Igor E. Novikov',
+			author_email='igor.e.novikov@gmail.com',
+			maintainer='Igor E. Novikov',
+			maintainer_email='igor.e.novikov@gmail.com',
+			license='LGPL v2, GPL v2 (some packages)',
+			url='http://sk1project.org',
+			download_url='http://sk1project.org/modules.php?name=Products&product=uniconvertor',
+			long_description='''
 UniConvertor is a multiplatform universal vector graphics translator.
 It uses sK1 engine to convert one format to another.
 
@@ -159,7 +159,7 @@ Export filters:
 			"Topic :: Multimedia :: Graphics :: Graphics Conversion",
 			],
 
-			packages = ['uniconvertor',
+			packages=['uniconvertor',
 				'uniconvertor.app',
 				'uniconvertor.app.Graphics',
 				'uniconvertor.app.Lib',
@@ -172,58 +172,57 @@ Export filters:
 				'uniconvertor.app.scripts',
 				'uniconvertor.app.utils'
 			],
-			
-			package_dir = {'uniconvertor': 'src',
-			'uniconvertor.app': 'src/app',
-			'uniconvertor.app.modules': 'src/app/modules',
-			},
-			
-			package_data={'uniconvertor.app': ['VERSION'],		
-			'uniconvertor': ['GNU_GPL_v2', 'GNU_LGPL_v2', 'COPYRIGHTS',
-							'share/icc/*.*', 'share/fonts/*.*', 'share/ps_templates/*.*'], 			
-			'sk1.app.modules': ['descr.txt',]
+
+			package_dir={'uniconvertor': 'src/uniconvertor',
+			'uniconvertor.app': src + 'app',
+			'uniconvertor.app.modules': src + 'app/modules',
 			},
 
-			scripts=['src/uniconvertor'],
+			package_data={'uniconvertor.app': ['VERSION'],
+			'uniconvertor': ['share/icc/*.*', 'share/fonts/*.*', 'share/ps_templates/*.*'],
+			'uniconvertor.app.modules': ['descr.txt', ]
+			},
 
-			ext_modules = [filter_module, type1mod_module, skread_module, pstokenize_module, skmod_module])
+			scripts=['src/script/uniconvertor'],
 
-	
+			ext_modules=[filter_module, type1mod_module, skread_module, pstokenize_module, skmod_module])
+
+
 #################################################
 # .py source compiling
 #################################################
-if sys.argv[1]=='build':
+if sys.argv[1] == 'build':
 	import compileall
 	compileall.compile_dir('build/')
-			
+
 ##############################################
 # This section for developing purpose only
 # Command 'python setup.py build&copy' allows
 # automating build and native extension copying
 # into package directory
-##############################################	
-			
+##############################################
+
 if COPY:
 	import shutil, string, platform
-	version=(string.split(sys.version)[0])[0:3]
-	
-	shutil.copy('build/lib.linux-'+platform.machine()+'-'+version+'/uniconvertor/app/modules/pstokenize.so','src/app/modules/')
+	version = (string.split(sys.version)[0])[0:3]
+
+	shutil.copy('build/lib.linux-' + platform.machine() + '-' + version + '/uniconvertor/app/modules/pstokenize.so', 'src/app/modules/')
 	print '\n pstokenize.so has been copied to src/ directory'
-	
-	shutil.copy('build/lib.linux-'+platform.machine()+'-'+version+'/uniconvertor/app/modules/_sketch.so','src/app/modules/')
+
+	shutil.copy('build/lib.linux-' + platform.machine() + '-' + version + '/uniconvertor/app/modules/_sketch.so', 'src/app/modules/')
 	print '\n _sketchmodule.so has been copied to src/ directory'
-	
-	shutil.copy('build/lib.linux-'+platform.machine()+'-'+version+'/uniconvertor/app/modules/skread.so','src/app/modules/')
+
+	shutil.copy('build/lib.linux-' + platform.machine() + '-' + version + '/uniconvertor/app/modules/skread.so', 'src/app/modules/')
 	print '\n skreadmodule.so has been copied to src/ directory'
-	
-	shutil.copy('build/lib.linux-'+platform.machine()+'-'+version+'/uniconvertor/app/modules/streamfilter.so','src/app/modules/')
+
+	shutil.copy('build/lib.linux-' + platform.machine() + '-' + version + '/uniconvertor/app/modules/streamfilter.so', 'src/app/modules/')
 	print '\n streamfilter.so has been copied to src/ directory'
-	
-	shutil.copy('build/lib.linux-'+platform.machine()+'-'+version+'/uniconvertor/app/modules/_type1.so','src/app/modules/')
-	print '\n _type1module.so has been copied to src/ directory'	
-	
-	os.system('rm -rf build')		
-			
+
+	shutil.copy('build/lib.linux-' + platform.machine() + '-' + version + '/uniconvertor/app/modules/_type1.so', 'src/app/modules/')
+	print '\n _type1module.so has been copied to src/ directory'
+
+	os.system('rm -rf build')
+
 #################################################
 # Implementation of bdist_deb command
 #################################################
@@ -231,43 +230,43 @@ if DEBIAN:
 	print '\nDEBIAN PACKAGE BUILD'
 	print '===================='
 	import shutil, string, platform
-	version=(string.split(sys.version)[0])[0:3]
-	
-	arch,bin = platform.architecture()
-	if arch=='64bit':
-		arch='amd64'
+	version = (string.split(sys.version)[0])[0:3]
+
+	arch, bin = platform.architecture()
+	if arch == '64bit':
+		arch = 'amd64'
 	else:
-		arch='i386'
-	
-	target='build/deb-root/usr/lib/python'+version+'/dist-packages'
-	
-	if os.path.lexists(os.path.join('build','deb-root')):
+		arch = 'i386'
+
+	target = 'build/deb-root/usr/lib/python' + version + '/dist-packages'
+
+	if os.path.lexists(os.path.join('build', 'deb-root')):
 		os.system('rm -rf build/deb-root')
-	os.makedirs(os.path.join('build','deb-root','DEBIAN'))
-	
-	os.system("cat DEBIAN/control |sed 's/<PLATFORM>/"+arch+"/g'|sed 's/<VERSION>/"+VERSION+"/g'> build/deb-root/DEBIAN/control")
-	
+	os.makedirs(os.path.join('build', 'deb-root', 'DEBIAN'))
+
+	os.system("cat DEBIAN/control |sed 's/<PLATFORM>/" + arch + "/g'|sed 's/<VERSION>/" + VERSION + "/g'> build/deb-root/DEBIAN/control")
+
 	os.makedirs(target)
 	os.makedirs('build/deb-root/usr/bin')
-	os.system('cp -R build/lib.linux-'+platform.machine()+'-'+version+'/uniconvertor '+target)	
+	os.system('cp -R build/lib.linux-' + platform.machine() + '-' + version + '/uniconvertor ' + target)
 	os.system('cp src/uniconvertor build/deb-root/usr/bin')
 	os.system('chmod +x build/deb-root/usr/bin/uniconvertor')
-		
-	if os.path.lexists('dist'):	
+
+	if os.path.lexists('dist'):
 		os.system('rm -rf dist/*.deb')
 	else:
 		os.makedirs('dist')
-	
-	os.system('dpkg --build build/deb-root/ dist/python-uniconvertor-'+VERSION+'_'+arch+'.deb')		
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
+
+	os.system('dpkg --build build/deb-root/ dist/python-uniconvertor-' + VERSION + '_' + arch + '.deb')
+
+
+
+
+
+
+
+
+
+
+
+

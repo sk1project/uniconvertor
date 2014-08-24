@@ -5,21 +5,20 @@ include DEBIAN/control
 
 include setup_win32.py
 include src/GNU_GPL_v2 src/GNU_LGPL_v2 src/COPYRIGHTS
-include src/uniconvertor
-include src/uniconvertor.cmd
-include src/modules/filter/README
-include src/app/modules/descr.txt
-include src/app/VERSION
-recursive-include src/share *.*
-recursive-include src/share/fonts *.*
-recursive-include src/share/ps_templates *.*
-recursive-include src/share/ps_templates *.*
-recursive-include src/modules/filter *.*
-recursive-include src/modules/skmod *.*
-recursive-include src/modules/skread *.*
-recursive-include src/modules/pstokenize *.*
-recursive-include src/modules/type1mod *.*
-recursive-include src/app/plugins/Filters *.py
+include src/script/uniconvertor
+include src/uniconvertor/modules/filter/README
+include src/uniconvertor/app/modules/descr.txt
+include src/uniconvertor/app/VERSION
+recursive-include src/uniconvertor/share *.*
+recursive-include src/uniconvertor/share/fonts *.*
+recursive-include src/uniconvertor/share/ps_templates *.*
+recursive-include src/uniconvertor/share/ps_templates *.*
+recursive-include src/uniconvertor/modules/filter *.*
+recursive-include src/uniconvertor/modules/skmod *.*
+recursive-include src/uniconvertor/modules/skread *.*
+recursive-include src/uniconvertor/modules/pstokenize *.*
+recursive-include src/uniconvertor/modules/type1mod *.*
+recursive-include src/uniconvertor/app/plugins/Filters *.py
 
 
 
