@@ -38,7 +38,7 @@ from distutils.core import setup, Extension
 import sys, os
 
 
-COPY = False
+COPY = True
 DEBIAN = False
 VERSION = '1.1.6pre'
 
