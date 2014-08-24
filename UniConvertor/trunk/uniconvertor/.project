@@ -3,6 +3,7 @@
 	<name>uniconvertor</name>
 	<comment></comment>
 	<projects>
+		<project>sk1libs</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
