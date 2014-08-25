@@ -96,6 +96,15 @@ if __name__ == "__main__":
 					skmod_src + 'curvefunc.c', skmod_src + 'curveobject.c', skmod_src + 'curvelow.c',
 					skmod_src + 'curvemisc.c', skmod_src + 'skaux.c', skmod_src + 'skimage.c', ])
 
+ 	ft2_src = src + 'ft2engine/'
+	ft2_module = Extension('uniconvertor.ft2engine.ft2',
+			define_macros=[('MAJOR_VERSION', '1'),
+						('MINOR_VERSION', '0')],
+			sources=[ft2_src + 'ft2module.c'],
+			include_dirs=['/usr/include/freetype2'],
+			libraries=['freetype'],
+			extra_compile_args=["-Wall"])
+
 	setup (name='uniconvertor',
 			version=VERSION,
 			description='Universal vector graphics translator',
@@ -170,23 +179,28 @@ Export filters:
 				'uniconvertor.app.managers',
 				'uniconvertor.app.modules',
 				'uniconvertor.app.scripts',
-				'uniconvertor.app.utils'
-				'uniconvertor.utils'
+				'uniconvertor.app.utils',
+				'uniconvertor.utils',
+				'uniconvertor.ft2engine',
 			],
 
 			package_dir={'uniconvertor': 'src/uniconvertor',
 			'uniconvertor.app': src + 'app',
 			'uniconvertor.app.modules': src + 'app/modules',
+#			'uniconvertor.utils': src + 'utils',
+#			'uniconvertor.ft2engine': src + 'ft2engine',
 			},
 
 			package_data={'uniconvertor.app': ['VERSION'],
 			'uniconvertor': ['share/icc/*.*', 'share/fonts/*.*', 'share/ps_templates/*.*'],
-			'uniconvertor.app.modules': ['descr.txt', ]
+			'uniconvertor.app.modules': ['descr.txt', ],
+			'uniconvertor.ft2engine': ['fallback_fonts/*.*'],
 			},
 
 			scripts=['src/script/uniconvertor'],
 
-			ext_modules=[filter_module, type1mod_module, skread_module, pstokenize_module, skmod_module])
+			ext_modules=[filter_module, type1mod_module, skread_module, pstokenize_module, skmod_module,
+						ft2_module, ])
 
 
 #################################################
@@ -207,20 +221,29 @@ if COPY:
 	import shutil, string, platform
 	version = (string.split(sys.version)[0])[0:3]
 
-	shutil.copy('build/lib.linux-' + platform.machine() + '-' + version + '/uniconvertor/app/modules/pstokenize.so', src + 'app/modules/')
+	shutil.copy('build/lib.linux-' + platform.machine() + '-' + version +
+			'/uniconvertor/app/modules/pstokenize.so', src + 'app/modules/')
 	print '\n pstokenize.so has been copied to src/ directory'
 
-	shutil.copy('build/lib.linux-' + platform.machine() + '-' + version + '/uniconvertor/app/modules/_sketch.so', src + 'app/modules/')
+	shutil.copy('build/lib.linux-' + platform.machine() + '-' + version +
+			'/uniconvertor/app/modules/_sketch.so', src + 'app/modules/')
 	print '\n _sketchmodule.so has been copied to src/ directory'
 
-	shutil.copy('build/lib.linux-' + platform.machine() + '-' + version + '/uniconvertor/app/modules/skread.so', src + 'app/modules/')
+	shutil.copy('build/lib.linux-' + platform.machine() + '-' + version +
+			'/uniconvertor/app/modules/skread.so', src + 'app/modules/')
 	print '\n skreadmodule.so has been copied to src/ directory'
 
-	shutil.copy('build/lib.linux-' + platform.machine() + '-' + version + '/uniconvertor/app/modules/streamfilter.so', src + 'app/modules/')
+	shutil.copy('build/lib.linux-' + platform.machine() + '-' + version +
+			'/uniconvertor/app/modules/streamfilter.so', src + 'app/modules/')
 	print '\n streamfilter.so has been copied to src/ directory'
 
-	shutil.copy('build/lib.linux-' + platform.machine() + '-' + version + '/uniconvertor/app/modules/_type1.so', src + 'app/modules/')
+	shutil.copy('build/lib.linux-' + platform.machine() + '-' + version +
+			'/uniconvertor/app/modules/_type1.so', src + 'app/modules/')
 	print '\n _type1module.so has been copied to src/ directory'
+
+	shutil.copy('build/lib.linux-' + platform.machine() + '-' + version +
+			'/uniconvertor/ft2engine/ft2.so', src + 'ft2engine/')
+	print '\n ft2.so has been copied to src/ directory'
 
 	os.system('rm -rf build')
 
