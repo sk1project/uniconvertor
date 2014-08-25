@@ -3,7 +3,6 @@ include README setup.cfg
 
 include DEBIAN/control
 
-include setup_win32.py
 include src/GNU_GPL_v2 src/GNU_LGPL_v2 src/COPYRIGHTS
 include src/script/uniconvertor
 include src/uniconvertor/modules/filter/README
@@ -18,8 +17,11 @@ recursive-include src/uniconvertor/modules/skmod *.*
 recursive-include src/uniconvertor/modules/skread *.*
 recursive-include src/uniconvertor/modules/pstokenize *.*
 recursive-include src/uniconvertor/modules/type1mod *.*
-recursive-include src/uniconvertor/app/plugins/Filters *.py
 
+include src/uniconvertor/ft2engine/libft2/ft2module.c
 
-
-
+recursive-include src/uniconvertor/filters/import *.py
+recursive-include src/uniconvertor/filters/export *.py
+recursive-include src/uniconvertor/filters/parsing *.py
+recursive-include src/uniconvertor/filters/preview *.py
+recursive-include src/uniconvertor/ft2engine/fallback_fonts *.*
