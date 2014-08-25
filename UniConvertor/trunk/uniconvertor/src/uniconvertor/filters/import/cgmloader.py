@@ -47,7 +47,7 @@ from app import _, Trafo, Scale, Translation, Point, Polar, CreatePath, \
 
 from app.events.warn import INTERNAL, warn_tb
 from app.io.load import GenericLoader, SketchLoadError
-import sk1libs
+import uniconvertor
 from app.Graphics import text
 
 basestyle = Style()
@@ -148,8 +148,8 @@ CGM_ID = {
 
 cp = copy.deepcopy
 
-fntlst = map(lambda l: l[0], sk1libs.ft2engine.fontlist)
-#print sk1libs.ft2engine.fontlist
+fntlst = map(lambda l: l[0], uniconvertor.ft2engine.fontlist)
+#print uniconvertor.ft2engine.fontlist
 #print fntlst
 
 fntalias = {
@@ -334,7 +334,7 @@ init.edge.width = None
 init.edge.dashtable = init.line.dashtable
 init.edge.visible = 0
 init.text = cgminfo()
-init.text.fontindex = fntlst.index((sk1libs.ft2engine.fontlist[0])[0])
+init.text.fontindex = fntlst.index((uniconvertor.ft2engine.fontlist[0])[0])
 init.text.height = None
 init.text.expansion = 1.0
 init.text.spacing = 0.0

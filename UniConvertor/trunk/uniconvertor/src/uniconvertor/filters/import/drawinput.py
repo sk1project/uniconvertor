@@ -73,7 +73,7 @@ from app import SolidPattern, EmptyPattern
 
 from PIL import Image
 
-from sk1libs.filters.formats import drawfile
+from uniconvertor.filters.formats import drawfile
 
 scale = float(drawfile.units_per_point)
 

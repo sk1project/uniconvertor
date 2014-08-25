@@ -13,7 +13,7 @@
 ###End
 
 import app
-from sk1libs.utils import system
+from uniconvertor.utils import system
 from app import PostScriptDevice
 
 
