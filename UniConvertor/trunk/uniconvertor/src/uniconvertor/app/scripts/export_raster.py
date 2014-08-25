@@ -37,7 +37,7 @@
 
 import os, tempfile
 
-from sk1libs.imaging import Image, ImageChops
+from PIL import Image, ImageChops
 
 import app.Scripting
 from app import _, PostScriptDevice

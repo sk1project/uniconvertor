@@ -24,8 +24,7 @@
 import os, app
 from types import StringType
 
-from sk1libs.imaging import ImageChops
-from sk1libs import imaging
+from PIL import ImageChops
 
 from app import _, RegisterCommands, colormanager
 #from app.UI.command import AddCmd
@@ -133,7 +132,8 @@ class ImageData(ExternalData):
 
 
 def load_image(filename, cache = 0):
-	image = imaging.Image.open(filename)
+	import PIL
+	image = PIL.Image.open(filename)
 	if type(filename) != StringType:
 		filename = ''
 	return ImageData(image, filename = filename, cache = cache)
