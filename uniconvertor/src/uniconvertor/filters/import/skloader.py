@@ -34,7 +34,7 @@ from string import atoi
 from app.events.warn import warn, INTERNAL, pdebug, warn_tb
 
 from app import SketchLoadError, SketchError
-from sk1libs import filters
+from uniconvertor import filters
 from app.io import load
 from app.conf import const
 from app import CreateRGBColor, SolidPattern, HatchingPattern,EmptyPattern,\

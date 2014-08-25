@@ -240,8 +240,8 @@ format_name = 'SK'
 
 import os
 
-from sk1libs.utils.fs import relpath
-from sk1libs.utils import Empty
+from uniconvertor.utils.fs import relpath
+from uniconvertor.utils import Empty
 from app import IdentityMatrix, EmptyPattern, SolidPattern, Style, \
 		StandardColors, SketchError, const
 from app.Graphics import properties
