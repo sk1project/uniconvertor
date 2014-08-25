@@ -81,7 +81,7 @@ def uniconv_run():
 	sys.path.insert(1, _pkgdir)
 	
 	from app.io import load
-	from sk1libs import filters
+	from uniconvertor import filters
 	import app
 	
 	app.init_lib()
