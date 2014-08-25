@@ -6,7 +6,7 @@
 # For more info see COPYRIGHTS file in sK1 root directory.
 import os, app
 
-from sk1libs.pycms import cmsOpenProfileFromFile,cmsCreateTransform,cmsDoTransform, \
+from uniconvertor.cms import cmsOpenProfileFromFile,cmsCreateTransform,cmsDoTransform, \
 	cmsCreateRGBProfile, cmsCreateCMYKProfile, cmsCreateLabProfile, cmsCreateGrayProfile, \
 	cmsDoBitmapTransform, cmsDeleteTransform,cmsCloseProfile,TYPE_RGB_8,TYPE_CMYK_8, \
 	INTENT_PERCEPTUAL,cmsFLAGS_NOTPRECALC,COLORB, INTENT_RELATIVE_COLORIMETRIC
