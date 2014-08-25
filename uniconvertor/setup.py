@@ -171,6 +171,7 @@ Export filters:
 				'uniconvertor.app.modules',
 				'uniconvertor.app.scripts',
 				'uniconvertor.app.utils'
+				'uniconvertor.utils'
 			],
 
 			package_dir={'uniconvertor': 'src/uniconvertor',
