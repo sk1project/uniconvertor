@@ -121,7 +121,7 @@ from Graphics.dashes import StandardDashes
 from Graphics.document import EditDocument, SelectionMode, EditMode
 Document = EditDocument
 
-from sk1libs.ft2engine import GetFont
+from uniconvertor.ft2engine import GetFont
 from Graphics.gradient import MultiGradient, CreateSimpleGradient
 from Graphics.graphics import SimpleGC, GraphicsDevice, InvertingDevice, HitTestDevice
 
