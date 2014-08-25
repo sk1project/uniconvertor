@@ -24,7 +24,7 @@ import os, math
 from PIL import Image
 
 from app.Lib import dscparser
-from sk1libs import utils
+from uniconvertor import utils
 IsEpsFileStart = dscparser.IsEpsFileStart
 from app import _, Point, config
 

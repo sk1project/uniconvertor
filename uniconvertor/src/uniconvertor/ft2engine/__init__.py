@@ -29,7 +29,7 @@ from app import _, config, Point, Scale, Subscribe, CreatePath, SKCache, ContAng
 
 from app.conf import const
 
-from sk1libs.utils.fs import find_in_path, find_files_in_path, get_files_tree, gethome, get_system_fontdirs
+from uniconvertor.utils.fs import find_in_path, find_files_in_path, get_files_tree, gethome, get_system_fontdirs
 
 
 fontlist = []

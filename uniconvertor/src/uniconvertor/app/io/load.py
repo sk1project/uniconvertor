@@ -34,7 +34,7 @@ import time
 from copy import deepcopy
 
 from app import config
-from sk1libs import filters
+from uniconvertor import filters
 from app.utils import locale_utils
 from app.events.warn import warn, INTERNAL, pdebug
 from app.conf.const import ArcPieSlice
