@@ -448,7 +448,7 @@ PyMethodDef pycms_methods[] = {
 };
 
 void
-init_pycms(void)
+init_cms(void)
 {
     Py_InitModule("_cms", pycms_methods);
 }
