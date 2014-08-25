@@ -96,6 +96,14 @@ if __name__ == "__main__":
 					skmod_src + 'curvefunc.c', skmod_src + 'curveobject.c', skmod_src + 'curvelow.c',
 					skmod_src + 'curvemisc.c', skmod_src + 'skaux.c', skmod_src + 'skimage.c', ])
 
+ 	cms_src = src + 'cms/'
+	cms_module = Extension('uniconvertor.cms._cms',
+			define_macros=[('MAJOR_VERSION', '1'),
+						('MINOR_VERSION', '0')],
+			sources=[cms_src + '_cms.c'],
+			libraries=['lcms'],
+			extra_compile_args=["-Wall"])
+
  	ft2_src = src + 'ft2engine/'
 	ft2_module = Extension('uniconvertor.ft2engine.ft2',
 			define_macros=[('MAJOR_VERSION', '1'),
@@ -184,6 +192,7 @@ Export filters:
 				'uniconvertor.ft2engine',
 				'uniconvertor.filters',
 				'uniconvertor.filters.formats',
+				'uniconvertor.cms',
 			],
 
 			package_dir={'uniconvertor': 'src/uniconvertor',
@@ -191,6 +200,7 @@ Export filters:
 			'uniconvertor.app.modules': src + 'app/modules',
 			'uniconvertor.filters': src + 'filters',
 			'uniconvertor.filters.formats': src + 'filters/formats',
+			'uniconvertor.cms': src + 'cms',
 			},
 
 			package_data={'uniconvertor.app': ['VERSION'],
@@ -198,12 +208,13 @@ Export filters:
 			'uniconvertor.app.modules': ['descr.txt', ],
 			'uniconvertor.ft2engine': ['fallback_fonts/*.*'],
 			'uniconvertor.filters': ['import/*.py', 'export/*.py', 'parsing/*.py', 'preview/*.py'],
+			'uniconvertor.cms': ['profiles/*.*'],
 			},
 
 			scripts=['src/script/uniconvertor'],
 
 			ext_modules=[filter_module, type1mod_module, skread_module, pstokenize_module, skmod_module,
-						ft2_module, ])
+						ft2_module, cms_module, ])
 
 
 #################################################
@@ -247,6 +258,10 @@ if COPY:
 	shutil.copy('build/lib.linux-' + platform.machine() + '-' + version +
 			'/uniconvertor/ft2engine/ft2.so', src + 'ft2engine/')
 	print '\n ft2.so has been copied to src/ directory'
+
+	shutil.copy('build/lib.linux-' + platform.machine() + '-' + version +
+			'/uniconvertor/cms/_cms.so', src + 'cms/')
+	print '\n _cms.so has been copied to src/ directory'
 
 	os.system('rm -rf build')
 
