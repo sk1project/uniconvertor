@@ -32,7 +32,7 @@ from app.conf import const
 from app.Lib import encoding
 
 from app.events.warn import warn, INTERNAL, USER, pdebug
-from sk1libs.utils.fs import find_in_path, find_files_in_path
+from uniconvertor.utils.fs import find_in_path, find_files_in_path
 
 minus_tilde = maketrans('-', '~')
 

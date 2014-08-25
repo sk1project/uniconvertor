@@ -10,7 +10,7 @@ from xml.sax import handler
 
 from app.events import connector
 from const import CHANGED
-from sk1libs.utils.fs import gethome
+from uniconvertor.utils.fs import gethome
 from app import Point, PointType
 
 class Configurator:

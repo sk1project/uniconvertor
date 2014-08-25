@@ -18,7 +18,7 @@ import operator, math
 from types import ListType, InstanceType, TupleType
 import time
 
-from sk1libs.utils import flatten
+from uniconvertor.utils import flatten
 
 #from app.UI.skpixmaps import pixmaps
 from app.events.warn import pdebug, warn, INTERNAL
