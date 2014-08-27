@@ -1,4 +1,4 @@
-/* pycms - small package which provides binding to LittleCMS library.
+/* cms - small package which provides binding to LittleCMS library.
  *
  * Copyright (C) 2009 by Igor E.Novikov
  *
