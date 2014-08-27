@@ -427,8 +427,14 @@ pycms_TransformPixels (PyObject *self, PyObject *args) {
 	return Py_BuildValue("O",  PyCObject_FromVoidPtr((void *)result, (void *)free));
 }
 
+static PyObject *
+pycms_GetVersion (PyObject *self, PyObject *args) {
+	return Py_BuildValue("i",  LCMS_VERSION);
+}
+
 static
 PyMethodDef pycms_methods[] = {
+	{"getVersion", pycms_GetVersion, METH_VARARGS},
 	{"openProfile", pycms_OpenProfile, METH_VARARGS},
 	{"createRGBProfile", pycms_CreateRGBProfile, METH_VARARGS},
 	{"createLabProfile", pycms_CreateLabProfile, METH_VARARGS},
