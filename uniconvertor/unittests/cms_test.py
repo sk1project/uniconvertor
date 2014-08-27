@@ -38,6 +38,9 @@ class TestCmsFunctions(unittest.TestCase):
 											 self.outProfile, cms.TYPE_CMYK_8,
 											 cms.INTENT_PERCEPTUAL, 0)
 
+	def test00_GetVersion(self):
+		self.assertNotEqual(None, cms._cms.getVersion())
+
 	def test01_OpenProfile(self):
 		self.assertNotEqual(None, self.inProfile)
 		self.assertNotEqual(None, self.outProfile)
