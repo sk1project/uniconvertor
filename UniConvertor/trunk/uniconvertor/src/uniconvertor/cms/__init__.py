@@ -46,6 +46,13 @@ cmsFLAGS_LOWRESPRECALC = 0x0800
 class cmsError(Exception):
 	pass
 
+def get_version():
+	"""
+	Retuns LCMS version.
+	"""
+	ver = str(_cms.getVersion())
+	return ver[0] + '.' + ver[1:]
+
 def COLORB():
 	"""
 	The function for python-lcms compatibility.

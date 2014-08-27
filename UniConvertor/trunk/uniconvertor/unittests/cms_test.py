@@ -39,7 +39,7 @@ class TestCmsFunctions(unittest.TestCase):
 											 cms.INTENT_PERCEPTUAL, 0)
 
 	def test00_GetVersion(self):
-		self.assertNotEqual(None, cms._cms.getVersion())
+		self.assertNotEqual(None, cms.get_version())
 
 	def test01_OpenProfile(self):
 		self.assertNotEqual(None, self.inProfile)
