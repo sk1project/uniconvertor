@@ -41,6 +41,8 @@ import sys, os
 COPY = True
 DEBIAN = False
 VERSION = '1.1.6pre'
+LCMS2 = True
+include_path = '/usr/include'
 
 ########################
 #
@@ -97,12 +99,20 @@ if __name__ == "__main__":
 					skmod_src + 'curvemisc.c', skmod_src + 'skaux.c', skmod_src + 'skimage.c', ])
 
  	cms_src = src + 'cms/'
-	cms_module = Extension('uniconvertor.cms._cms',
-			define_macros=[('MAJOR_VERSION', '1'),
-						('MINOR_VERSION', '0')],
-			sources=[cms_src + '_cms.c'],
-			libraries=['lcms'],
-			extra_compile_args=["-Wall"])
+ 	if os.path.isfile(os.path.join(include_path, 'lcms2.h'))::
+		cms_module = Extension('uniconvertor.cms._cms',
+				define_macros=[('MAJOR_VERSION', '1'),
+							('MINOR_VERSION', '0')],
+				sources=[cms_src + '_cms2.c'],
+				libraries=['lcms2'],
+				extra_compile_args=["-Wall"])
+ 	else:
+		cms_module = Extension('uniconvertor.cms._cms',
+				define_macros=[('MAJOR_VERSION', '1'),
+							('MINOR_VERSION', '0')],
+				sources=[cms_src + '_cms.c'],
+				libraries=['lcms'],
+				extra_compile_args=["-Wall"])
 
  	ft2_src = src + 'ft2engine/'
 	ft2_module = Extension('uniconvertor.ft2engine.ft2',
