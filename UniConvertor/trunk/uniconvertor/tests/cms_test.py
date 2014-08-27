@@ -25,7 +25,7 @@ import unittest
 from PIL import Image
 from uniconvertor import cms
 
-class TestPycmsFunctions(unittest.TestCase):
+class TestCmsFunctions(unittest.TestCase):
 
 	def setUp(self):
 		self.inProfile = cms.cmsOpenProfileFromFile('cms_data/sRGB.icm')
@@ -423,5 +423,14 @@ class TestPycmsFunctions(unittest.TestCase):
 		pass
 
 
+#if __name__ == '__main__':
+#	unittest.main()
+
+def get_suite():
+	suite = unittest.TestSuite()
+	suite.addTest(unittest.makeSuite(TestCmsFunctions))
+	return suite
+
+
 if __name__ == '__main__':
-	unittest.main()
+	unittest.TextTestRunner(verbosity=2).run(get_suite())
