@@ -43,7 +43,7 @@ cmsFLAGS_HIGHRESPRECALC = 0x0400
 cmsFLAGS_LOWRESPRECALC = 0x0800
 
 
-class pycmsError(Exception):
+class cmsError(Exception):
 	pass
 
 def COLORB():
@@ -62,7 +62,7 @@ def cmsSetAlarmCodes(r, g, b):
 	if r in range(0, 256) and g in range(0, 256) and b in range(0, 256):
 		_cms.setAlarmCodes(r, g, b)
 	else:
-		raise pycmsError, "r,g,b are expected to be integers in range 0..255"
+		raise cmsError, "r,g,b are expected to be integers in range 0..255"
 
 
 def cmsOpenProfileFromFile(profileFilename, mode=None):
@@ -76,12 +76,12 @@ def cmsOpenProfileFromFile(profileFilename, mode=None):
 	mode - stub parameter for python-lcms compatibility
 	"""
 	if not os.path.isfile(profileFilename):
-		raise pycmsError, "Invalid profile path provided: %s" % profileFilename
+		raise cmsError, "Invalid profile path provided: %s" % profileFilename
 
 	result = _cms.openProfile(profileFilename)
 
 	if result is None:
-		raise pycmsError, "It seems provided profile is invalid: %s" % profileFilename
+		raise cmsError, "It seems provided profile is invalid: %s" % profileFilename
 
 	return result
 
@@ -95,7 +95,7 @@ def cmsCreateRGBProfile():
 	result = _cms.createRGBProfile()
 
 	if result is None:
-		raise pycmsError, "LCMS library misconfiguration"
+		raise cmsError, "LCMS library misconfiguration"
 
 	return result
 
@@ -122,7 +122,7 @@ def cmsCreateLabProfile():
 	result = _cms.createLabProfile()
 
 	if result is None:
-		raise pycmsError, "LCMS library misconfiguration"
+		raise cmsError, "LCMS library misconfiguration"
 
 	return result
 
@@ -137,7 +137,7 @@ def cmsCreateGrayProfile():
 	result = _cms.createGrayProfile()
 
 	if result is None:
-		raise pycmsError, "LCMS library misconfiguration"
+		raise cmsError, "LCMS library misconfiguration"
 
 	return result
 
@@ -159,12 +159,12 @@ def cmsCreateTransform(inputProfile, inMode,
 	"""
 
 	if renderingIntent not in (0, 1, 2, 3):
-		raise pycmsError, "renderingIntent must be an integer between 0 and 3"
+		raise cmsError, "renderingIntent must be an integer between 0 and 3"
 
 	result = _cms.buildTransform(inputProfile, inMode, outputProfile, outMode, renderingIntent, flags)
 
 	if result is None:
-		raise pycmsError, "Cannot create requested transform: %s %s" % (inMode, outMode)
+		raise cmsError, "Cannot create requested transform: %s %s" % (inMode, outMode)
 
 	return result
 
@@ -188,16 +188,16 @@ def cmsCreateProofingTransform(inputProfile, inMode,
 	"""
 
 	if renderingIntent not in (0, 1, 2, 3):
-		raise pycmsError, "renderingIntent must be an integer between 0 and 3"
+		raise cmsError, "renderingIntent must be an integer between 0 and 3"
 
 	if proofingIntent not in (0, 1, 2, 3):
-		raise pycmsError, "proofingIntent must be an integer between 0 and 3"
+		raise cmsError, "proofingIntent must be an integer between 0 and 3"
 
 	result = _cms.buildProofingTransform(inputProfile, inMode, outputProfile, outMode,
 										proofingProfile, renderingIntent, proofingIntent, flags)
 
 	if result is None:
-		raise pycmsError, "Cannot create requested proofing transform: %s %s" % (inMode, outMode)
+		raise cmsError, "Cannot create requested proofing transform: %s %s" % (inMode, outMode)
 
 	return result
 
@@ -222,7 +222,7 @@ def cmsDoTransform(hTransform, inputBuffer, outputBuffer, buffersSizeInPixels=No
 		return
 
 	else:
-		raise pycmsError, "inputBuffer and outputBuffer must be Python 4-member list objects"
+		raise cmsError, "inputBuffer and outputBuffer must be Python 4-member list objects"
 
 def cmsDoTransform2(hTransform, channel1, channel2, channel3, channel4=0):
 	"""
@@ -247,16 +247,16 @@ def cmsDoBitmapTransform(hTransform, inImage, inMode, outMode):
 	Returns new PIL image object in outMode colorspace.
 	"""
 	if not inImage.mode == inMode:
-		raise pycmsError, "incorrect inMode"
+		raise cmsError, "incorrect inMode"
 
 	if not inImage.mode in [TYPE_RGB_8, TYPE_RGBA_8, TYPE_CMYK_8]:
-		raise pycmsError, "unsupported image type: %s" % inImage.mode
+		raise cmsError, "unsupported image type: %s" % inImage.mode
 
 	if not inMode in [TYPE_RGB_8, TYPE_RGBA_8, TYPE_CMYK_8]:
-		raise pycmsError, "unsupported inMode type: %s" % inMode
+		raise cmsError, "unsupported inMode type: %s" % inMode
 
 	if not outMode in [TYPE_RGB_8, TYPE_RGBA_8, TYPE_CMYK_8]:
-		raise pycmsError, "unsupported outMode type: %s" % outMode
+		raise cmsError, "unsupported outMode type: %s" % outMode
 
 	w, h = inImage.size
 	inImage.load()
