@@ -425,15 +425,14 @@ class TestCmsFunctions(unittest.TestCase):
 	def tearDown(self):
 		pass
 
-
-#if __name__ == '__main__':
-#	unittest.main()
-
 def get_suite():
 	suite = unittest.TestSuite()
 	suite.addTest(unittest.makeSuite(TestCmsFunctions))
 	return suite
 
+def run_tests():
+	print "CMS module test suite\n" + "-"*60
+	unittest.TextTestRunner(verbosity=2).run(get_suite())
 
 if __name__ == '__main__':
-	unittest.TextTestRunner(verbosity=2).run(get_suite())
+	run_tests()
