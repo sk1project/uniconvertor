@@ -1,17 +1,18 @@
-include MANIFEST.in
-include README setup.cfg
 
-include DEBIAN/control
+include COPYRIGHTS GNU_LGPL_v2 MANIFEST.in libutils.py setup.cfg
 
-include GNU_LGPL_v2 COPYRIGHTS
+include debian/postinst
+include debian/postrm
+
 include src/script/uniconvertor
-include src/uniconvertor/modules/filter/README
 include src/uniconvertor/app/modules/descr.txt
-include src/uniconvertor/app/VERSION
+
 recursive-include src/uniconvertor/share *.*
 recursive-include src/uniconvertor/share/fonts *.*
 recursive-include src/uniconvertor/share/ps_templates *.*
 recursive-include src/uniconvertor/share/ps_templates *.*
+
+include src/uniconvertor/modules/filter/README
 recursive-include src/uniconvertor/modules/filter *.*
 recursive-include src/uniconvertor/modules/skmod *.*
 recursive-include src/uniconvertor/modules/skread *.*
@@ -19,12 +20,13 @@ recursive-include src/uniconvertor/modules/pstokenize *.*
 recursive-include src/uniconvertor/modules/type1mod *.*
 
 include src/uniconvertor/ft2engine/libft2/ft2module.c
+recursive-include src/uniconvertor/ft2engine/fallback_fonts *.*
 
 recursive-include src/uniconvertor/filters/import *.py
 recursive-include src/uniconvertor/filters/export *.py
 recursive-include src/uniconvertor/filters/parsing *.py
 recursive-include src/uniconvertor/filters/preview *.py
-recursive-include src/uniconvertor/ft2engine/fallback_fonts *.*
+
 recursive-include src/uniconvertor/cms *.c
 recursive-include src/uniconvertor/cms *.h
 recursive-include src/uniconvertor/profiles *.*
