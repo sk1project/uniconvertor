@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 #
-# Setup script for UniConvertor
+# Setup script for UniConvertor 1.x
 #
-# Copyright (C) 2007-2010 Igor E. Novikov
+# Copyright (C) 2007-2014 Igor E. Novikov
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -18,307 +18,273 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
 #
-# Usage:
-# --------------------------------------------------------------------------
-#  to build package:   python setup.py build
-#  to install package:   python setup.py install
-# --------------------------------------------------------------------------
-#  to create source distribution:   python setup.py sdist
-# --------------------------------------------------------------------------
-#  to create binary RPM distribution:  python setup.py bdist_rpm
-# --------------------------------------------------------------------------
-#  to create binary DEB package:  python setup.py bdist_deb
-# --------------------------------------------------------------------------
-#  to create Win32 distribution:   python setup.py bdist_wininst
-# --------------------------------------------------------------------------
-#  help on available distribution formats: python setup.py bdist --help-formats
+
+"""
+Usage: 
+--------------------------------------------------------------------------
+ to build package:   python setup.py build
+ to install package:   python setup.py install
+--------------------------------------------------------------------------
+ to create source distribution:   python setup.py sdist
+--------------------------------------------------------------------------
+ to create binary RPM distribution:  python setup.py bdist_rpm
+--------------------------------------------------------------------------
+ to create binary DEB distribution:  python setup.py bdist_deb
+--------------------------------------------------------------------------
+ to force compiling against LCMS2 use flag --lcms2 
+ to force compiling against LCMS1 use flag --lcms1 
+ By default build script tries to detect lcms2.h to choise LCMS version
+--------------------------------------------------------------------------
+ Help on available distribution formats: --help-formats
+"""
+
+import os, sys
+
+import libutils
+from libutils import make_source_list, DEB_Builder
+
+
+############################################################
 #
+# Flags
+#
+############################################################
+UPDATE_MODULES = False
+DEB_PACKAGE = False
+CLEAR_BUILD = False
+LCMS2 = False
 
-from distutils.core import setup, Extension
-import sys, os
+############################################################
+#
+# Package description
+#
+############################################################
+NAME = 'uniconvertor'
+VERSION = '1.2.0'
+DESCRIPTION = 'Universal vector graphics translator'
+AUTHOR = 'Igor E. Novikov'
+AUTHOR_EMAIL = 'igor.e.novikov@gmail.com'
+MAINTAINER = AUTHOR
+MAINTAINER_EMAIL = AUTHOR_EMAIL
+LICENSE = 'LGPL v2'
+URL = 'http://sk1project.org'
+DOWNLOAD_URL = URL
+CLASSIFIERS = [
+'Development Status :: 6 - Mature',
+'Environment :: Console',
+'Intended Audience :: End Users/Desktop',
+'License :: OSI Approved :: LGPL v2',
+'Operating System :: POSIX',
+'Operating System :: MacOS :: MacOS X',
+'Operating System :: Microsoft :: Windows',
+'Programming Language :: Python',
+'Programming Language :: C',
+"Topic :: Multimedia :: Graphics :: Graphics Conversion",
+]
+LONG_DESCRIPTION = '''
+UniConvertor is a multiplatform universal vector graphics translator.
+Uses sK1 model to convert one format to another. 
 
+sK1 Project (http://sk1project.org),
+Copyright (C) 2007-2014 by Igor E. Novikov
+--------------------------------------------------------------------------------
+Supported input formats:  
+ CDR, CDT, CCX, CDRX, CMX, AI, PS, EPS, CGM, WMF, XFIG, SVG, SK, SK1, 
+ AFF, PLT, DXF, DST, PES, EXP, PCS
+--------------------------------------------------------------------------------
+Supported output formats: 
+ AI, SVG, SK, SK1, CGM, WMF, PDF, PS, PLT    
+--------------------------------------------------------------------------------
+'''
+LONG_DEB_DESCRIPTION = ''' .
+ UniConvertor is a multiplatform universal vector graphics translator.
+ Uses sK1 model to convert one format to another. 
+ . 
+ sK1 Project (http://sk1project.org),
+ Copyright (C) 2007-2014 by Igor E. Novikov 
+ .
+ Supported input formats:  
+ CDR, CDT, CCX, CDRX, CMX, AI, PS, EPS, CGM, WMF, XFIG, SVG, SK, SK1, 
+ AFF, PLT, DXF, DST, PES, EXP, PCS
+ .
+ Supported output formats: 
+ AI, SVG, SK, SK1, CGM, WMF, PDF, PS, PLT
+ .
+'''
 
-COPY = True
-DEBIAN = False
-VERSION = '1.1.6pre'
-LCMS2 = True
+############################################################
+#
+# Build data
+#
+############################################################
+src_path = 'src'
+pkg_path = os.path.join(src_path, 'uniconvertor')
 include_path = '/usr/include'
+modules = []
+scripts = ['src/script/uniconvertor', ]
+deb_scripts = ['debian/postinst', 'debian/postrm']
+data_files = []
+deb_depends = 'python (>=2.4), python (<<3.0), python-imaging'
 
-########################
+if os.path.isfile(os.path.join(include_path, 'lcms2.h')): LCMS2 = True
+
+package_data = {
+'uniconvertor':libutils.get_resources(pkg_path, pkg_path + '/share'),
+'uniconvertor.cms': ['profiles/*.*'],
+'uniconvertor.ft2engine': ['fallback_fonts/*.*'],
+'uniconvertor.app.modules': ['descr.txt', ],
+'uniconvertor.filters': ['import/*.py', 'export/*.py',
+						'parsing/*.py', 'preview/*.py'],
+}
+
+############################################################
 #
 # Main build procedure
 #
-########################
+############################################################
 
-if __name__ == "__main__":
+if len(sys.argv) == 1:
+	print 'Please specify build options!'
+	print __doc__
+	sys.exit(0)
 
-	if len(sys.argv) > 1 and sys.argv[1] == 'build&copy':
-		COPY = True
+if len(sys.argv) > 1:
+	if sys.argv[1] == 'bdist_rpm':
+		CLEAR_BUILD = True
+
+	if sys.argv[1] == 'build_update':
+		UPDATE_MODULES = True
+		CLEAR_BUILD = True
 		sys.argv[1] = 'build'
 
-	if len(sys.argv) > 1 and sys.argv[1] == 'bdist_deb':
-		DEBIAN = True
+	if sys.argv[1] == 'bdist_deb':
+		DEB_PACKAGE = True
+		CLEAR_BUILD = True
 		sys.argv[1] = 'build'
 
+	if len(sys.argv) > 2 and '--lcms2' in sys.argv:
+		LCMS2 = True
+		sys.argv.remove('--lcms2')
 
-	src = 'src/uniconvertor/'
+	if len(sys.argv) > 2 and '--lcms1' in sys.argv:
+		LCMS2 = False
+		sys.argv.remove('--lcms1')
 
-	filter_src = src + 'modules/filter/'
-	filter_module = Extension('uniconvertor.app.modules.streamfilter',
-			define_macros=[('MAJOR_VERSION', '1'),
-						('MINOR_VERSION', '1')],
-			sources=[filter_src + 'streamfilter.c', filter_src + 'filterobj.c', filter_src + 'linefilter.c',
-					filter_src + 'subfilefilter.c', filter_src + 'base64filter.c', filter_src + 'nullfilter.c',
-					filter_src + 'stringfilter.c', filter_src + 'binfile.c', filter_src + 'hexfilter.c'])
 
- 	type1mod_src = src + 'modules/type1mod/'
-	type1mod_module = Extension('uniconvertor.app.modules._type1',
-			define_macros=[('MAJOR_VERSION', '1'),
-						('MINOR_VERSION', '1')],
-			sources=[type1mod_src + '_type1module.c'])
+from distutils.core import setup, Extension
 
- 	skread_src = src + 'modules/skread/'
-	skread_module = Extension('uniconvertor.app.modules.skread',
-			define_macros=[('MAJOR_VERSION', '1'),
-						('MINOR_VERSION', '1')],
-			sources=[skread_src + 'skreadmodule.c'])
+macros = [('MAJOR_VERSION', '1'), ('MINOR_VERSION', '0')]
 
- 	pstokenize_src = src + 'modules/pstokenize/'
-	pstokenize_module = Extension('uniconvertor.app.modules.pstokenize',
-			define_macros=[('MAJOR_VERSION', '1'),
-						('MINOR_VERSION', '1')],
-			sources=[pstokenize_src + 'pstokenize.c', pstokenize_src + 'pschartab.c'])
+filter_src = os.path.join(src_path, 'uniconvertor', 'modules', 'filter')
+files = ['streamfilter.c', 'filterobj.c', 'linefilter.c',
+		'subfilefilter.c', 'base64filter.c', 'nullfilter.c',
+		'stringfilter.c', 'binfile.c', 'hexfilter.c']
+files = make_source_list(filter_src, files)
+filter_module = Extension('uniconvertor.app.modules.streamfilter',
+		define_macros=macros, sources=files)
+modules.append(filter_module)
 
- 	skmod_src = src + 'modules/skmod/'
-	skmod_module = Extension('uniconvertor.app.modules._sketch',
-			define_macros=[('MAJOR_VERSION', '1'),
-						('MINOR_VERSION', '1')],
-			sources=[skmod_src + '_sketchmodule.c', skmod_src + 'skpoint.c', skmod_src + 'skcolor.c',
-					skmod_src + 'sktrafo.c', skmod_src + 'skrect.c', skmod_src + 'skfm.c',
-					skmod_src + 'curvefunc.c', skmod_src + 'curveobject.c', skmod_src + 'curvelow.c',
-					skmod_src + 'curvemisc.c', skmod_src + 'skaux.c', skmod_src + 'skimage.c', ])
+type1mod_src = os.path.join(src_path, 'uniconvertor', 'modules', 'type1mod')
+files = make_source_list(type1mod_src, ['_type1module.c', ])
+type1mod_module = Extension('uniconvertor.app.modules._type1',
+		define_macros=macros, sources=files)
+modules.append(type1mod_module)
 
- 	cms_src = src + 'cms/'
- 	if os.path.isfile(os.path.join(include_path, 'lcms2.h'))::
-		cms_module = Extension('uniconvertor.cms._cms',
-				define_macros=[('MAJOR_VERSION', '1'),
-							('MINOR_VERSION', '0')],
-				sources=[cms_src + '_cms2.c'],
-				libraries=['lcms2'],
-				extra_compile_args=["-Wall"])
- 	else:
-		cms_module = Extension('uniconvertor.cms._cms',
-				define_macros=[('MAJOR_VERSION', '1'),
-							('MINOR_VERSION', '0')],
-				sources=[cms_src + '_cms.c'],
-				libraries=['lcms'],
-				extra_compile_args=["-Wall"])
+skread_src = os.path.join(src_path, 'uniconvertor', 'modules', 'skread')
+files = make_source_list(skread_src, ['skreadmodule.c', ])
+skread_module = Extension('uniconvertor.app.modules.skread',
+		define_macros=macros, sources=files)
+modules.append(skread_module)
 
- 	ft2_src = src + 'ft2engine/'
-	ft2_module = Extension('uniconvertor.ft2engine.ft2',
-			define_macros=[('MAJOR_VERSION', '1'),
-						('MINOR_VERSION', '0')],
-			sources=[ft2_src + 'ft2module.c'],
-			include_dirs=['/usr/include/freetype2'],
-			libraries=['freetype'],
-			extra_compile_args=["-Wall"])
+pstokenize_src = os.path.join(src_path, 'uniconvertor', 'modules', 'pstokenize')
+files = make_source_list(pstokenize_src, ['pstokenize.c', 'pschartab.c'])
+pstokenize_module = Extension('uniconvertor.app.modules.pstokenize',
+		define_macros=macros, sources=files)
+modules.append(pstokenize_module)
 
-	setup (name='uniconvertor',
-			version=VERSION,
-			description='Universal vector graphics translator',
-			author='Igor E. Novikov',
-			author_email='igor.e.novikov@gmail.com',
-			maintainer='Igor E. Novikov',
-			maintainer_email='igor.e.novikov@gmail.com',
-			license='LGPL v2, GPL v2 (some packages)',
-			url='http://sk1project.org',
-			download_url='http://sk1project.org/modules.php?name=Products&product=uniconvertor',
-			long_description='''
-UniConvertor is a multiplatform universal vector graphics translator.
-It uses sK1 engine to convert one format to another.
+skmod_src = os.path.join(src_path, 'uniconvertor', 'modules', 'skmod')
+files = ['_sketchmodule.c', 'skpoint.c', 'skcolor.c', 'sktrafo.c', 'skrect.c',
+		'skfm.c', 'curvefunc.c', 'curveobject.c', 'curvelow.c', 'curvemisc.c',
+		'skaux.c', 'skimage.c', ]
+files = make_source_list(skmod_src, files)
+skmod_module = Extension('uniconvertor.app.modules._sketch',
+		define_macros=macros, sources=files)
+modules.append(skmod_module)
 
-sK1 Team (http://sk1project.org),
-Copyright (C) 2007-2010 by Igor E. Novikov
-------------------------------------------------------------------------------------
+cms_src = os.path.join(src_path, 'uniconvertor', 'cms')
+libs = ['lcms2', ]
+if LCMS2:
+ 	files = make_source_list(cms_src, ['_cms2.c', ])
+	deb_depends = 'liblcms2, ' + deb_depends
+else:
+ 	files = make_source_list(cms_src, ['_cms.c', ])
+	deb_depends = 'liblcms1, ' + deb_depends
+	libs = ['lcms', ]
 
-Import filters: 
-    * CorelDRAW ver.7-X3,X4 (CDR/CDT/CCX/CDRX/CMX)
-    * Adobe Illustrator up to 9 ver. (AI postscript based)
-    * Postscript (PS)
-    * Encapsulated Postscript (EPS)
-    * Computer Graphics Metafile (CGM)
-    * Windows Metafile (WMF)
-    * XFIG
-    * Scalable Vector Graphics (SVG)
-    * Skencil/Sketch/sK1 (SK and SK1)
-    * Acorn Draw (AFF)
-    * HPGL for cutting plotter files (PLT)
-    * Autocad Drawing Exchange Format (DXF)
-    * Design format (Tajima) (DST)
-    * Embroidery file format (Brother) (PES)
-    * Embroidery file format (Melco) (EXP)
-    * Design format (Pfaff home) (PCS)
-------------------------------------------------------------------------------------
+cms_module = Extension('uniconvertor.cms._cms',
+		define_macros=macros, sources=files,
+		libraries=libs, extra_compile_args=["-Wall"])
+modules.append(cms_module)
 
-Export filters: 
-    * AI - Postscript based Adobe Illustrator 5.0 format
-    * SVG - Scalable Vector Graphics
-    * SK - Sketch/Skencil format
-    * SK1 - sK1 format
-    * CGM - Computer Graphics Metafile
-    * WMF - Windows Metafile
-    * PDF - Portable Document Format
-    * PS  - PostScript
-    * PLT - HPGL for cutting plotter files
-    
-------------------------------------------------------------------------------------
-			''',
-		classifiers=[
-			'Development Status :: 6 - Mature',
-			'Environment :: Console',
-			'Intended Audience :: End Users/Desktop',
-			'License :: OSI Approved :: LGPL v2',
-			'License :: OSI Approved :: GPL v2',
-			'Operating System :: POSIX',
-			'Operating System :: MacOS :: MacOS X',
-			'Programming Language :: Python',
-			'Programming Language :: C',
-			"Topic :: Multimedia :: Graphics :: Graphics Conversion",
-			],
+ft2_src = os.path.join(src_path, 'uniconvertor', 'ft2engine')
+files = make_source_list(ft2_src, ['ft2module.c', ])
+ft2_module = Extension('uniconvertor.ft2engine.ft2',
+		define_macros=macros, sources=files,
+		include_dirs=['/usr/include/freetype2'], libraries=['freetype'],
+		extra_compile_args=["-Wall"])
+modules.append(ft2_module)
 
-			packages=['uniconvertor',
-				'uniconvertor.app',
-				'uniconvertor.app.Graphics',
-				'uniconvertor.app.Lib',
-				'uniconvertor.app.Scripting',
-				'uniconvertor.app.conf',
-				'uniconvertor.app.events',
-				'uniconvertor.app.io',
-				'uniconvertor.app.managers',
-				'uniconvertor.app.modules',
-				'uniconvertor.app.scripts',
-				'uniconvertor.app.utils',
-				'uniconvertor.utils',
-				'uniconvertor.ft2engine',
-				'uniconvertor.filters',
-				'uniconvertor.filters.formats',
-				'uniconvertor.cms',
-			],
-
-			package_dir={'uniconvertor': 'src/uniconvertor',
-			'uniconvertor.app': src + 'app',
-			'uniconvertor.app.modules': src + 'app/modules',
-			'uniconvertor.filters': src + 'filters',
-			'uniconvertor.filters.formats': src + 'filters/formats',
-			'uniconvertor.cms': src + 'cms',
-			},
-
-			package_data={'uniconvertor.app': ['VERSION'],
-			'uniconvertor': ['share/icc/*.*', 'share/fonts/*.*', 'share/ps_templates/*.*'],
-			'uniconvertor.app.modules': ['descr.txt', ],
-			'uniconvertor.ft2engine': ['fallback_fonts/*.*'],
-			'uniconvertor.filters': ['import/*.py', 'export/*.py', 'parsing/*.py', 'preview/*.py'],
-			'uniconvertor.cms': ['profiles/*.*'],
-			},
-
-			scripts=['src/script/uniconvertor'],
-
-			ext_modules=[filter_module, type1mod_module, skread_module, pstokenize_module, skmod_module,
-						ft2_module, cms_module, ])
-
+setup(name=NAME,
+	version=VERSION,
+	description=DESCRIPTION,
+	author=AUTHOR,
+	author_email=AUTHOR_EMAIL,
+	maintainer=MAINTAINER,
+	maintainer_email=MAINTAINER_EMAIL,
+	license=LICENSE,
+	url=URL,
+	download_url=DOWNLOAD_URL,
+	long_description=LONG_DESCRIPTION,
+	classifiers=CLASSIFIERS,
+	packages=libutils.get_source_structure(),
+	package_dir=libutils.get_package_dirs(),
+	package_data=package_data,
+	data_files=data_files,
+	scripts=scripts,
+	ext_modules=modules)
 
 #################################################
 # .py source compiling
 #################################################
-if sys.argv[1] == 'build':
-	import compileall
-	compileall.compile_dir('build/')
+libutils.compile_sources()
+
 
 ##############################################
 # This section for developing purpose only
-# Command 'python setup.py build&copy' allows
+# Command 'python setup.py build_update' allows
 # automating build and native extension copying
 # into package directory
 ##############################################
+if UPDATE_MODULES: libutils.copy_modules(modules)
 
-if COPY:
-	import shutil, string, platform
-	version = (string.split(sys.version)[0])[0:3]
-
-	shutil.copy('build/lib.linux-' + platform.machine() + '-' + version +
-			'/uniconvertor/app/modules/pstokenize.so', src + 'app/modules/')
-	print '\n pstokenize.so has been copied to src/ directory'
-
-	shutil.copy('build/lib.linux-' + platform.machine() + '-' + version +
-			'/uniconvertor/app/modules/_sketch.so', src + 'app/modules/')
-	print '\n _sketchmodule.so has been copied to src/ directory'
-
-	shutil.copy('build/lib.linux-' + platform.machine() + '-' + version +
-			'/uniconvertor/app/modules/skread.so', src + 'app/modules/')
-	print '\n skreadmodule.so has been copied to src/ directory'
-
-	shutil.copy('build/lib.linux-' + platform.machine() + '-' + version +
-			'/uniconvertor/app/modules/streamfilter.so', src + 'app/modules/')
-	print '\n streamfilter.so has been copied to src/ directory'
-
-	shutil.copy('build/lib.linux-' + platform.machine() + '-' + version +
-			'/uniconvertor/app/modules/_type1.so', src + 'app/modules/')
-	print '\n _type1module.so has been copied to src/ directory'
-
-	shutil.copy('build/lib.linux-' + platform.machine() + '-' + version +
-			'/uniconvertor/ft2engine/ft2.so', src + 'ft2engine/')
-	print '\n ft2.so has been copied to src/ directory'
-
-	shutil.copy('build/lib.linux-' + platform.machine() + '-' + version +
-			'/uniconvertor/cms/_cms.so', src + 'cms/')
-	print '\n _cms.so has been copied to src/ directory'
-
-	os.system('rm -rf build')
 
 #################################################
 # Implementation of bdist_deb command
 #################################################
-if DEBIAN:
-	print '\nDEBIAN PACKAGE BUILD'
-	print '===================='
-	import shutil, string, platform
-	version = (string.split(sys.version)[0])[0:3]
+if DEB_PACKAGE:
+	bld = DEB_Builder(name=NAME,
+					version=VERSION,
+					maintainer='%s <%s>' % (AUTHOR, AUTHOR_EMAIL),
+					depends=deb_depends,
+					homepage=URL,
+					description=DESCRIPTION,
+					long_description=LONG_DEB_DESCRIPTION,
+					package_dirs=libutils.get_package_dirs(),
+					package_data=package_data,
+					scripts=scripts,
+					data_files=data_files,
+					deb_scripts=deb_scripts)
+	bld.build()
 
-	arch, bin = platform.architecture()
-	if arch == '64bit':
-		arch = 'amd64'
-	else:
-		arch = 'i386'
-
-	target = 'build/deb-root/usr/lib/python' + version + '/dist-packages'
-
-	if os.path.lexists(os.path.join('build', 'deb-root')):
-		os.system('rm -rf build/deb-root')
-	os.makedirs(os.path.join('build', 'deb-root', 'DEBIAN'))
-
-	os.system("cat DEBIAN/control |sed 's/<PLATFORM>/" + arch + "/g'|sed 's/<VERSION>/" + VERSION + "/g'> build/deb-root/DEBIAN/control")
-
-	os.makedirs(target)
-	os.makedirs('build/deb-root/usr/bin')
-	os.system('cp -R build/lib.linux-' + platform.machine() + '-' + version + '/uniconvertor ' + target)
-	os.system('cp src/uniconvertor build/deb-root/usr/bin')
-	os.system('chmod +x build/deb-root/usr/bin/uniconvertor')
-
-	if os.path.lexists('dist'):
-		os.system('rm -rf dist/*.deb')
-	else:
-		os.makedirs('dist')
-
-	os.system('dpkg --build build/deb-root/ dist/python-uniconvertor-' + VERSION + '_' + arch + '.deb')
-
-
-
-
-
-
-
-
-
-
-
+if CLEAR_BUILD: libutils.clear_build()
 
