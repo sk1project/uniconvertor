@@ -3,7 +3,7 @@ include README setup.cfg
 
 include DEBIAN/control
 
-include src/GNU_GPL_v2 src/GNU_LGPL_v2 src/COPYRIGHTS
+include GNU_LGPL_v2 COPYRIGHTS
 include src/script/uniconvertor
 include src/uniconvertor/modules/filter/README
 include src/uniconvertor/app/modules/descr.txt
@@ -25,3 +25,6 @@ recursive-include src/uniconvertor/filters/export *.py
 recursive-include src/uniconvertor/filters/parsing *.py
 recursive-include src/uniconvertor/filters/preview *.py
 recursive-include src/uniconvertor/ft2engine/fallback_fonts *.*
+recursive-include src/uniconvertor/cms *.c
+recursive-include src/uniconvertor/cms *.h
+recursive-include src/uniconvertor/profiles *.*
