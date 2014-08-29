@@ -7,3 +7,4 @@ encoding//src/uniconvertor/cms/__init__.py=utf-8
 encoding//src/uniconvertor/utils/__init__.py=utf-8
 encoding//src/uniconvertor/utils/fs.py=utf-8
 encoding//src/uniconvertor/utils/system.py=utf-8
+encoding/libutils.py=utf-8
