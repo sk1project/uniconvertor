@@ -132,6 +132,7 @@ package_data = {
 'uniconvertor':libutils.get_resources(pkg_path, pkg_path + '/share'),
 'uniconvertor.cms': ['profiles/*.*'],
 'uniconvertor.ft2engine': ['fallback_fonts/*.*'],
+'uniconvertor.app': ['VERSION', ],
 'uniconvertor.app.modules': ['descr.txt', ],
 'uniconvertor.filters': ['import/*.py', 'export/*.py',
 						'parsing/*.py', 'preview/*.py'],

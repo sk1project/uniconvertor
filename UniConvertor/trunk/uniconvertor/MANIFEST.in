@@ -5,6 +5,7 @@ include debian/postinst
 include debian/postrm
 
 include src/script/uniconvertor
+include src/uniconvertor/app/VERSION
 include src/uniconvertor/app/modules/descr.txt
 
 recursive-include src/uniconvertor/share *.*
