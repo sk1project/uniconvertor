@@ -124,7 +124,8 @@ modules = []
 scripts = ['src/script/uniconvertor', ]
 deb_scripts = ['debian/postinst', 'debian/postrm']
 data_files = []
-deb_depends = 'python (>=2.4), python (<<3.0), python-imaging'
+deb_depends = 'libfreetype6, python (>=2.4), python (<<3.0), python-imaging'
+deb_depends += ', python-reportlab'
 
 if os.path.isfile(os.path.join(include_path, 'lcms2.h')): LCMS2 = True
 
