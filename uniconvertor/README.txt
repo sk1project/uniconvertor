@@ -44,6 +44,7 @@ some development packages. We describe dev-packages for Ubuntu|Debian, but for
 other distros they have similar names. So, you need:
 
 libfreetype6-dev
+python-dev
 python-imaging 
 python-reportlab
 liblcms1-dev (or liblcms2-dev)
