@@ -1,5 +1,5 @@
 
-include COPYRIGHTS GNU_LGPL_v2 MANIFEST.in libutils.py setup.cfg
+include COPYRIGHTS GNU_LGPL_v2 MANIFEST.in libutils.py setup.cfg README.txt
 
 include debian/postinst
 include debian/postrm
