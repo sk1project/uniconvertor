@@ -45,6 +45,10 @@ other distros they have similar names. So, you need:
 
 libfreetype6-dev
 python-dev
+liblcms1-dev (or liblcms2-dev)
+
+
+To run application you need installing also:
+
 python-imaging 
 python-reportlab
-liblcms1-dev (or liblcms2-dev)
