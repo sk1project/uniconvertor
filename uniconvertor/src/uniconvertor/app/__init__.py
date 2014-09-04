@@ -9,15 +9,15 @@
 
 import os, sys, string
 
-path_separator='/'
-if os.name=='nt':
-	path_separator='\\'
+path_separator = '/'
+if os.name == 'nt':
+	path_separator = '\\'
 
 _pkgdir = __path__[0]
 
-temp=string.split(_pkgdir,path_separator)
+temp = string.split(_pkgdir, path_separator)
 temp.remove(temp[-1])
-_parentdir=string.join(temp,path_separator)
+_parentdir = string.join(temp, path_separator)
 
 sKVersion = string.strip(open(os.path.join(_pkgdir, 'VERSION')).read())
 
@@ -55,10 +55,10 @@ _ = gettext
 
 
 ####Info variables for progress
-info1=None
-info2=None
-info3=None
-info_win=None
+info1 = None
+info2 = None
+info3 = None
+info_win = None
 #######################################
 
 from conf import const
@@ -70,7 +70,7 @@ from conf.configurator import Configurator
 config = Configurator(base_dir=_parentdir)
 
 from managers.colormanager import ColorManager
-colormanager=ColorManager()
+colormanager = ColorManager()
 
 
 from _sketch import Rect, PointsToRect, UnionRects, IntersectRects, EmptyRect, InfinityRect, RectType
@@ -91,11 +91,11 @@ from events.skexceptions import *
 from events.undo import Undo, UndoList, CreateListUndo, CreateMultiUndo, UndoAfter, UndoRedo, NullUndo
 from events.connector import Connect, Disconnect, Issue, RemovePublisher, Subscribe, Publisher, QueueingPublisher
 
-receiver=None
+receiver = None
 
-def updateInfo(inf1='',inf2='',inf3=0):
+def updateInfo(inf1='', inf2='', inf3=0):
 	if not receiver is None:
-		receiver(inf1,inf2,inf3)
+		receiver(inf1, inf2, inf3)
 
 
 command_classes = []
@@ -149,6 +149,8 @@ from Graphics.text import SimpleText, SimpleTextCreator, PathText
 def init_lib():
 	from uniconvertor import filters
 # 	config.load_user_preferences()
+	from uniconvertor.ft2engine import scan_fonts_dirs
+	scan_fonts_dirs()
 	Issue(None, const.INITIALIZE)
 
 def init_ui():
