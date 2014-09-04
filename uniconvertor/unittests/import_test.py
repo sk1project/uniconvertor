@@ -63,8 +63,11 @@ class TestImportFunctions(unittest.TestCase):
 	def test07_Open_PLT_file(self):
 		if not conv('plt', 'sk1'): self.fail()
 
-	def test08_Open_XFIG_file(self):
-		if not conv('fig', 'sk1'): self.fail()
+	def test08_Open_CDR_file(self):
+		if not conv('cdr', 'sk1'): self.fail()
+
+	def test08_Open_CMX_file(self):
+		if not conv('cmx', 'sk1'): self.fail()
 
 	def tearDown(self):
 		shutil.rmtree(tmpdir)
