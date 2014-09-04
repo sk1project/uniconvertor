@@ -380,7 +380,7 @@ class CGMLoader(GenericLoader):
 				text = string.join([format] + map(str, args))
 			if text[-1] != '\n':
 				text = text + '\n'
-			sys.stdout.write(text)
+#			sys.stdout.write(text)
 
 	def unpack(self, format):
 		size = struct.calcsize(format)
@@ -460,7 +460,7 @@ class CGMLoader(GenericLoader):
 
 #   0x0020:
 	def BEGMF(self, size):
-#		self._print(10 ,  '======= 0.1 =======')
+		self._print(10 , '======= 0.1 =======')
 		global dflt, reff
 		dflt = cp(init)
 		reff = dflt
