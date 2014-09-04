@@ -144,7 +144,7 @@ CGM_ID = {
 	0x5460: 'asf',
 	0x6020: 'ESCAPE',
 }
-	
+
 
 cp = copy.deepcopy
 
@@ -157,14 +157,14 @@ fntalias = {
 	'Bookman' : ('Brooklyn',) ,
 	'Courier' : ('Fixed',) ,
 	'Helvetica' : ('Arial' , 'Swiss' , 'Switzerland' , 'Monospace') ,
-	'NewCenturySchlbk' : ('NewBrunswick' , 'NewCenturion') , 
+	'NewCenturySchlbk' : ('NewBrunswick' , 'NewCenturion') ,
 	'Palatino' : ('PalmSprings' , 'Zapf Calligraphic') ,
 	'Times' : ('Dutch' , 'Times New Roman') ,
 	'Symbol' : ('GreekMathSYmbols',) ,
 	'ZapfChancery' : ('ZurichCalligraphic',) ,
 	'ZapfDingbats' : ('Dixieland',) ,
 	'URWGothicL' : ('Block',) ,
-	'CenturySchL' : ('NewBrunswick' , 'WordPerfect' , 'Centurion') , 
+	'CenturySchL' : ('NewBrunswick' , 'WordPerfect' , 'Centurion') ,
 	'URWBookmanL' : () ,
 	'Dingbats' : () ,
 	'NimbusSanL' : () ,
@@ -173,43 +173,43 @@ fntalias = {
 	'URWPalladioL' : () ,
 	'StandardSymL' : () ,
 	'URWChanceryL' : () ,
-	'Utopia' : ('Univers' , ) ,
-	'CharterBT' : ('Bernhard Modern BT' , 'Blackletter' , 'Brush' , 
-					'GeometricSlabSerif' , 'Humanist' , 'Onyx') 
+	'Utopia' : ('Univers' ,) ,
+	'CharterBT' : ('Bernhard Modern BT' , 'Blackletter' , 'Brush' ,
+					'GeometricSlabSerif' , 'Humanist' , 'Onyx')
 }
-	
-	
+
+
 class cgminfo:
 	def __init__(self):
 		pass
 
 def sign(num):
-	return num/abs(num)
+	return num / abs(num)
 
 def cr(P1, P2):
 	return P1.x * P2.y - P1.y * P2.x
 
 def Angle(V):
 	x, y = V
-	return (atan2(y,x) % (2 * pi))
+	return (atan2(y, x) % (2 * pi))
 
 def Angle2(V1, V2):
-	return Angle((V1*V2 , cr(V1,V2)))
+	return Angle((V1 * V2 , cr(V1, V2)))
 
 def cr3(P1, P2, P3):
 	return cr(P1, P2) + cr(P2, P3) + cr(P3, P1)
 
 def Cnt3Pnt(P1, P2, P3):
-	Q1 = Point(P1*P1 , P1.y)
-	Q2 = Point(P2*P2 , P2.y)
-	Q3 = Point(P3*P3 , P3.y)
-	R1 = Point(P1.x , P1*P1)
-	R2 = Point(P2.x , P2*P2)
-	R3 = Point(P3.x , P3*P3)
+	Q1 = Point(P1 * P1 , P1.y)
+	Q2 = Point(P2 * P2 , P2.y)
+	Q3 = Point(P3 * P3 , P3.y)
+	R1 = Point(P1.x , P1 * P1)
+	R2 = Point(P2.x , P2 * P2)
+	R3 = Point(P3.x , P3 * P3)
 	N = 2 * cr3(P1, P2, P3)
 	Nx = cr3(Q1, Q2, Q3)
 	Ny = cr3(R1, R2, R3)
-	return Point(Nx/N , Ny/N)
+	return Point(Nx / N , Ny / N)
 
 def transform_base(po, px, py):
 	return apply(Trafo, tuple(px - po) + tuple(py - po) + tuple(po))
@@ -224,9 +224,9 @@ def CreateColorTable(sz):
 	cb = bs / 3
 	tb = bs % 3
 	mc = (1 << (cb + tb)) - 1.0
-	Table = Max * [(0.0, 0.0, 0.0)] 
+	Table = Max * [(0.0, 0.0, 0.0)]
 	for i in range(Max):
-		j =  i + Max - 1
+		j = i + Max - 1
 		j = j % Max
 		red, grn, blu = 0, 0, 0
 		for k in range(cb):
@@ -259,9 +259,9 @@ def strmatch(s1, s2):
 	for i in range(len1 + 1):
 		mat[i] = (len2 + 1) * [0]
 	for i in range(len1 + 1):
-		mat[i][0] =  i
+		mat[i][0] = i
 	for i in range(len2 + 1):
-		mat[0][i] =  i
+		mat[0][i] = i
 	for i in range(1, len1 + 1):
 		for j in range(1 , len2 + 1):
 			t = min(mat[i - 1][j] , mat[i][j - 1]) + 1
@@ -292,11 +292,11 @@ dflt = cgminfo()
 curr = cgminfo()
 reff = dflt
 
-init.intprec = 1 # 16 bits
+init.intprec = 1# 16 bits
 init.intsize = 2
-init.inxprec = 1 # 16 bits
+init.inxprec = 1# 16 bits
 init.inxsize = 2
-init.realprec = 0 # 32 bits fixed point
+init.realprec = 0# 32 bits fixed point
 init.realsize = 4
 init.color = cgminfo()
 init.color.absstruct = "!BBB"
@@ -307,16 +307,16 @@ init.color.table = CreateColorTable(64)
 init.color.offset = (0.0, 0.0, 0.0)
 init.color.scale = (255.0, 255.0, 255.0)
 init.vdc = cgminfo()
-init.vdc.type = 0 # integers
-init.vdc.realprec = 0 # 32 bits fixed point
+init.vdc.type = 0# integers
+init.vdc.realprec = 0# 32 bits fixed point
 init.vdc.realsize = 4
-init.vdc.intprec = 1 # 16 bits
+init.vdc.intprec = 1# 16 bits
 init.vdc.intsize = 2
-init.vdc.prec = None # integers , 16 bit
+init.vdc.prec = None# integers , 16 bit
 init.vdc.size = None
-init.vdc.intextend = ((0,0),(32767,32767))
-init.vdc.realextend = ((0.0,0.0),(1.0,1.0))
-init.vdc.extend = None #((0,0),(32767,32767))
+init.vdc.intextend = ((0, 0), (32767, 32767))
+init.vdc.realextend = ((0.0, 0.0), (1.0, 1.0))
+init.vdc.extend = None#((0,0),(32767,32767))
 init.fill = cgminfo()
 init.fill.type = 1
 init.fill.color = (0.0, 0.0, 0.0)
@@ -325,7 +325,7 @@ init.line.type = 1
 init.line.color = (0.0, 0.0, 0.0)
 init.line.widthmode = 0
 init.line.width = None
-init.line.dashtable = ((), (4,4) , (1,1) , (4,1,1,1) , (4,1,1,1,1,1))
+init.line.dashtable = ((), (4, 4) , (1, 1) , (4, 1, 1, 1) , (4, 1, 1, 1, 1, 1))
 init.edge = cgminfo()
 init.edge.type = 1
 init.edge.color = (0.0, 0.0, 0.0)
@@ -338,9 +338,9 @@ init.text.fontindex = fntlst.index((uniconvertor.ft2engine.fontlist[0])[0])
 init.text.height = None
 init.text.expansion = 1.0
 init.text.spacing = 0.0
-init.text.orientation = ((0.0 , 1.0),(1.0, 0.0)) # Up , Base vector
-init.text.path = 0 # right
-init.text.alignment = 0 # Dont understand this yet.
+init.text.orientation = ((0.0 , 1.0), (1.0, 0.0))# Up , Base vector
+init.text.path = 0# right
+init.text.alignment = 0# Dont understand this yet.
 init.text.color = (0.0, 0.0, 0.0)
 init.marker = cgminfo()
 init.marker.sizemode = 0
@@ -350,7 +350,7 @@ init.clip = cgminfo()
 init.clip.mode = 1
 init.clip.rect = init.vdc.extend
 init.scale = cgminfo()
-init.scale.mode = 0 # abstract
+init.scale.mode = 0# abstract
 init.scale.metric = 0.0
 
 
@@ -458,17 +458,17 @@ class CGMLoader(GenericLoader):
 			cgmcol = self.unpack(reff.color.inxstruct)[0]
 			return reff.color.table[cgmcol % reff.color.maxindex]
 
-#   0x0020: 
+#   0x0020:
 	def BEGMF(self, size):
-		self._print(10 ,  '======= 0.1 =======')
+#		self._print(10 ,  '======= 0.1 =======')
 		global dflt, reff
 		dflt = cp(init)
 		reff = dflt
 		self.document()
 		self.fntmap = range(78)
-		self.fntmap.insert(0,0)
+		self.fntmap.insert(0, 0)
 
-#   0x0040: 
+#   0x0040:
 	def ENDMF(self, size):
 		pass
 
@@ -495,7 +495,7 @@ class CGMLoader(GenericLoader):
 				reff.vdc.prec = reff.vdc.realprec
 		Hgt = reff.vdc.extend[1][1] - reff.vdc.extend[0][1]
 		Wdt = reff.vdc.extend[1][0] - reff.vdc.extend[0][0]
-		LS = max(abs(Hgt),abs(Wdt))
+		LS = max(abs(Hgt), abs(Wdt))
 		if reff.clip.rect == None:
 			reff.clip.rect = reff.vdc.extend
 		if reff.marker.size == None:
@@ -516,7 +516,7 @@ class CGMLoader(GenericLoader):
 			else:
 				reff.line.width = 1
 		ln = self.getstr()
-		self.layer(name = ln)
+		self.layer(name=ln)
 
 #   0x0080:
 	def BEGPICBODY(self, size):
@@ -532,11 +532,11 @@ class CGMLoader(GenericLoader):
 			raise SketchLoadError("Can only load CGM version 1")
 
 #   0x1040:
-	def mfdesc(self,size):
+	def mfdesc(self, size):
 		pass
 
 #   0x1060:
-	def vdctype(self,size):
+	def vdctype(self, size):
 		reff.vdc.type = self.Enum()
 		if reff.vdc.type == 0:
 			reff.vdc.size = reff.vdc.intsize
@@ -550,8 +550,8 @@ class CGMLoader(GenericLoader):
 #   0x1080:
 	def integerprec(self, size):
 		bits = self.Int()
-		if bits in (8,16,24,32):
-			reff.intsize = (bits / 8) 
+		if bits in (8, 16, 24, 32):
+			reff.intsize = (bits / 8)
 			reff.intprec = reff.intsize - 1
 		else:
 			raise SketchLoadError("This implementation can't work with %d bit integers" % (bits,))
@@ -562,16 +562,16 @@ class CGMLoader(GenericLoader):
 		prec = (self.Int(), self.Int())
 		if type == 1:
 			if prec == (16, 16):
-				reff.realprec = 0 # 32 bit fixed precision
+				reff.realprec = 0# 32 bit fixed precision
 			elif prec == (32, 32):
-				reff.realprec = 1 # 64 bit fixed precision
+				reff.realprec = 1# 64 bit fixed precision
 			else:
 				raise SketchLoadError("This implementation can't work with %d,%d bit fixed points" % prec)
 		else:
 			if prec == (9, 23):
-				reff.realprec = 2 # 32 bit floating point
+				reff.realprec = 2# 32 bit floating point
 			elif prec == (12, 52):
-				reff.realprec = 3 # 64 bit floating point
+				reff.realprec = 3# 64 bit floating point
 			else:
 				raise SketchLoadError("This implementation can't work with %d,%d bit floatingpoints" % prec)
 
@@ -579,8 +579,8 @@ class CGMLoader(GenericLoader):
 #   0x10c0: 'indexprec',
 	def indexprec(self, size):
 		bits = self.Int()
-		if bits in (8,16,24,32):
-			reff.inxsize = (bits / 8) 
+		if bits in (8, 16, 24, 32):
+			reff.inxsize = (bits / 8)
 			reff.inxprec = reff.inxsize - 1
 		else:
 			raise SketchLoadError("This implementation can't work with %d bit indices" % (bits,))
@@ -661,9 +661,9 @@ class CGMLoader(GenericLoader):
 
 
 #   0x2020: 'scalemode',
-	def scalemode(self,size):
+	def scalemode(self, size):
 		reff.scale.mode = self.Enum()
-		if reff.realprec in (2,3):  # floatingpoint precision
+		if reff.realprec in (2, 3):# floatingpoint precision
 			reff.scale.metric = self.Real()
 		else:
 			reff.scale.metric = self.flp32()
@@ -674,11 +674,11 @@ class CGMLoader(GenericLoader):
 #   0x2040:
 	def colrmode(self, size):
 		reff.color.mode = self.Enum()
-		
+
 #   0x2060:
 	def linewidthmode(self, size):
 		reff.line.widthmode = self.Enum()
-		
+
 #   0x2080:
 	def markersizemode(self, size):
 		reff.marker.sizemode = self.Enum()
@@ -702,14 +702,14 @@ class CGMLoader(GenericLoader):
 			height = 1
 			sc = reff.scale.metric * 72 / 25.4
 		self.Scale = sc
-		self.trafo = Scale(sign(width)*sc , sign(height)*sc)(Translation(-left , -bottom))
-		
+		self.trafo = Scale(sign(width) * sc , sign(height) * sc)(Translation(-left , -bottom))
+
 #   0x20c0:
 	def vdcext(self, size):
 		ll = self.Pnt()
 		ur = self.Pnt()
-		reff.vdc.extend = (ll,ur)
-		
+		reff.vdc.extend = (ll, ur)
+
 #   0x20e0:
 	def backcolr(self, size):
 		self.getcol()
@@ -717,8 +717,8 @@ class CGMLoader(GenericLoader):
 #   0x3020:
 	def vdcintegerprec(self, size):
 		bits = self.Int()
-		if bits in (8,16,24,32):
-			reff.vdc.intsize = (bits / 8) 
+		if bits in (8, 16, 24, 32):
+			reff.vdc.intsize = (bits / 8)
 			reff.vdc.intprec = reff.vdc.intsize - 1
 			if reff.vdc.type == 0:
 				reff.vdc.size = reff.vdc.intsize
@@ -732,16 +732,16 @@ class CGMLoader(GenericLoader):
 		prec = (self.Int(), self.Int())
 		if type == 1:
 			if prec == (16, 16):
-				reff.vdc.realprec = 0 # 32 bit fixed precision
+				reff.vdc.realprec = 0# 32 bit fixed precision
 			elif prec == (32, 32):
-				reff.vdc.realprec = 1 # 64 bit fixed precision
+				reff.vdc.realprec = 1# 64 bit fixed precision
 			else:
 				raise SketchLoadError("This implementation can't work with %d,%d bit fixed points" % prec)
 		else:
 			if prec == (9, 23):
-				reff.vdc.realprec = 2 # 32 bit floating point
+				reff.vdc.realprec = 2# 32 bit floating point
 			elif prec == (12, 52):
-				reff.vdc.realprec = 3 # 64 bit floating point
+				reff.vdc.realprec = 3# 64 bit floating point
 			else:
 				raise SketchLoadError("This implementation can't work with %d,%d bit floatingpoints" % prec)
 		if reff.vdc.type == 1:
@@ -768,13 +768,13 @@ class CGMLoader(GenericLoader):
 		style.line_dashes = reff.line.dashtable[reff.line.type - 1]
 		self.prop_stack.AddStyle(style)
 
-			
+
 #   0x4020:
 	def LINE(self, size):
 		path = self.Path(size)
 		self.setlinestyle()
 		self.bezier((path,))
-			
+
 #   0x4040:
 	def DISJTLINE(self, size):
 		path = ()
@@ -801,9 +801,9 @@ class CGMLoader(GenericLoader):
 		self.style.font = GetFont(fntlst[self.fntmap[reff.text.fontindex]])
 		self.style.font_size = reff.text.height * self.Scale
 		self.style.fill_pattern = SolidPattern(apply(CreateRGBColor , reff.text.color))
-		O = text.SimpleText(text = S, trafo = T(B),
-							halign = text.ALIGN_LEFT, valign = text.ALIGN_BASE,
-							properties = self.get_prop_stack())
+		O = text.SimpleText(text=S, trafo=T(B),
+							halign=text.ALIGN_LEFT, valign=text.ALIGN_BASE,
+							properties=self.get_prop_stack())
 		self.append_object(O)
 
 	def setfillstyle(self):
@@ -839,7 +839,7 @@ class CGMLoader(GenericLoader):
 			P = self.Pnt()
 			F = self.Enum()
 			subpath.AppendLine(self.trafo(P))
-			if F in (2,3):
+			if F in (2, 3):
 				if subpath.Node(-1) != subpath.Node(0):
 					subpath.AppendLine(subpath.Node(0))
 				subpath.load_close()
@@ -854,7 +854,7 @@ class CGMLoader(GenericLoader):
 		self.bezier(path)
 
 	def bugmark(self, P):
-		P = P - Point(1,1)
+		P = P - Point(1, 1)
 		style = basestyle.Duplicate()
 		style.fill_pattern = SolidPattern(StandardColors.black)
 		style.line_pattern = SolidPattern(StandardColors.black)
@@ -862,7 +862,7 @@ class CGMLoader(GenericLoader):
 		self.rectangle(2, 0, 0, 2, P.x, P.y)
 
 #   0x4160:
-	def RECT(self,size):
+	def RECT(self, size):
 		ll = self.trafo(self.Pnt())
 		ur = self.trafo(self.Pnt())
 		lr = Point(ur.x , ll.y)
@@ -871,8 +871,8 @@ class CGMLoader(GenericLoader):
 		self.setfillstyle()
 		apply(self.rectangle , T.coeff())
 
-#   0x4180: 
-	def CIRCLE(self,size):
+#   0x4180:
+	def CIRCLE(self, size):
 		centre = self.trafo(self.Pnt())
 		radius = self.VDC() * self.Scale
 		self.setfillstyle()
@@ -911,8 +911,8 @@ class CGMLoader(GenericLoader):
 		self.setfillstyle()
 		self.ellipse(radius, 0, 0, radius, Pc.x, Pc.y, Ao, Ae, 2 - closetype)
 
-#   0x41e0: 
-	def ARCCTR(self,size):
+#   0x41e0:
+	def ARCCTR(self, size):
 		centre = self.trafo(self.Pnt())
 		Vo = self.trafo.DTransform(self.Pnt())
 		Ve = self.trafo.DTransform(self.Pnt())
@@ -923,7 +923,7 @@ class CGMLoader(GenericLoader):
 		self.ellipse(radius, 0, 0, radius, centre.x, centre.y, Ao, Ae, 0)
 
 #   0x4200: 'ARCCTRCLOSE',
-	def ARCCTRCLOSE(self,size):
+	def ARCCTRCLOSE(self, size):
 		centre = self.trafo(self.Pnt())
 		Vo = self.trafo.DTransform(self.Pnt())
 		Ve = self.trafo.DTransform(self.Pnt())
@@ -935,15 +935,15 @@ class CGMLoader(GenericLoader):
 		self.ellipse(radius, 0, 0, radius, centre.x, centre.y, Ao, Ae, 2 - closetype)
 
 #   0x4220:
-	def ELLIPSE(self,size):
+	def ELLIPSE(self, size):
 		centre = self.trafo(self.Pnt())
 		cdp1 = self.trafo(self.Pnt())
 		cdp2 = self.trafo(self.Pnt())
 		T = transform_base(centre , cdp1 , cdp2)
 		self.setfillstyle()
 		apply(self.ellipse , T.coeff())
-	
-#   0x4240: 
+
+#   0x4240:
 	def ELLIPARC(self, size):
 		centre = self.trafo(self.Pnt())
 		cdp1 = self.trafo(self.Pnt())
@@ -958,7 +958,7 @@ class CGMLoader(GenericLoader):
 		self.setlinestyle()
 		apply(self.ellipse , T.coeff() + (Ao, Ae, 0))
 
-#   0x4260: 
+#   0x4260:
 	def ELLIPARCCLOSE(self, size):
 		centre = self.trafo(self.Pnt())
 		cdp1 = self.trafo(self.Pnt())
@@ -981,7 +981,7 @@ class CGMLoader(GenericLoader):
 #   0x5060:
 	def linewidth(self, size):
 		if reff.line.widthmode == 0:
-			reff.line.width = self.VDC() 
+			reff.line.width = self.VDC()
 		else:
 			reff.line.width = self.Real()
 
@@ -999,7 +999,7 @@ class CGMLoader(GenericLoader):
 		self._print(10 , 'font[%d]: => %s\n' , reff.text.fontindex , fntlst[self.fntmap[reff.text.fontindex]])
 
 #   0x5180: 'charexpan',
-	def charexpan(self,size):
+	def charexpan(self, size):
 		reff.text.expansion = self.Real()
 
 
@@ -1078,7 +1078,7 @@ class CGMLoader(GenericLoader):
 					name = CGM_ID.get(Id, '')
 					Class = Id >> 12
 					Elem = (Id & 0x0fff) >> 5
-					self._print(2, '*** unimplemented: %4x; class = %d, element = %2d  %s' 
+					self._print(2, '*** unimplemented: %4x; class = %d, element = %2d  %s'
 										, Id , Class , Elem, name)
 			pos = pos + hdsz + pdsz
 			if tell() < pos:
@@ -1092,9 +1092,9 @@ class CGMLoader(GenericLoader):
 
 	def Load(self):
 
-		self.file.seek(0,2)
+		self.file.seek(0, 2)
 		where = self.file.tell()
-		self.file.seek(0,0)
+		self.file.seek(0, 0)
 		self.interpret(where)
 		self.end_all()
 		self.object.load_Completed()
