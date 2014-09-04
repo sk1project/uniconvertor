@@ -60,6 +60,12 @@ class TestImportFunctions(unittest.TestCase):
 	def test06_Open_WMF_file(self):
 		if not conv('wmf', 'sk1'): self.fail()
 
+	def test07_Open_PLT_file(self):
+		if not conv('plt', 'sk1'): self.fail()
+
+	def test08_Open_XFIG_file(self):
+		if not conv('fig', 'sk1'): self.fail()
+
 	def tearDown(self):
 		shutil.rmtree(tmpdir)
 
