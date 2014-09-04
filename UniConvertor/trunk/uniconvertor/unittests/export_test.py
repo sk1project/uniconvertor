@@ -78,7 +78,7 @@ def get_suite():
 	return suite
 
 def run_tests():
-	print "UniConvertor export test suite\n" + "-"*60
+	print "\nUniConvertor export test suite\n" + "-"*60
 	unittest.TextTestRunner(verbosity=2).run(get_suite())
 
 if __name__ == '__main__':
