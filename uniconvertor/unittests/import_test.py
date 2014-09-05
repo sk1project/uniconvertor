@@ -34,6 +34,8 @@ def conv(ext_in, ext_out):
 		convert(input_file, output_file)
 	except:
 		return False
+	if not os.path.exists(output_file) or not os.path.getsize(output_file):
+		return False
 	return True
 
 class TestImportFunctions(unittest.TestCase):
