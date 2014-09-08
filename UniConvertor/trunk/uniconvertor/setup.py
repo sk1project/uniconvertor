@@ -60,7 +60,7 @@ LCMS2 = False
 #
 ############################################################
 NAME = 'uniconvertor'
-VERSION = '1.2.0'
+VERSION = '1.2.0pre1'
 DESCRIPTION = 'Universal vector graphics translator'
 AUTHOR = 'Igor E. Novikov'
 AUTHOR_EMAIL = 'igor.e.novikov@gmail.com'
