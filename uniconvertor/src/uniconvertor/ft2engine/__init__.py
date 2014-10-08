@@ -69,6 +69,7 @@ freetype_lib = ft2.Library()
 
 def scan_fonts_dirs():
 	fontfile_list = []
+	fontnames = []
 
 	paths = get_system_fontdirs()
 	for path in get_system_fontdirs():
@@ -97,27 +98,29 @@ def scan_fonts_dirs():
 				break
 		if is_unicode:
 			ps_name = face.getPostscriptName()
-			info = (ps_name,
-					face.family_name,
-					face.style_name,
-					'',
-					'UTF8',
-					fontfile,
-					face.style_flags & ft2.FT_STYLE_FLAG_BOLD,
-					face.style_flags & ft2.FT_STYLE_FLAG_ITALIC)
-			fontlist.append(info)
-			fontmap[ps_name] = (face.family_name,
-					face.style_name,
-					'',
-					'UTF8',
-					fontfile,
-					face.style_flags & ft2.FT_STYLE_FLAG_BOLD,
-					face.style_flags & ft2.FT_STYLE_FLAG_ITALIC)
+			if not ps_name in fontnames:
+				fontnames.append(ps_name)
+				info = (ps_name,
+						face.family_name,
+						face.style_name,
+						'',
+						'UTF8',
+						fontfile,
+						face.style_flags & ft2.FT_STYLE_FLAG_BOLD,
+						face.style_flags & ft2.FT_STYLE_FLAG_ITALIC)
+				fontlist.append(info)
+				fontmap[ps_name] = (face.family_name,
+						face.style_name,
+						'',
+						'UTF8',
+						fontfile,
+						face.style_flags & ft2.FT_STYLE_FLAG_BOLD,
+						face.style_flags & ft2.FT_STYLE_FLAG_ITALIC)
 
-			filename = (fontfile,)
-			if ps_to_filename.has_key(ps_name):
-				filename = ps_to_filename[ps_name] + filename
-			ps_to_filename[ps_name] = filename
+				filename = (fontfile,)
+				if ps_to_filename.has_key(ps_name):
+					filename = ps_to_filename[ps_name] + filename
+				ps_to_filename[ps_name] = filename
 
 		f.close()
 	for item in fontmap.keys():
