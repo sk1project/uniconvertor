@@ -10,6 +10,7 @@ encoding//src/uniconvertor/app/io/loadres.py=utf-8
 encoding//src/uniconvertor/app/managers/colormanager.py=utf-8
 encoding//src/uniconvertor/cms/__init__.py=utf-8
 encoding//src/uniconvertor/filters/__init__.py=utf-8
+encoding//src/uniconvertor/filters/export/aisaver.py=utf-8
 encoding//src/uniconvertor/filters/export/pdfgensaver.py=utf-8
 encoding//src/uniconvertor/filters/import/ailoader.py=utf-8
 encoding//src/uniconvertor/filters/import/sk1loader.py=utf-8
