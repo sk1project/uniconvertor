@@ -1,0 +1,13 @@
+#! /usr/bin/python
+#
+# Wrapper script to execute UniConvertor application once it is installed
+#
+# Copyright (C) 2007-2010 Igor E. Novikov
+#
+# This library is covered by GNU Library General Public License.
+# For more info see COPYRIGHTS file in uniconvertor root directory.
+#
+
+
+from uniconvertor import uniconv_run
+uniconv_run()
