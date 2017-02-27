@@ -1,6 +1,10 @@
 UniConvertor is a multiplatform universal vector graphics translator.
 Uses sK1 model to convert one format to another. 
 
+THIS REPOSITORY CONTAINS OLD UNICONVERTOR 1.x BRANCH.
+Actual UniConvertor 2.0 is under active development and the source
+code is placed in sk1project/sk1-wx repository (together with sK1 2.0).
+
 sK1 Project (http://sk1project.net),
 Copyright (C) 2007-2013 by Igor E. Novikov
 
