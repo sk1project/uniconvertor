@@ -458,11 +458,11 @@ class InfoCollector:
 		
 		if palflag == 3:#CMYK image
 			self.bmpbuf=chunk.data[bmpstart+40:]
-			self.extracted_image = Image.fromstring('CMYK', (width, height), self.bmpbuf, 'raw', 'CMYK', 0, -1)
+			self.extracted_image = Image.frombytes('CMYK', (width, height), self.bmpbuf, 'raw', 'CMYK', 0, -1)
 		elif palflag == 5:#Grayscale image
 			self.bmpbuf=chunk.data[bmpstart+40:]
 			bytes=math.ceil(width/2.0)*2
-			self.extracted_image = Image.fromstring('L', (width, height), self.bmpbuf, 'raw', 'L', bytes, -1)
+			self.extracted_image = Image.frombytes('L', (width, height), self.bmpbuf, 'raw', 'L', bytes, -1)
 		elif palflag == 6: #Mono image
 			bmpstart2 = numcol*4 + 66
 			bmpstart2 = struct.pack('<L',bmpstart2)		
@@ -477,7 +477,7 @@ class InfoCollector:
 #		elif palflag == 1: #RGB
 #			print 'width, height', (width, height)
 #			self.bmpbuf=chunk.data[bmpstart+40:]
-#			self.extracted_image = Image.fromstring('RGB', (width, height), self.bmpbuf, 'raw', 'BGR', 0, -1)
+#			self.extracted_image = Image.frombytes('RGB', (width, height), self.bmpbuf, 'raw', 'BGR', 0, -1)
 		
 		else:
 			self.bmpbuf = 'BM'+chunk.data[42:50]+bmpstart2[0:4]+'\x28\x00\x00\x00'
