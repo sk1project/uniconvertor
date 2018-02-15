@@ -8,6 +8,8 @@ code is placed in sk1project/sk1-wx repository (together with sK1 2.0).
 sK1 Project (http://sk1project.net),
 Copyright (C) 2007-2013 by Igor E. Novikov
 
+You can find lcms at https://github.com/mm2/Little-CMS.git
+
 How to install: 
 --------------------------------------------------------------------------
  to build package:   python setup.py build
@@ -50,7 +52,6 @@ other distros they have similar names. So, you need:
 libfreetype6-dev
 python-dev
 liblcms1-dev (or liblcms2-dev)
-
 
 To run application you need installing also:
 
