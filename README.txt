@@ -12,14 +12,16 @@ You can find lcms at https://github.com/mm2/Little-CMS.git
 
 How to install: 
 --------------------------------------------------------------------------
- to build package:   python setup.py build
+ to build package:   python setup.py build [build_ext -n -I <lcms include path>]
  to install package:   python setup.py install
 --------------------------------------------------------------------------
  to create source distribution:   python setup.py sdist
 --------------------------------------------------------------------------
- to create binary RPM distribution:  python setup.py bdist_rpm
+ to create binary RPM distribution:  python setup.py bdist_rpm [build_ext -n -I <lcms include path>]
 --------------------------------------------------------------------------
- to create binary DEB distribution:  python setup.py bdist_deb
+ to create binary DEB distribution:  python setup.py bdist_deb [build_ext -n -I <lcms include path>]
+--------------------------------------------------------------------------
+ to create binary wheel distribution:  python setup.py bdist_wheel [build_ext -n -I <lcms include path>]
 --------------------------------------------------------------------------
 
 help on available distribution formats: python setup.py bdist --help-formats
@@ -30,7 +32,7 @@ DETAILS
 If you wish testing UniConvertor you have two installation ways. 
 First option is a distutils install with commands:
 
-python setup.py build
+python setup.py build [build_ext -n -I <lcms include path>]
 python setup.py install
 
 Application will be installed into /usr/local/lib/python2.x/site-packages
