@@ -173,7 +173,7 @@ if len(sys.argv) > 1:
 		sys.argv.remove('--lcms1')
 
 
-from distutils.core import setup, Extension
+from setuptools import setup, Extension
 
 macros = [('MAJOR_VERSION', '1'), ('MINOR_VERSION', '0')]
 
