@@ -12,7 +12,7 @@ matrix:
         - docker
 
 script:
-  - git remote add upstream https://github.com/sk1project/sk1-wx
+  - git remote add upstream https://github.com/sk1project/uniconvertor
   - git fetch upstream
   - git pull upstream master
   - sudo apt-get install -y sshpass gettext
