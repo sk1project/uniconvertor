@@ -65,6 +65,7 @@ For successful build either distutils or deb|rpm package you need installing
 some development packages. We describe dev-packages for Ubuntu|Debian, but for
 other distros they have similar names. So, you need:
 ```
+git
 gettext
 libcairo2-dev
 liblcms2-dev
