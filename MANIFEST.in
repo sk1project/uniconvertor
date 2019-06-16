@@ -1,33 +1,10 @@
+include LICENSE README.txt MANIFEST.in_uc2 setup.cfg_uc2
+include native_mods.py src/script/uniconvertor.tmpl
 
-include COPYRIGHTS GNU_LGPL_v2 MANIFEST.in libutils.py setup.cfg README.txt
-
-include debian/postinst
-include debian/postrm
-
-include src/script/uniconvertor
-include src/uniconvertor/app/VERSION
-include src/uniconvertor/app/modules/descr.txt
-
-recursive-include src/uniconvertor/share *.*
-recursive-include src/uniconvertor/share/fonts *.*
-recursive-include src/uniconvertor/share/ps_templates *.*
-recursive-include src/uniconvertor/share/ps_templates *.*
-
-include src/uniconvertor/modules/filter/README
-recursive-include src/uniconvertor/modules/filter *.*
-recursive-include src/uniconvertor/modules/skmod *.*
-recursive-include src/uniconvertor/modules/skread *.*
-recursive-include src/uniconvertor/modules/pstokenize *.*
-recursive-include src/uniconvertor/modules/type1mod *.*
-
-include src/uniconvertor/ft2engine/libft2/ft2module.c
-recursive-include src/uniconvertor/ft2engine/fallback_fonts *.*
-
-recursive-include src/uniconvertor/filters/import *.py
-recursive-include src/uniconvertor/filters/export *.py
-recursive-include src/uniconvertor/filters/parsing *.py
-recursive-include src/uniconvertor/filters/preview *.py
-
-recursive-include src/uniconvertor/cms *.c
-recursive-include src/uniconvertor/cms *.h
-recursive-include src/uniconvertor/profiles *.*
+recursive-include utils *.py
+recursive-include src/uc2/libcairo *.c
+recursive-include src/uc2/libcairo *.h
+recursive-include src/uc2/libimg *.c
+recursive-include src/uc2/libpango *.c
+recursive-include src/uc2/cms *.c
+recursive-include src/uc2/cms *.h

@@ -1,0 +1,21 @@
+language: python
+python:
+  - "2.7"
+
+matrix:
+  include:
+    - os: linux
+      sudo: required
+      dist: xenial
+      compiler: gcc
+      services:
+        - docker
+
+script:
+  - git remote add upstream https://github.com/sk1project/sk1-wx
+  - git fetch upstream
+  - git pull upstream master
+  - sudo apt-get install -y sshpass gettext
+  - python bbox.py pull
+  - python bbox.py build --project=sk1
+  - python bbox.py build --project=uc2

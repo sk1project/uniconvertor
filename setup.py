@@ -1,292 +1,334 @@
 #!/usr/bin/env python
 #
-# Setup script for UniConvertor 1.x
+#   Setup script for UniConvertor 2.x
 #
-# Copyright (C) 2007-2014 Igor E. Novikov
+# 	Copyright (C) 2013-2018 by Igor E. Novikov
 #
-# This library is free software; you can redistribute it and/or
-# modify it under the terms of the GNU Lesser General Public
-# License as published by the Free Software Foundation; either
-# version 2.1 of the License, or (at your option) any later version.
+# 	This program is free software: you can redistribute it and/or modify
+# 	it under the terms of the GNU General Public License as published by
+# 	the Free Software Foundation, either version 3 of the License, or
+# 	(at your option) any later version.
 #
-# This library is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# Lesser General Public License for more details.
+# 	This program is distributed in the hope that it will be useful,
+# 	but WITHOUT ANY WARRANTY; without even the implied warranty of
+# 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# 	GNU General Public License for more details.
 #
-# You should have received a copy of the GNU Lesser General Public
-# License along with this library; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
-#
+# 	You should have received a copy of the GNU General Public License
+# 	along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+from __future__ import print_function
 
 """
 Usage: 
 --------------------------------------------------------------------------
- to build package:   python setup.py build
- to install package:   python setup.py install
+ to build package:       python setup-uc2.py build
+ to install package:     python setup-uc2.py install
+ to remove installation: python setup-uc2.py uninstall
 --------------------------------------------------------------------------
- to create source distribution:   python setup.py sdist
+ to create source distribution:   python setup-uc2.py sdist
 --------------------------------------------------------------------------
- to create binary RPM distribution:  python setup.py bdist_rpm
+ to create binary RPM distribution:  python setup-uc2.py bdist_rpm
 --------------------------------------------------------------------------
- to create binary DEB distribution:  python setup.py bdist_deb
---------------------------------------------------------------------------
- to force compiling against LCMS2 use flag --lcms2 
- to force compiling against LCMS1 use flag --lcms1 
- By default build script tries to detect lcms2.h to choise LCMS version
---------------------------------------------------------------------------
+ to create binary DEB distribution:  python setup-uc2.py bdist_deb
+--------------------------------------------------------------------------.
  Help on available distribution formats: --help-formats
 """
 
-import os, sys
+import datetime
+import os
+import shutil
+import sys
+from distutils.core import setup
 
-import libutils
-from libutils import make_source_list, DEB_Builder
 
+import utils.deb
+import utils.rpm
+from utils import build
+
+from utils import dependencies
+from native_mods import make_modules
+
+sys.path.insert(1, os.path.abspath('./src'))
+
+CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
+
+from uc2 import uc2const
 
 ############################################################
-#
 # Flags
-#
 ############################################################
 UPDATE_MODULES = False
 DEB_PACKAGE = False
+RPM_PACKAGE = False
 CLEAR_BUILD = False
-LCMS2 = False
 
 ############################################################
-#
 # Package description
-#
 ############################################################
 NAME = 'uniconvertor'
-VERSION = '1.2.0pre1'
+VERSION = uc2const.VERSION + uc2const.REVISION
 DESCRIPTION = 'Universal vector graphics translator'
 AUTHOR = 'Igor E. Novikov'
-AUTHOR_EMAIL = 'igor.e.novikov@gmail.com'
+AUTHOR_EMAIL = 'sk1.project.org@gmail.com'
 MAINTAINER = AUTHOR
 MAINTAINER_EMAIL = AUTHOR_EMAIL
-LICENSE = 'LGPL v2'
-URL = 'http://sk1project.org'
+LICENSE = 'GPL v3'
+URL = 'https://sk1project.net'
 DOWNLOAD_URL = URL
 CLASSIFIERS = [
-'Development Status :: 6 - Mature',
-'Environment :: Console',
-'Intended Audience :: End Users/Desktop',
-'License :: OSI Approved :: LGPL v2',
-'Operating System :: POSIX',
-'Operating System :: MacOS :: MacOS X',
-'Operating System :: Microsoft :: Windows',
-'Programming Language :: Python',
-'Programming Language :: C',
-"Topic :: Multimedia :: Graphics :: Graphics Conversion",
+    'Development Status :: 6 - Mature',
+    'Environment :: Console',
+    'Intended Audience :: End Users/Desktop',
+    'License :: OSI Approved :: LGPL v2',
+    'License :: OSI Approved :: GPL v3',
+    'Operating System :: POSIX',
+    'Operating System :: MacOS :: MacOS X',
+    'Operating System :: Microsoft :: Windows',
+    'Programming Language :: Python',
+    'Programming Language :: C',
+    "Topic :: Multimedia :: Graphics :: Graphics Conversion",
 ]
+loaders = uc2const.MODEL_LOADERS + uc2const.PALETTE_LOADERS + \
+          uc2const.BITMAP_LOADERS
+savers = uc2const.MODEL_SAVERS + uc2const.PALETTE_SAVERS + \
+         uc2const.BITMAP_SAVERS
+year = str(datetime.date.today().year)
+
 LONG_DESCRIPTION = '''
 UniConvertor is a multiplatform universal vector graphics translator.
-Uses sK1 model to convert one format to another. 
+Uses SK2 model to convert one format to another. 
 
-sK1 Project (http://sk1project.org),
-Copyright (C) 2007-2014 by Igor E. Novikov
+sK1 Project (https://sk1project.net),
+Copyright (C) 2007-%s sK1 Project Team
 --------------------------------------------------------------------------------
 Supported input formats:  
- CDR, CDT, CCX, CDRX, CMX, AI, PS, EPS, CGM, WMF, XFIG, SVG, SK, SK1, 
- AFF, PLT, DXF, DST, PES, EXP, PCS
+  %s
 --------------------------------------------------------------------------------
 Supported output formats: 
- AI, SVG, SK, SK1, CGM, WMF, PDF, PS, PLT    
+  %s
 --------------------------------------------------------------------------------
-'''
-LONG_DEB_DESCRIPTION = ''' .
- UniConvertor is a multiplatform universal vector graphics translator.
- Uses sK1 model to convert one format to another. 
+''' % (year,
+       '\n  '.join([uc2const.FORMAT_DESCRIPTION[item] for item in loaders]),
+       '\n  '.join([uc2const.FORMAT_DESCRIPTION[item] for item in savers]))
+
+LONG_DEB_DESCRIPTION = ''' UniConvertor is a multiplatform universal vector graphics translator.
+ Uses SK2 model to convert one format to another. 
  . 
- sK1 Project (http://sk1project.org),
- Copyright (C) 2007-2014 by Igor E. Novikov 
+ sK1 Project (https://sk1project.net),
+ Copyright (C) 2007-%s sK1 Project Team 
  .
- Supported input formats:  
- CDR, CDT, CCX, CDRX, CMX, AI, PS, EPS, CGM, WMF, XFIG, SVG, SK, SK1, 
- AFF, PLT, DXF, DST, PES, EXP, PCS
+ ##############################################
  .
- Supported output formats: 
- AI, SVG, SK, SK1, CGM, WMF, PDF, PS, PLT
+ Supported input formats:
  .
-'''
+ %s
+ .
+ ##############################################
+ .
+ Supported output formats:
+ .
+ %s
+ .
+ ##############################################  
+''' % (year,
+       '  '.join([uc2const.FORMAT_DESCRIPTION[item] for item in loaders]),
+       '  '.join([uc2const.FORMAT_DESCRIPTION[item] for item in savers]))
 
 ############################################################
-#
 # Build data
-#
 ############################################################
+install_path = '/usr/lib/%s-%s' % (NAME, VERSION)
+os.environ["APP_INSTALL_PATH"] = "%s" % (install_path,)
 src_path = 'src'
-pkg_path = os.path.join(src_path, 'uniconvertor')
 include_path = '/usr/include'
 modules = []
 scripts = ['src/script/uniconvertor', ]
-deb_scripts = ['debian/postinst', 'debian/postrm']
-data_files = []
-deb_depends = 'libfreetype6, python (>=2.4), python (<<3.0), python-imaging'
-deb_depends += ', python-reportlab'
-
-if os.path.isfile(os.path.join(include_path, 'lcms2.h')): LCMS2 = True
-
-package_data = {
-'uniconvertor':libutils.get_resources(pkg_path, pkg_path + '/share'),
-'uniconvertor.cms': ['profiles/*.*'],
-'uniconvertor.ft2engine': ['fallback_fonts/*.*'],
-'uniconvertor.app': ['VERSION', ],
-'uniconvertor.app.modules': ['descr.txt', ],
-'uniconvertor.filters': ['import/*.py', 'export/*.py',
-						'parsing/*.py', 'preview/*.py'],
-}
+deb_scripts = []
+data_files = [
+    (install_path, ['LICENSE', ]),
+]
 
 ############################################################
-#
+deb_depends = ''
+rpm_depends = ''
+############################################################
+
+package_data = {}
+
+# Preparing start script
+src_script = 'src/script/uniconvertor.tmpl'
+dst_script = 'src/script/uniconvertor'
+fileptr = open(src_script, 'rb')
+fileptr2 = open(dst_script, 'wb')
+while True:
+    line = fileptr.readline()
+    if line == '':
+        break
+    if '$APP_INSTALL_PATH' in line:
+        line = line.replace('$APP_INSTALL_PATH', install_path)
+    fileptr2.write(line)
+fileptr.close()
+fileptr2.close()
+
+############################################################
 # Main build procedure
-#
 ############################################################
 
 if len(sys.argv) == 1:
-	print 'Please specify build options!'
-	print __doc__
-	sys.exit(0)
+    print('Please specify build options!')
+    print(__doc__)
+    sys.exit(0)
 
 if len(sys.argv) > 1:
-	if sys.argv[1] == 'bdist_rpm':
-		CLEAR_BUILD = True
 
-	if sys.argv[1] == 'build_update':
-		UPDATE_MODULES = True
-		CLEAR_BUILD = True
-		sys.argv[1] = 'build'
+    if sys.argv[1] == 'bdist_rpm':
+        CLEAR_BUILD = True
+        RPM_PACKAGE = True
+        sys.argv[1] = 'sdist'
+        rpm_depends = dependencies.get_uc2_rpm_depend()
 
-	if sys.argv[1] == 'bdist_deb':
-		DEB_PACKAGE = True
-		CLEAR_BUILD = True
-		sys.argv[1] = 'build'
+    if sys.argv[1] == 'build_update':
+        UPDATE_MODULES = True
+        CLEAR_BUILD = True
+        sys.argv[1] = 'build'
 
-	if len(sys.argv) > 2 and '--lcms2' in sys.argv:
-		LCMS2 = True
-		sys.argv.remove('--lcms2')
+    if sys.argv[1] == 'bdist_deb':
+        DEB_PACKAGE = True
+        CLEAR_BUILD = True
+        sys.argv[1] = 'build'
+        deb_depends = dependencies.get_uc2_deb_depend()
 
-	if len(sys.argv) > 2 and '--lcms1' in sys.argv:
-		LCMS2 = False
-		sys.argv.remove('--lcms1')
+    if sys.argv[1] == 'uninstall':
+        if os.path.isdir(install_path):
+            # removing UC2 folder
+            print('REMOVE: ' + install_path)
+            os.system('rm -rf ' + install_path)
+            # removing scripts
+            for item in scripts:
+                filename = os.path.basename(item)
+                print('REMOVE: /usr/bin/' + filename)
+                os.system('rm -rf /usr/bin/' + filename)
+            # removing data files
+            for item in data_files:
+                location = item[0]
+                file_list = item[1]
+                for file_item in file_list:
+                    filename = os.path.basename(file_item)
+                    filepath = os.path.join(location, filename)
+                    if not os.path.isfile(filepath):
+                        continue
+                    print('REMOVE: ' + filepath)
+                    os.system('rm -rf ' + filepath)
+            print('Desktop database update: ', end=' ')
+            os.system('update-desktop-database')
+            print('DONE!')
+        else:
+            print('UniConvertor installation is not found!')
+        sys.exit(0)
 
+# Preparing MANIFEST.in and setup.cfg
+############################################################
+shutil.copy2('MANIFEST.in_uc2', 'MANIFEST.in')
 
-from distutils.core import setup, Extension
+fileptr = open('setup.cfg_uc2', 'rb')
+fileptr2 = open('setup.cfg', 'wb')
+content = fileptr.read()
+if rpm_depends:
+    content += '\nrequires = ' + rpm_depends
+fileptr2.write(content)
+fileptr.close()
+fileptr2.close()
 
-macros = [('MAJOR_VERSION', '1'), ('MINOR_VERSION', '0')]
+############################################################
+# Native extensions
+############################################################
 
-filter_src = os.path.join(src_path, 'uniconvertor', 'modules', 'filter')
-files = ['streamfilter.c', 'filterobj.c', 'linefilter.c',
-		'subfilefilter.c', 'base64filter.c', 'nullfilter.c',
-		'stringfilter.c', 'binfile.c', 'hexfilter.c']
-files = make_source_list(filter_src, files)
-filter_module = Extension('uniconvertor.app.modules.streamfilter',
-		define_macros=macros, sources=files)
-modules.append(filter_module)
+modules += make_modules(src_path, include_path)
 
-type1mod_src = os.path.join(src_path, 'uniconvertor', 'modules', 'type1mod')
-files = make_source_list(type1mod_src, ['_type1module.c', ])
-type1mod_module = Extension('uniconvertor.app.modules._type1',
-		define_macros=macros, sources=files)
-modules.append(type1mod_module)
+############################################################
+# Setup routine
+############################################################
 
-skread_src = os.path.join(src_path, 'uniconvertor', 'modules', 'skread')
-files = make_source_list(skread_src, ['skreadmodule.c', ])
-skread_module = Extension('uniconvertor.app.modules.skread',
-		define_macros=macros, sources=files)
-modules.append(skread_module)
+setup(
+    name=NAME,
+    version=VERSION,
+    description=DESCRIPTION,
+    author=AUTHOR,
+    author_email=AUTHOR_EMAIL,
+    maintainer=MAINTAINER,
+    maintainer_email=MAINTAINER_EMAIL,
+    license=LICENSE,
+    url=URL,
+    download_url=DOWNLOAD_URL,
+    long_description=LONG_DESCRIPTION,
+    classifiers=CLASSIFIERS,
+    packages=build.get_source_structure('src/uc2') + ['uc2'],
+    package_dir={'uc2': 'src/uc2'},
+    package_data=package_data,
+    data_files=data_files,
+    scripts=scripts,
+    ext_modules=modules)
 
-pstokenize_src = os.path.join(src_path, 'uniconvertor', 'modules', 'pstokenize')
-files = make_source_list(pstokenize_src, ['pstokenize.c', 'pschartab.c'])
-pstokenize_module = Extension('uniconvertor.app.modules.pstokenize',
-		define_macros=macros, sources=files)
-modules.append(pstokenize_module)
-
-skmod_src = os.path.join(src_path, 'uniconvertor', 'modules', 'skmod')
-files = ['_sketchmodule.c', 'skpoint.c', 'skcolor.c', 'sktrafo.c', 'skrect.c',
-		'skfm.c', 'curvefunc.c', 'curveobject.c', 'curvelow.c', 'curvemisc.c',
-		'skaux.c', 'skimage.c', ]
-files = make_source_list(skmod_src, files)
-skmod_module = Extension('uniconvertor.app.modules._sketch',
-		define_macros=macros, sources=files)
-modules.append(skmod_module)
-
-cms_src = os.path.join(src_path, 'uniconvertor', 'cms')
-libs = ['lcms2', ]
-if LCMS2:
- 	files = make_source_list(cms_src, ['_cms2.c', ])
-	deb_depends = 'liblcms2, ' + deb_depends
-else:
- 	files = make_source_list(cms_src, ['_cms.c', ])
-	deb_depends = 'liblcms1, ' + deb_depends
-	libs = ['lcms', ]
-
-cms_module = Extension('uniconvertor.cms._cms',
-		define_macros=macros, sources=files,
-		libraries=libs, extra_compile_args=["-Wall"])
-modules.append(cms_module)
-
-ft2_src = os.path.join(src_path, 'uniconvertor', 'ft2engine')
-files = make_source_list(ft2_src, ['ft2module.c', ])
-ft2_module = Extension('uniconvertor.ft2engine.ft2',
-		define_macros=macros, sources=files,
-		include_dirs=['/usr/include/freetype2'], libraries=['freetype'],
-		extra_compile_args=["-Wall"])
-modules.append(ft2_module)
-
-setup(name=NAME,
-	version=VERSION,
-	description=DESCRIPTION,
-	author=AUTHOR,
-	author_email=AUTHOR_EMAIL,
-	maintainer=MAINTAINER,
-	maintainer_email=MAINTAINER_EMAIL,
-	license=LICENSE,
-	url=URL,
-	download_url=DOWNLOAD_URL,
-	long_description=LONG_DESCRIPTION,
-	classifiers=CLASSIFIERS,
-	packages=libutils.get_source_structure(),
-	package_dir=libutils.get_package_dirs(),
-	package_data=package_data,
-	data_files=data_files,
-	scripts=scripts,
-	ext_modules=modules)
-
-#################################################
+############################################################
 # .py source compiling
-#################################################
-libutils.compile_sources()
+############################################################
+if not UPDATE_MODULES:
+    build.compile_sources()
 
-
-##############################################
+############################################################
 # This section for developing purpose only
 # Command 'python setup.py build_update' allows
-# automating build and native extension copying
+# automating build and copying of native extensions
 # into package directory
-##############################################
-if UPDATE_MODULES: libutils.copy_modules(modules)
+############################################################
+if UPDATE_MODULES:
+    build.copy_modules(modules)
 
-
-#################################################
+############################################################
 # Implementation of bdist_deb command
-#################################################
+############################################################
 if DEB_PACKAGE:
-	bld = DEB_Builder(name=NAME,
-					version=VERSION,
-					maintainer='%s <%s>' % (AUTHOR, AUTHOR_EMAIL),
-					depends=deb_depends,
-					homepage=URL,
-					description=DESCRIPTION,
-					long_description=LONG_DEB_DESCRIPTION,
-					package_dirs=libutils.get_package_dirs(),
-					package_data=package_data,
-					scripts=scripts,
-					data_files=data_files,
-					deb_scripts=deb_scripts)
-	bld.build()
+    utils.deb.DebBuilder(
+        name=NAME,
+        version=VERSION,
+        maintainer='%s <%s>' % (AUTHOR, AUTHOR_EMAIL),
+        depends=deb_depends,
+        homepage=URL,
+        description=DESCRIPTION,
+        long_description=LONG_DEB_DESCRIPTION,
+        section='graphics',
+        package_dirs=build.get_package_dirs('src/uc2'),
+        package_data=package_data,
+        scripts=scripts,
+        data_files=data_files,
+        deb_scripts=deb_scripts,
+        dst=install_path)
 
-if CLEAR_BUILD: libutils.clear_build()
+############################################################
+# Implementation of bdist_rpm command
+############################################################
+if RPM_PACKAGE:
+    utils.rpm.RpmBuilder(
+        name=NAME,
+        version=VERSION,
+        release='0',
+        arch='',
+        maintainer='%s <%s>' % (AUTHOR, AUTHOR_EMAIL),
+        summary=DESCRIPTION,
+        description=LONG_DESCRIPTION,
+        license=LICENSE,
+        url=URL,
+        depends=rpm_depends.split(' '),
+        build_script='setup-uc2.py',
+        install_path=install_path,
+        data_files=data_files, )
 
+os.chdir(CURRENT_PATH)
+
+if CLEAR_BUILD:
+    build.clear_build()
+
+for item in ['MANIFEST', 'MANIFEST.in', 'src/script/uniconvertor', 'setup.cfg']:
+    if os.path.lexists(item):
+        os.remove(item)
