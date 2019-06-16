@@ -227,18 +227,16 @@ if len(sys.argv) > 1:
             print('UniConvertor installation is not found!')
         sys.exit(0)
 
-# Preparing MANIFEST.in and setup.cfg
+# Preparing setup.cfg
 ############################################################
-shutil.copy2('MANIFEST.in_uc2', 'MANIFEST.in')
 
-fileptr = open('setup.cfg_uc2', 'rb')
-fileptr2 = open('setup.cfg', 'wb')
-content = fileptr.read()
-if rpm_depends:
-    content += '\nrequires = ' + rpm_depends
-fileptr2.write(content)
-fileptr.close()
-fileptr2.close()
+with open('setup.cfg.in', 'rb') as fileptr:
+    content = fileptr.read()
+    if rpm_depends:
+        content += '\nrequires = ' + rpm_depends
+
+with open('setup.cfg', 'wb') as fileptr:
+    fileptr.write(content)
 
 ############################################################
 # Native extensions
@@ -329,6 +327,6 @@ os.chdir(CURRENT_PATH)
 if CLEAR_BUILD:
     build.clear_build()
 
-for item in ['MANIFEST', 'MANIFEST.in', 'src/script/uniconvertor', 'setup.cfg']:
+for item in ['MANIFEST', 'src/script/uniconvertor', 'setup.cfg']:
     if os.path.lexists(item):
         os.remove(item)
