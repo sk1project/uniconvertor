@@ -36,13 +36,6 @@ To run build, just launch BuildBox:
 
 >python bbox.py build
 --------------------------------------------------------------------------
-BuildBox can be used alongside Vagrant VM. To run in VM:
-
->vagrant up ubuntu
->vagrant ssh ubuntu
->sudo -s
->/vagrant/bbox.py build
---------------------------------------------------------------------------
 """
 
 import os
@@ -58,7 +51,6 @@ from utils.fsutils import get_files_tree
 CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(1, os.path.join(CURRENT_PATH, 'src'))
 
-import sk1.appconst
 import uc2.uc2const
 
 # options processing
@@ -75,9 +67,8 @@ STDOUT_ENDC = '\033[0m'
 STDOUT_BOLD = '\033[1m'
 STDOUT_UNDERLINE = '\033[4m'
 
-SK1 = 'sk1'
 UC2 = 'uc2'
-PROJECT = ARGV.get('project', SK1)  # change point
+PROJECT = UC2  # change point
 
 # Build constants
 IMAGE_PREFIX = 'sk1project/'
@@ -91,18 +82,16 @@ PKGBUILD_DIR = os.path.join(PROJECT_DIR, 'pkgbuild')
 ARCH_DIR = os.path.join(PROJECT_DIR, 'archlinux')
 LOCALES_DIR = os.path.join(PROJECT_DIR, 'src/sk1/share/locales')
 
-SCRIPT = 'setup-%s.py' % PROJECT
-APP_NAME = {SK1: SK1, UC2: 'uniconvertor'}[PROJECT]
-APP_FULL_NAME = {SK1: 'sK1', UC2: 'UniConvertor'}[PROJECT]
-APP_MAJOR_VER = {SK1: sk1.appconst.VERSION,
-                 UC2: uc2.uc2const.VERSION}[PROJECT]
-APP_REVISION = {SK1: sk1.appconst.REVISION,
-                UC2: uc2.uc2const.REVISION}[PROJECT]
+SCRIPT = 'setup.py'
+APP_NAME = 'uniconvertor'
+APP_FULL_NAME = 'UniConvertor'
+APP_MAJOR_VER = uc2.uc2const.VERSION
+APP_REVISION = uc2.uc2const.REVISION
 APP_VER = '%s%s' % (APP_MAJOR_VER, APP_REVISION)
 
 RELEASE = 'RELEASE' in os.environ or 'release' in ARGV
 DEBUG_MODE = 'DEBUG_MODE' in os.environ
-CONST_FILES = ['src/sk1/appconst.py', 'src/uc2/uc2const.py']
+CONST_FILES = ['src/uc2/uc2const.py']
 
 README_TEMPLATE = """
 Universal vector graphics format translator
@@ -227,9 +216,6 @@ def run_build(locally=False, stop_on_error=True):
         command('sudo rm -rf %s' % RELEASE_DIR)
     if is_path(LOCALES_DIR):
         command('sudo rm -rf %s' % LOCALES_DIR)
-    if PROJECT == SK1:
-        command('cd %s && python setup-sk1.py build_locales' % PROJECT_DIR)
-        echo_msg('=' * 35, code=STDOUT_MAGENTA)
     for image in IMAGES if not locally else LOCAL_IMAGES:
         os_name = image.capitalize().replace('_', ' ')
         msg = 'Build on %s' % os_name
@@ -370,7 +356,7 @@ def build_package():
     clear_folders()
 
 
-PKGS = ['sk1', 'uc2', 'wal'] if PROJECT == SK1 else ['uc2']
+PKGS = ['uc2']
 EXTENSIONS = [
     'uc2/cms/_cms.pyd',
     'uc2/libcairo/_libcairo.pyd',
@@ -384,8 +370,7 @@ MSI_APP_VERSION = APP_MAJOR_VER if RELEASE \
 MSI_DATA = {
     # Required
     'Name': '%s %s' % (APP_FULL_NAME, APP_VER),
-    'UpgradeCode': {SK1: '3AC4B4FF-10C4-4B8F-81AD-BAC3238BF693',
-                    UC2: '3AC4B4FF-10C4-4B8F-81AD-BAC3238BF695'}[PROJECT],
+    'UpgradeCode': '3AC4B4FF-10C4-4B8F-81AD-BAC3238BF695',
     'Version': MSI_APP_VERSION,
     'Manufacturer': 'sK1 Project',
     # Optional
@@ -402,33 +387,15 @@ MSI_DATA = {
     '_OutputDir': '',
     '_ProgramMenuFolder': 'sK1 Project',
     '_AddToPath': [''],
-}
 
-if PROJECT == SK1:
-    MSI_DATA['_Shortcuts'] = [
-        {'Name': 'sK1 %s illustration program' % APP_VER,
-         'Description': 'Open source sK1 vector graphics editor',
-         'Target': 'sk1.exe',
-         'AddOnDesktop': True,
-         'Open': [],
-         'OpenWith': ['.sk2', '.sk1', '.sk', '.svg', '.plt', '.wmf', '.fig',
-                      '.cdr', '.cmx', '.cdt', '.ccx', '.xar', '.cgm',
-                      # '.ai', '.ps', '.pdf', '.eps',
-                      '.bmp', '.jpg', '.jpeg', '.j2p', '.png', '.tif', '.tiff',
-                      '.gif', '.xcf', '.psd', '.pcx', '.xbm', '.xpm', '.ppm',
-                      '.webp',
-                      '.skp', '.gpl', '.xml', '.soc', '.ase', '.aco', '.cpl',
-                      '.jcw']
-         },
-    ]
-elif PROJECT == UC2:
-    MSI_DATA['_Shortcuts'] = [
-        {'Name': 'UniConvertor %s readme' % APP_VER,
-         'Description': 'ReadMe file',
-         'Target': 'readme.txt',
-         'Open': [],
-         },
-    ]
+    '_Shortcuts': [
+            {'Name': 'UniConvertor %s readme' % APP_VER,
+             'Description': 'ReadMe file',
+             'Target': 'readme.txt',
+             'Open': [],
+             },
+        ]
+}
 
 
 def build_msw_packages():
@@ -465,13 +432,6 @@ def build_msw_packages():
         for folder in obsolete_folders:
             shutil.rmtree(os.path.join(portable_folder, folder), True)
 
-        if PROJECT == SK1:
-            wx_zip = os.path.join('/%s-devres' % arch, 'wx.zip')
-            ZipFile(wx_zip, 'r').extractall(portable_libs)
-            portable_exe_zip = os.path.join('/%s-devres' % arch,
-                                            '%s_portable.zip' % PROJECT)
-            ZipFile(portable_exe_zip, 'r').extractall(portable_folder)
-
         for item in PKGS:
             src = os.path.join(SRC_DIR, item)
             echo_msg('Copying tree %s' % src)
@@ -485,19 +445,6 @@ def build_msw_packages():
             src = os.path.join('/%s-devres' % arch, 'pyd', filename)
             dst = os.path.join(portable_libs, item)
             shutil.copy(src, dst)
-
-        # Portable package compressing (sk1 only)
-        if PROJECT == SK1:
-            portable_zip = os.path.join(distro_folder, portable_name + '.zip')
-            ziph = ZipFile(portable_zip, 'w', ZIP_DEFLATED)
-
-            echo_msg('Compressing into %s' % portable_zip)
-            for root, dirs, files in os.walk(portable_folder):
-                for item in files:
-                    path = os.path.join(root, item)
-                    local_path = path.split(portable_name)[1][1:]
-                    ziph.write(path, os.path.join(portable_name, local_path))
-            ziph.close()
 
         # MSI build
         echo_msg('Creating MSI package')

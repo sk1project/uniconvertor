@@ -40,6 +40,23 @@ import os
 import sys
 from distutils.core import setup
 
+############################################################
+# Subprojects resolving
+
+CLEAR_UTILS = False
+
+if not os.path.exists('./utils'):
+    if os.path.exists('../build-utils/src/utils'):
+        os.system('ln -s ../build-utils/src/utils utils')
+    else:
+        if not os.path.exists('./subproj/build-utils/src/utils'):
+            os.makedirs('./subproj')
+            os.system('cd subproj && git clone '
+                      'https://github.com/sk1project/build-utils && cd ..')
+        os.system('ln -s ./subproj/build-utils/src/utils utils')
+    CLEAR_UTILS = True
+
+############################################################
 
 import utils.deb
 import utils.rpm
@@ -326,6 +343,9 @@ os.chdir(CURRENT_PATH)
 if CLEAR_BUILD:
     build.clear_build()
 
-for item in ['MANIFEST', 'src/script/uniconvertor', 'setup.cfg']:
+FOR_CLEAR = ['MANIFEST', 'src/script/uniconvertor', 'setup.cfg']
+if CLEAR_UTILS:
+    FOR_CLEAR += ['utils']
+for item in FOR_CLEAR:
     if os.path.lexists(item):
         os.remove(item)

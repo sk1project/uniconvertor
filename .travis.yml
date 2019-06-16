@@ -16,6 +16,8 @@ script:
   - git fetch upstream
   - git pull upstream master
   - sudo apt-get install -y sshpass gettext
+  - mkdir subproj
+  - git clone https://github.com/sk1project/build-utils subproj/build-utils
+  - ln -s ./subproj/build-utils/src/utils utils
   - python bbox.py pull
-  - python bbox.py build --project=sk1
-  - python bbox.py build --project=uc2
+  - python bbox.py build
