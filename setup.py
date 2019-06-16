@@ -47,7 +47,7 @@ import utils.rpm
 from utils import build
 
 from utils import dependencies
-from native_mods import make_modules
+from utils.native_mods import make_modules
 
 sys.path.insert(1, os.path.abspath('./src'))
 
