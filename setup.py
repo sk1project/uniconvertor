@@ -37,7 +37,6 @@ Usage:
 
 import datetime
 import os
-import shutil
 import sys
 from distutils.core import setup
 
