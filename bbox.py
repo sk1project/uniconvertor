@@ -90,7 +90,7 @@ APP_REVISION = uc2.uc2const.REVISION
 APP_VER = '%s%s' % (APP_MAJOR_VER, APP_REVISION)
 
 RELEASE = 'RELEASE' in os.environ or 'release' in ARGV
-DEBUG_MODE = True #'DEBUG_MODE' in os.environ
+DEBUG_MODE = 'DEBUG_MODE' in os.environ
 CONST_FILES = ['src/uc2/uc2const.py']
 
 README_TEMPLATE = """
