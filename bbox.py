@@ -450,19 +450,16 @@ def build_msw_packages():
         echo_msg('Creating MSI package')
 
         clear_files(portable_folder, ['exe'])
-        if PROJECT == UC2:
-            nonportable = os.path.join('/%s-devres' % arch,
-                                       '%s.zip' % PROJECT)
-            readme = README_TEMPLATE % bbox.TIMESTAMP[:4]
-            readme_path = os.path.join(portable_folder, 'readme.txt')
-            with open(readme_path, 'wb') as fp:
-                mark = '' if RELEASE else ' build %s' % bbox.TIMESTAMP
-                fp.write('%s %s%s' % (APP_FULL_NAME, APP_VER, mark))
-                fp.write('\r\n\r\n')
-                fp.write(readme.replace('\n', '\r\n'))
-        else:
-            nonportable = os.path.join('/%s-devres' % arch,
-                                       '%s_msi.zip' % PROJECT)
+
+        nonportable = os.path.join('/%s-devres' % arch,
+                                   '%s.zip' % PROJECT)
+        readme = README_TEMPLATE % bbox.TIMESTAMP[:4]
+        readme_path = os.path.join(portable_folder, 'readme.txt')
+        with open(readme_path, 'wb') as fp:
+            mark = '' if RELEASE else ' build %s' % bbox.TIMESTAMP
+            fp.write('%s %s%s' % (APP_FULL_NAME, APP_VER, mark))
+            fp.write('\r\n\r\n')
+            fp.write(readme.replace('\n', '\r\n'))
 
         echo_msg('Extracting non-portable executables from %s' % nonportable)
         ZipFile(nonportable, 'r').extractall(portable_folder)
@@ -485,8 +482,7 @@ def build_msw_packages():
 
     shutil.rmtree(BUILD_DIR, True)
 
-    for item in ['MANIFEST', 'MANIFEST.in', 'src/script/sk1',
-                 'src/script/uniconvertor', 'setup.cfg']:
+    for item in ['MANIFEST', 'src/script/uniconvertor', 'setup.cfg']:
         item = os.path.join(PROJECT_DIR, item)
         if os.path.lexists(item):
             os.remove(item)
