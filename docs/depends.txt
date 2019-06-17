@@ -1,0 +1,3 @@
+Project depends on subprojects:
+
+build-utils   https://github.com/sk1project/build-utils
