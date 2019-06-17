@@ -18,6 +18,6 @@ script:
   - sudo apt-get install -y sshpass gettext
   - mkdir subproj
   - git clone https://github.com/sk1project/build-utils subproj/build-utils
-  - ln -s ./subproj/build-utils/src/utils utils
+  - ln -s subproj/build-utils/src/utils utils
   - python bbox.py pull
   - python bbox.py build
