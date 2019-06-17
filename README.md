@@ -1,6 +1,6 @@
 # UniConvertor 2.0
 
-![build status](https://api.travis-ci.org/sk1project-build-bot/sk1-wx.svg?branch=master)
+![build status](https://api.travis-ci.org/sk1project-build-bot/uniconvertor.svg?branch=master)
 
 <center>
 
