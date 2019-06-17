@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python2
 #
 #   Setup script for UniConvertor 2.x
 #

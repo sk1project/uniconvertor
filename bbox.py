@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/python2
 #
 #   BuildBox for sK1/UniConvertor 2.x
 #
