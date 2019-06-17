@@ -18,11 +18,11 @@ md5sums=('SKIP')
 build() {
   chmod -R 644 "${srcdir}/$pkgname-$pkgver"
   cd "${srcdir}/$pkgname-$pkgver"
-  LANG=en_US.UTF-8 python2 setup-uc2.py build
+  LANG=en_US.UTF-8 python2 setup.py build
 }
 
 package() {
   cd "${srcdir}/$pkgname-$pkgver"
-  LANG=en_US.UTF-8 python2 setup-uc2.py install --root="$pkgdir"
+  LANG=en_US.UTF-8 python2 setup.py install --root="$pkgdir"
 }
 
