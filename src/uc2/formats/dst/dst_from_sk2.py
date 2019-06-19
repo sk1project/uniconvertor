@@ -22,74 +22,74 @@ from uc2 import _, uc2const, sk2const, cms, libgeom
 class EmbroideryMachine(object):
     max_distance = dst_const.MAX_DISTANCE
 
+    x = 0
+    y = 0
+    stitch_count = 0
+    extents_left = 0
+    extents_top = 0
+    extents_right = 0
+    extents_bottom = 0
+    command_color_change = 0
+
     def __init__(self, dst_doc):
         self.dst_doc = dst_doc
         self.dst_mt = dst_doc.model
-        self.x = 0
-        self.y = 0
         self.header = dst_model.DstHeader()
         self.dst_mt.childs.append(self.header)
+
+    def append_stitch(self, stitch):
+        self.stitch_count += 1
+        self.dst_mt.childs.append(stitch)
 
     def move(self, dx, dy):
         self.x += dx
         self.y += dy
+        self.extents_left = min(self.extents_left, self.x)
+        self.extents_right = max(self.extents_right, self.x)
+        self.extents_top = min(self.extents_top, self.y)
+        self.extents_bottom = max(self.extents_bottom, self.y)
 
     def jump_to(self, x, y):
-        self._to(x, y, dst_const.CMD_JUMP, self.max_distance)
+        self._to(x, y, dst_const.CMD_STITCH)
 
     def stitch_to(self, x, y):
-        self._to(x, y, dst_const.CMD_STITCH, self.max_distance)
+        self._to(x, y, dst_const.CMD_STITCH)
+
+    def chang_color(self):
+        self.command_color_change += 1
+        cmd = dst_model.DstCmd()
+        cmd.cid = dst_const.CMD_CHANGE_COLOR
+        self.append_stitch(cmd)
 
     def stop(self):
-        stop = dst_model.DstStitch()
-        stop.cid = dst_const.CMD_STOP
-        self.dst_mt.childs.append(stop)
+        cmd = dst_model.DstCmd()
+        cmd.cid = dst_const.CMD_STOP
+        self.append_stitch(cmd)
 
     def end(self):
-        data_term = dst_model.DstStitch()
-        data_term.cid = dst_const.DATA_TERMINATOR
-        self.dst_mt.childs.append(data_term)
+        cmd = dst_model.DstCmd()
+        cmd.cid = dst_const.DATA_TERMINATOR
+        self.append_stitch(cmd)
 
-    def _to(self, x, y, cid, max_distance):
+    def _to(self, x, y, cid):
         end_point = (x, y)
         while True:
             current_point = (self.x, self.y)
             distance = libgeom.distance(current_point, end_point)
-            print "##", distance
-            if distance > 0:
-                coef = min(distance, max_distance) / distance
-                if coef != 1.0:
-                    x, y = libgeom.midpoint(current_point, end_point, coef)
 
-            cmd = dst_model.DstStitch()
-            cmd.cid = cid
+            if distance > 0:
+                coef = min(distance, self.max_distance) / distance
+                x, y = libgeom.midpoint(current_point, end_point, coef)
+
+            cmd = dst_model.DstCmd()
+            cmd.cid = cid  # TODO: if long stitch used dst_const.CMD_JUMP
             cmd.dx = int(x) - self.x
             cmd.dy = int(y) - self.y
 
-            self.dst_mt.childs.append(cmd)
+            self.append_stitch(cmd)
             self.move(cmd.dx, cmd.dy)
-
-            if distance < max_distance:
+            if distance <= self.max_distance:
                 break
-
-    #
-    # def color_change(self, dx, dy):
-    #     self.move(dx, dy)
-    #     self.end_stitch()
-    #
-    # def stop(self, dx, dy):
-    #     self.move(dx, dy)
-    #     self.end_stitch()
-    #
-    # def stitch(self, dx, dy):
-    #     self.move(dx, dy)
-    #     self.stitch_list.append([self.x, self.y])
-    #
-    # def sequin_eject(self, dx, dy):
-    #     self.move(dx, dy)
-    #
-    # def end_stitch(self):
-    #     pass
 
 
 class SK2_to_DST_Translator(object):
@@ -117,9 +117,29 @@ class SK2_to_DST_Translator(object):
             if self.sk2_mtds.is_layer_visible(layer):
                 self.translate_objs(layer.childs)
 
+        # move to 0,0 point
         self.processor.jump_to(0.0, 0.0)
         self.processor.stop()
+        # append data terminator
         self.processor.end()
+
+        header.metadata = self.metadata()
+
+    def metadata(self):
+        metadata = dict()
+        metadata['LA'] = 'Name'
+        metadata['ST'] = int(self.processor.stitch_count)
+        metadata['CO'] = int(self.processor.command_color_change)
+        metadata['+X'] = int(abs(self.processor.extents_right))
+        metadata['-X'] = int(abs(self.processor.extents_left))
+        metadata['+Y'] = int(abs(self.processor.extents_top))
+        metadata['-Y'] = int(abs(self.processor.extents_bottom))
+        metadata['AX'] = int(self.processor.x)
+        metadata['AY'] = int(self.processor.y)
+        metadata['MX'] = 0
+        metadata['MY'] = 0
+        metadata['PD'] = b'******'
+        return metadata
 
     def translate_objs(self, objs):
         for obj in objs:
@@ -147,18 +167,14 @@ class SK2_to_DST_Translator(object):
             self.translate_stroke(style, paths)
 
     def translate_stroke(self, style, paths):
-        # print '---', style#, paths
         clr = self.sk2_doc.cms.get_rgb_color(style[1][2])
         hex_color = cms.rgb_to_hexcolor(clr[1])
-        print 'hex_color', hex_color
         if not self.palette:
             self.palette.append(hex_color)
 
         if self.is_color_changed(hex_color):
             self.palette.append(hex_color)
-            print 'new', hex_color
-
-            self._chang_color()
+            self.processor.chang_color()
 
         for path in paths:
             start_point = path[0]
@@ -169,11 +185,5 @@ class SK2_to_DST_Translator(object):
             for point in points:
                 self.processor.stitch_to(point[0], point[1])
 
-    def _chang_color(self):
-        cmd = dst_model.DstStitch()
-        cmd.cid = dst_const.CMD_CHANGE_COLOR
-        self.dst_doc.model.childs.append(cmd)
-
     def is_color_changed(self, hex_color):
         return not (self.palette and self.palette[-1] == hex_color)
-

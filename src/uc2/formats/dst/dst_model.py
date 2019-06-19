@@ -26,8 +26,14 @@ class BaseDstModel(BinaryModelObject):
     dx = 0
     dy = 0
 
-    def __init__(self, chunk=None):
+    def __init__(self, chunk=None, cid=None, dx=None, dy=None):
         self.chunk = chunk
+        if cid is not None:
+            self.cid = cid
+        if dx is not None:
+            self.dx = dx
+        if dy is not None:
+            self.dy = dy
 
     def update(self):
         if self.chunk:
@@ -99,6 +105,10 @@ class DstHeader(BaseDstModel):
     cid = dst_const.DST_HEADER
     metadata = None
 
+    def __init__(self, *args, **kwargs):
+        BaseDstModel.__init__(self,  *args, **kwargs)
+        self.metadata = {}
+
     def parse(self):
         self.metadata = {}
         for i in self.chunk.split('\r'):
@@ -107,27 +117,45 @@ class DstHeader(BaseDstModel):
                 self.metadata[key] = val.replace(' ', '')
 
     def update_for_sword(self):
-        len_meta = self.chunk.index(dst_const.DATA_TERMINATOR)
-        self.cache_fields = [
-            (0, len_meta, 'metadata'),
-            (len_meta, 1, 'end of metadata'),
-            (len_meta + 1, len(self.chunk) - len_meta - 1, 'spaces 0x20'),
-        ]
+        self.cache_fields = []
+        length_meta = 0
+        for line in self.chunk.splitlines(True):
+            length = len(line)
+            rec = (length_meta, length, repr(line))
+            self.cache_fields.append(rec)
+            length_meta += length
 
     def get_content(self):
-        header = b""
-        header += b"LA:%-16s\r" % 'name'
-        header += b"ST:%7d\r" % 1
-        header += b"CO:%3d\r" % 2
-        header += b"+X:%5d\r" % 3
-        header += b"-X:%5d\r" % 4
-        header += b"+Y:%5d\r" % 5
-        header += b"-Y:%5d\r" % 6
-        header += b"AX:+%5d\r" % 0
-        header += b"AY:+%5d\r" % 0
-        header += b"MX:+%5d\r" % 0
-        header += b"AY:+%5d\r" % 0
-        header += b"PD:%6s\r" % b"******"
+        header_template = (
+            b"LA:{LA:<16}\r" +
+            b"ST:{ST:>7d}\r" +
+            b"CO:{CO:>3d}\r" +
+            b"+X:{+X:>5d}\r" +
+            b"-X:{-X:>5d}\r" +
+            b"+Y:{+Y:>5d}\r" +
+            b"-Y:{-Y:>5d}\r" +
+            b"AX:{AX:=+6d}\r" +
+            b"AY:{AY:=+6d}\r" +
+            b"MX:{MX:=+6d}\r" +
+            b"MY:{MY:=+6d}\r" +
+            b"PD:{PD:9s}\r"
+        )
+        metadata = self.metadata or {}
+        self.metadata = metadata
+        metadata.setdefault('LA', "Untitled")
+        metadata.setdefault('ST', 0)
+        metadata.setdefault('CO', 0)
+        metadata.setdefault('+X', 0)
+        metadata.setdefault('-X', 0)
+        metadata.setdefault('+Y', 0)
+        metadata.setdefault('-Y', 0)
+        metadata.setdefault('AX', 0)
+        metadata.setdefault('AY', 0)
+        metadata.setdefault('MX', 0)
+        metadata.setdefault('MY', 0)
+        metadata.setdefault('PD', "******")
+
+        header = header_template.format(**metadata)
         header += dst_const.DATA_TERMINATOR
 
         spaces = dst_const.DST_HEADER_SIZE - len(header)
@@ -136,7 +164,7 @@ class DstHeader(BaseDstModel):
         return header
 
 
-class DstStitch(BaseDstModel):
+class DstCmd(BaseDstModel):
     """
     Decoding of Byte 1 - 3 :
     Bit No.: 7     6     5     4     3     2     1     0

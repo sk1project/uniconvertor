@@ -24,15 +24,21 @@ from uc2.libgeom.trafo import apply_trafo_to_point
 
 
 class EmbroideryMachine(object):
+    x = 0
+    y = 0
+    stitch_count = 0
+    extents_left = 0
+    extents_top = 0
+    extents_right = 0
+    extents_bottom = 0
+
+    command_color_change = 0
 
     def __init__(self, dst_doc, sk2_doc, palette=None):
         self.dst_doc = dst_doc
         self.sk2_doc = sk2_doc
         self.palette = palette or dst_doc.palette
         self.sk2_mtds = sk2_doc.methods
-        self.x = 0
-        self.y = 0
-        self.stitch_count = 0
         self.stitch_list = []
         self.rope_width = abs(self.dst_doc.config.thickness or 0.72)
         self.page = self.sk2_mtds.get_page()
@@ -45,6 +51,10 @@ class EmbroideryMachine(object):
         self.x += dx
         self.y += dy
         self.stitch_count += 1
+        self.extents_left = min(self.extents_left, self.x)
+        self.extents_right = max(self.extents_right, self.x)
+        self.extents_top = min(self.extents_top, self.y)
+        self.extents_bottom = max(self.extents_bottom, self.y)
 
     def color_change(self, dx, dy):
         self.move(dx, dy)
@@ -56,6 +66,7 @@ class EmbroideryMachine(object):
         self.layer.name = hex_color
         self.layer.color = hex_color
         self.hex_color = hex_color
+        self.command_color_change += 1
 
     def stop(self, dx, dy):
         self.move(dx, dy)
@@ -133,15 +144,15 @@ class DST_to_SK2_Translator(object):
                 out.sequin_mode(dx, dy)  # XXX: didn't check it
                 sequin_mode = not sequin_mode
             elif cmd.cid == dst_const.DST_HEADER:
-                self.handle_document_header(cmd)
                 self.handle_document_metainfo(cmd)
             elif cmd.cid == dst_const.CMD_STOP:
                 out.stop(dx, dy)
             else:
                 out.move(dx, dy)
 
-        # print 'last x, y', out.x, out.y
-        # print 'stitch_count', out.stitch_count
+        header = stack[0]
+        header.metadata.update(self.metadata())
+        self.handle_document_header(header)
 
     def handle_document_metainfo(self, rec):
         metainfo = [b'', b'', b'', b'']
@@ -163,3 +174,14 @@ class DST_to_SK2_Translator(object):
         page = self.sk2_mtds.get_page()
         self.sk2_mtds.set_page_format(page, page_format)
 
+    def metadata(self):
+        metadata = dict()
+        metadata['ST'] = int(self.processor.stitch_count)
+        metadata['CO'] = int(self.processor.command_color_change)
+        metadata['+X'] = int(abs(self.processor.extents_right))
+        metadata['-X'] = int(abs(self.processor.extents_left))
+        metadata['+Y'] = int(abs(self.processor.extents_top))
+        metadata['-Y'] = int(abs(self.processor.extents_bottom))
+        metadata['AX'] = int(self.processor.x)
+        metadata['AY'] = int(self.processor.y)
+        return metadata

@@ -28,18 +28,19 @@ class DST_Loader(AbstractLoader):
     def do_load(self):
         stream = self.fileptr
         self.presenter.palette = EDR_Palette(self.filepath)
-
         self.model.childs = []
         parent_stack = self.model.childs
 
+        # read header
         chunk = stream.read(dst_const.DST_HEADER_SIZE)
         header = dst_model.DstHeader(chunk)
         parent_stack.append(header)
 
+        # read stitch commands
         while True:
             chunk = stream.read(3)
             if chunk:
-                stitch = dst_model.DstStitch(chunk)
+                stitch = dst_model.DstCmd(chunk)
                 parent_stack.append(stitch)
             else:
                 break
@@ -49,13 +50,5 @@ class DST_Saver(AbstractSaver):
     name = 'DST_Saver'
 
     def do_save(self):
-        header = b""
-        body = b""
-        parent_stack = self.model.childs
-        if len(parent_stack) > 1:
-            for child in parent_stack[1:]:
-                body += child.chunk  # get_content()
-            header = parent_stack[0].get_content()  # b'\x20' * DST_HEADER_SIZE
-
-        self.fileptr.write(header)
-        self.fileptr.write(body)
+        for rec in self.model.childs:
+            self.fileptr.write(rec.chunk)
