@@ -39,9 +39,12 @@ class UC2PDFInfo(PDFInfo):
     def format(self, document):
         d = {"Title": PDFString(self.title),
              "Author": PDFString(self.author),
-             "CreationDate": PDFDate(invariant=self.invariant,
-                                     dateFormatter=self._dateFormatter),
              "Producer": PDFString(self.producer)}
+        try:
+            d["CreationDate"] = PDFDate(invariant=self.invariant,
+                                        dateFormatter=self._dateFormatter)
+        except:
+            pass
         if self.pdfxversion:
             d["GTS_PDFXVersion"] = PDFString(self.pdfxversion)
         d["Creator"] = PDFString(self.creator)
