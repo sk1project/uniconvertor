@@ -15,26 +15,19 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import datetime
 import logging
 import os
 import sys
 
 import uc2
-from uc2 import app_cms, uc2const
+from uc2 import app_cms, cmds
 from uc2 import events, msgconst
 from uc2.app_palettes import PaletteManager
-from uc2.formats import get_loader, get_saver, get_saver_by_id
 from uc2.uc2conf import UCData, UCConfig
 from uc2.utils import fsutils
 from uc2.utils.mixutils import echo, config_logging
 
 LOG = logging.getLogger(__name__)
-
-
-def log_stub(*args):
-    return args
-
 
 LOG_MAP = {
     msgconst.JOB: LOG.info,
@@ -42,49 +35,8 @@ LOG_MAP = {
     msgconst.OK: LOG.info,
     msgconst.WARNING: LOG.warn,
     msgconst.ERROR: LOG.error,
-    msgconst.STOP: log_stub,
+    msgconst.STOP: lambda *args: args,
 }
-
-HELP_TEMPLATE = '''
-%s
-
-Universal vector graphics format translator
-copyright (C) 2007-%s sK1 Project Team (https://sk1project.net)
-
-Usage: uniconvertor [OPTIONS] [INPUT FILE] [OUTPUT FILE]
-Example: uniconvertor drawing.cdr drawing.svg
-
- Available options:
- -h, --help      Display this help and exit
- -v, --verbose   Show internal logs
- --log=          Logging level: DEBUG, INFO, WARN, ERROR (by default, INFO)
- --format=       Type of output file format (values provided below)
- --directory     Show installation directory (for import in Python)
-
----INPUT FILE FORMATS-------------------------------
-
- Supported input vector graphics file formats:
-   %s
-
- Supported input palette file formats:
-   %s
-
- Supported input image file formats:
-   %s
-
----OUTPUT FILE FORMATS------------------------------
-
- Supported output vector graphics file formats:
-   %s
-
- Supported output palette file formats:
-   %s
-
- Supported output image file formats:
-   %s
-
-----------------------------------------------------
-'''
 
 
 class UCApplication(object):
@@ -105,38 +57,6 @@ class UCApplication(object):
         setattr(uc2, 'config', self.config)
         setattr(uc2, 'appdata', self.appdata)
 
-    def _get_infos(self, loaders):
-        result = []
-        for loader in loaders:
-            if loader in (uc2const.COREL_PAL, uc2const.SCRIBUS_PAL):
-                desc = uc2const.FORMAT_DESCRIPTION[loader]
-                desc = desc.replace(' - ', ') - ')
-                result.append('%s (%s' % (uc2const.FORMAT_NAMES[loader], desc))
-            else:
-                result.append(uc2const.FORMAT_DESCRIPTION[loader])
-        return '\n   '.join(result)
-
-    def show_help(self):
-        mark = '' if not self.appdata.build \
-            else ' build %s' % self.appdata.build
-        app_name = '%s %s%s%s' % (self.appdata.app_name, self.appdata.version,
-                                  self.appdata.revision, mark)
-        echo(HELP_TEMPLATE % (app_name, str(datetime.date.today().year),
-                              self._get_infos(uc2const.MODEL_LOADERS),
-                              self._get_infos(uc2const.PALETTE_LOADERS),
-                              self._get_infos(uc2const.BITMAP_LOADERS),
-                              self._get_infos(uc2const.MODEL_SAVERS),
-                              self._get_infos(uc2const.PALETTE_SAVERS),
-                              self._get_infos(uc2const.BITMAP_SAVERS),))
-        sys.exit(0)
-
-    def show_short_help(self, msg):
-        echo('')
-        echo(msg)
-        echo('USAGE: uniconvertor [OPTIONS] [INPUT FILE] [OUTPUT FILE]')
-        echo('Use --help for more details.' + '\n')
-        sys.exit(1)
-
     def verbose(self, *args):
         status = msgconst.MESSAGES[args[0]]
         LOG_MAP[args[0]](args[1])
@@ -145,63 +65,64 @@ class UCApplication(object):
             echo('%s%s| %s' % (status, indent, args[1]))
         if args[0] == msgconst.STOP:
             echo('For details see logs: %s\n' % self.log_filepath)
-            sys.exit(1)
 
-    def _check_args(self, args):
-        return any([arg in sys.argv for arg in args])
-
-    def run(self, cwd=None):
-        help_switches = ('--help', '-help', '--h', '-h')
-        dir_switches = ('--directory', '-directory', '--dir', '-dir')
-        if self._check_args(help_switches) or len(sys.argv) == 1:
-            self.show_help()
-        elif self._check_args(dir_switches):
+    def run(self, current_dir=None):
+        if len(sys.argv) == 1:
+            dt = self.appdata
+            mark = '' if not dt.build else ' build %s' % dt.build
+            msg = '%s %s%s%s\n' % (dt.app_name, dt.version, dt.revision, mark)
+            cmds.show_short_help(msg)
+            sys.exit(0)
+        elif cmds.check_args(cmds.HELP_CMDS):
+            cmds.show_help(self.appdata)
+            sys.exit(0)
+        elif cmds.check_args(cmds.LOG_CMDS):
+            log_filepath = os.path.join(self.appdata.app_config_dir, 'uc2.log')
+            log_filepath = log_filepath.decode('utf-8')
+            with open(log_filepath, 'rb') as fileptr:
+                echo(fileptr.read())
+            sys.exit(0)
+        elif cmds.check_args(cmds.DIR_CMDS):
             echo(os.path.dirname(os.path.dirname(__file__)))
             sys.exit(0)
         elif len(sys.argv) == 2:
-            self.show_short_help('Not enough arguments!')
+            cmds.show_short_help('Not enough arguments!')
+            sys.exit(1)
 
-        verbose_switches = ('--verbose', '-verbose', '-v', '--v')
-        self.do_verbose = any([arg in sys.argv for arg in verbose_switches])
-
-        files = []
-        options_list = []
-        options = {}
-
-        for item in sys.argv[1:]:
-            if item.startswith('--'):
-                options_list.append(item)
-            elif item in ('-v',):
-                continue
-            elif item.startswith('-'):
-                self.show_short_help('Unknown option "%s"' % item)
-            else:
-                filename = fsutils.get_utf8_path(item)
-                if not os.path.dirname(filename) and cwd:
-                    filename = os.path.join(cwd, filename)
-                files.append(filename)
+        self.do_verbose = cmds.check_args(cmds.VERBOSE_CMDS)
+        current_dir = os.getcwdu() if current_dir is None else current_dir
+        files, options = cmds.parse_cmd_args(current_dir)
 
         if not files:
-            self.show_short_help('File names are not provided!')
+            cmds.show_short_help('File names are not provided!')
+            sys.exit(1)
         elif len(files) == 1:
-            self.show_short_help('Destination file name is not provided!')
-        elif not fsutils.exists(files[0]):
-            self.show_short_help('Source file "%s" is not found!' % files[0])
+            msg = 'Destination directory or file name is not provided!'
+            cmds.show_short_help(msg)
+            sys.exit(1)
 
-        for item in options_list:
-            result = item[2:].split('=')
-            if not len(result) == 2:
-                options[result[0]] = True
+        command = cmds.convert
+        if any(['*' in files[0], '?' in files[0]]):
+            command = cmds.wildcard_convert
+            if os.path.exists(files[1]):
+                if not os.path.isdir(files[1]):
+                    msg = 'Destination directory "%s" is not a directory!'
+                    cmds.show_short_help(msg % files[1])
+                    sys.exit(1)
             else:
-                key, value = result
-                value = value.replace('"', '').replace("'", '')
-                if value.isdigit():
-                    value = int(value)
-                elif value.replace('.', '').isdigit():
-                    value = float(value)
-                elif value.lower() in ('yes', 'no'):
-                    value = {'yes': True, 'no': False}[value.lower()]
-                options[key] = value
+                os.makedirs(files[1])
+        elif len(files) > 2:
+            command = cmds.multiple_convert
+            if os.path.exists(files[-1]):
+                if not os.path.isdir(files[-1]):
+                    msg = 'Destination directory "%s" is not a directory!'
+                    cmds.show_short_help(msg % files[-1])
+                    sys.exit(1)
+            else:
+                os.makedirs(files[-1])
+        elif not fsutils.exists(files[0]):
+            cmds.show_short_help('Source file "%s" is not found!' % files[0])
+            sys.exit(1)
 
         events.connect(events.MESSAGES, self.verbose)
         log_level = options.get('log', self.config.log_level)
@@ -211,74 +132,15 @@ class UCApplication(object):
         self.default_cms = app_cms.AppColorManager(self)
         self.palettes = PaletteManager(self)
 
-        msg = 'Translation of "%s" into "%s"' % (files[0], files[1])
-        events.emit(events.MESSAGES, msgconst.JOB, msg)
-
-        saver_ids = uc2const.PALETTE_SAVERS
-        saver_ids += uc2const.MODEL_SAVERS + uc2const.BITMAP_SAVERS
-        sid = options.get('format', '').lower()
-        if sid and sid in saver_ids:
-            saver_id = sid
-            saver = get_saver_by_id(saver_id)
-        else:
-            saver, saver_id = get_saver(files[1], return_id=True)
-        if saver is None:
-            msg = 'Output file format of "%s" is unsupported.' % files[1]
-            events.emit(events.MESSAGES, msgconst.ERROR, msg)
-
-            msg = 'Translation is interrupted'
-            events.emit(events.MESSAGES, msgconst.STOP, msg)
-
-        loader, loader_id = get_loader(files[0], return_id=True)
-        if loader is None:
-            msg = 'Input file format of "%s" is unsupported.' % files[0]
-            events.emit(events.MESSAGES, msgconst.ERROR, msg)
-
-            msg = 'Translation is interrupted'
-            events.emit(events.MESSAGES, msgconst.STOP, msg)
-
-        doc = None
+        # EXECUTION ----------------------------
+        status = 0
         try:
-            if loader_id in uc2const.PALETTE_LOADERS and \
-                    saver_id in uc2const.PALETTE_SAVERS:
-                doc = loader(self.appdata, files[0], convert=True, **options)
-            else:
-                doc = loader(self.appdata, files[0], **options)
-        except Exception as e:
-            msg = 'Error while loading "%s"' % files[0]
-            msg += 'The file may be corrupted or contains unknown file format.'
-            events.emit(events.MESSAGES, msgconst.ERROR, msg)
+            command(self.appdata, files, options)
+        except Exception:
+            status = 1
 
-            msg = 'Loading is interrupted'
-            LOG.error('%s %s', msg, e)
-            events.emit(events.MESSAGES, msgconst.STOP, msg)
-
-        if doc is not None:
-            try:
-                if loader_id in uc2const.PALETTE_LOADERS and \
-                        saver_id in uc2const.PALETTE_SAVERS:
-                    saver(doc, files[1], translate=False, convert=True,
-                          **options)
-                else:
-                    saver(doc, files[1], **options)
-            except Exception as e:
-                msg = 'Error while translation and saving "%s"' % files[0]
-                events.emit(events.MESSAGES, msgconst.ERROR, msg)
-
-                msg = 'Translation is interrupted'
-                LOG.error('%s %s', msg, e, exc_info=True)
-                events.emit(events.MESSAGES, msgconst.STOP, msg)
-        else:
-            msg = 'Error creating model for "%s"' % files[0]
-            events.emit(events.MESSAGES, msgconst.ERROR, msg)
-
-            msg = 'Translation is interrupted'
-            events.emit(events.MESSAGES, msgconst.STOP, msg)
-
-        doc.close()
-        msg = 'Translation is successful'
-        events.emit(events.MESSAGES, msgconst.OK, msg)
         if self.do_verbose:
             echo('')
+        sys.exit(status)
 
-        sys.exit(0)
+
