@@ -141,7 +141,7 @@ class DST_to_SK2_Translator(object):
             elif cmd.cid == dst_const.CMD_CHANGE_COLOR:
                 out.color_change(dx, dy)
             elif cmd.cid == dst_const.CMD_SEQUIN_MODE:
-                out.sequin_mode(dx, dy)  # XXX: didn't check it
+                out.sequin_eject(dx, dy)  # XXX: didn't check it
                 sequin_mode = not sequin_mode
             elif cmd.cid == dst_const.DST_HEADER:
                 self.handle_document_metainfo(cmd)
