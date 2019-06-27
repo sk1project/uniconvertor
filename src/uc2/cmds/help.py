@@ -20,8 +20,6 @@ import datetime
 from uc2 import uc2const
 from uc2.utils.mixutils import echo
 
-HELP_CMDS = ('--help', '-help', '--h', '-h')
-
 HELP_TEMPLATE = '''
 %s
 
@@ -29,7 +27,7 @@ Universal vector graphics format translator
 copyright (C) 2007-%s sK1 Project Team (https://uc2.sk1project.net)
 For detailed help visit https://uc2.sk1project.net/help/
 
-Usage: uniconvertor [OPTIONS] [INPUT FILE] [OUTPUT FILE]
+Usage: uniconvertor [OPTIONS] INPUT_FILE OUTPUT_FILE
 Example: uniconvertor drawing.cdr drawing.svg
 
  Available options:
@@ -37,7 +35,26 @@ Example: uniconvertor drawing.cdr drawing.svg
  -v, --verbose   Show internal logs
  --log=          Logging level: DEBUG, INFO, WARN, ERROR (by default, INFO)
  --format=       Type of output file format (values provided below)
- --directory     Show installation directory (for import as Python package)
+ --package-dir   Show installation directory (for import as Python package)
+ --show-log      Show detailed log of previous run
+ 
+---Bulk operations:---------------------------------
+ 
+Usage: uniconvertor [OPTIONS] FILE_PATTERN OUTPUT_DIRECTORY
+Example: uniconvertor --recursive --format=PDF ~/clipart/*.svg ~/clipart_pdf/
+
+ Available options:
+ -vs, --verbose-short    Show minimized internal logs
+ --dry-run               Execute command without translation
+ --recursive             Recursive scanning
+ 
+---Configuring:-------------------------------------
+
+Usage: uniconvertor --configure [OPTIONS]
+Example: uniconvertor --configure --cms_use=yes
+
+ Available options:
+ uniconvertor --show-config
 
 ---INPUT FILE FORMATS-------------------------------
 
@@ -92,7 +109,7 @@ def show_help(appdata):
 
 
 def show_short_help(msg):
-    echo('')
+    echo()
     echo(msg)
     echo('USAGE: uniconvertor [OPTIONS] [INPUT FILE] [OUTPUT FILE]')
     echo('Use --help for more details.')

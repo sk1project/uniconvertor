@@ -58,7 +58,7 @@ BOLD = '\033[1m'
 UNDERLINE = '\033[4m'
 
 
-def echo(msg, newline=True, flush=True, code=''):
+def echo(msg='', newline=True, flush=True, code=''):
     msg = '%s\n' % msg if newline else msg
     msg = '%s%s%s' % (code, msg, ENDC) if code else msg
     sys.stdout.write(msg)

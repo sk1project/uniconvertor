@@ -29,13 +29,17 @@ LOG = logging.getLogger(__name__)
 IS_MSW = system.get_os_family() == system.WINDOWS
 IS_MAC = system.get_os_family() == system.MACOSX
 
-HOME = os.path.expanduser(u'~').encode('utf-8')
+HOME = os.path.expanduser(u'~')
 
 
 def expanduser(path=''):
     if path.startswith('~'):
         path = path.replace('~', HOME)
     return path
+
+
+def normalize_path(path):
+    return os.path.abspath(expanduser(path))
 
 
 def get_sys_path(path):
@@ -65,7 +69,7 @@ def get_fileptr(path, writable=False):
         except Exception:
             msg = _('Cannot open %s file for writing') % path
             events.emit(events.MESSAGES, msgconst.ERROR, msg)
-            LOG.error(msg)
+            LOG.exception(msg)
             raise
     else:
         try:
@@ -73,7 +77,7 @@ def get_fileptr(path, writable=False):
         except Exception:
             msg = _('Cannot open %s file for reading') % path
             events.emit(events.MESSAGES, msgconst.ERROR, msg)
-            LOG.error(msg)
+            LOG.exception(msg)
             raise
     return fileptr
 
@@ -88,7 +92,3 @@ def lexists(path):
 
 def exists(path):
     return os.path.lexists(get_sys_path(path))
-
-
-
-
