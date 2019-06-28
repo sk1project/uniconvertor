@@ -131,7 +131,8 @@ IMAGES = [
 ]
 
 LOCAL_IMAGES = [
-    'ubuntu_16.04_64bit',
+    'centos_7_32bit',
+    # 'ubuntu_16.04_64bit',
     # 'msw-packager',
 ]
 
@@ -297,6 +298,8 @@ def build_package():
         marker = bbox.get_marker(not RELEASE)
         new_name = '.'.join(items[:-2] + [marker, ] + items[-2:])
         if SYSFACTS.is_centos:
+            if not SYSFACTS.is_64bit:
+                new_name = new_name.replace('x86_64', 'i686')
             copies.append((new_name, rhel_folder))
     else:
         echo_msg('Unsupported distro!', code=STDOUT_FAIL)
