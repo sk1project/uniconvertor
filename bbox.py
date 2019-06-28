@@ -120,8 +120,6 @@ IMAGES = [
     'debian_8_64bit',
     'debian_9_32bit',
     'debian_9_64bit',
-    'centos_6_32bit',
-    'centos_6_64bit',
     'centos_7_32bit',
     'centos_7_64bit',
     'fedora_27_64bit',
