@@ -120,6 +120,10 @@ IMAGES = [
     'debian_8_64bit',
     'debian_9_32bit',
     'debian_9_64bit',
+    'centos_6_32bit',
+    'centos_6_64bit',
+    'centos_7_32bit',
+    'centos_7_64bit',
     'fedora_27_64bit',
     'fedora_28_64bit',
     'fedora_29_64bit',
@@ -259,6 +263,7 @@ def run_build_local():
 def build_package():
     mint_folder = os.path.join(RELEASE_DIR, 'LinuxMint')
     eos_folder = os.path.join(RELEASE_DIR, 'elementaryOS')
+    rhel_folder = os.path.join(RELEASE_DIR, 'RHEL')
     copies = []
     out = ' 1> /dev/null  2> /dev/null' if not DEBUG_MODE else ''
 
@@ -293,6 +298,8 @@ def build_package():
         items = old_name.split('.')
         marker = bbox.get_marker(not RELEASE)
         new_name = '.'.join(items[:-2] + [marker, ] + items[-2:])
+        if SYSFACTS.is_centos:
+            copies.append((new_name, rhel_folder))
     else:
         echo_msg('Unsupported distro!', code=STDOUT_FAIL)
         sys.exit(1)
