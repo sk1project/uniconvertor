@@ -53,7 +53,7 @@ class AbstractLoader(object):
             self.fileptr = get_fileptr(path)
         elif fileptr:
             self.fileptr = fileptr
-            self.fileptr.seek(0, 2)
+            self.fileptr.seek(-1, 1)
             self.file_size = self.fileptr.tell()
             self.fileptr.seek(0)
         else:
