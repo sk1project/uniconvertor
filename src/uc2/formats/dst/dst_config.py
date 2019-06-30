@@ -22,3 +22,15 @@ class DST_Config(XmlConfigParser):
     filename = 'dst_config.xml'
     system_encoding = 'utf-8'
     thickness = 0.72
+
+    end_instruction = True
+    optimize_number_of_stitches = False
+    maximum_stitch_length = 12.1
+    maximum_jump_length = 12.1
+    automatic_return_to_origin = True
+    # automatic_centering = True
+
+    borer_offset_x = 0.0
+    borer_offset_y = 0.0
+    # delete_empty_stitches = True
+    # delete_empty_jump = True

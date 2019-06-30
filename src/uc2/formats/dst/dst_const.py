@@ -17,8 +17,11 @@
 
 from uc2 import uc2const
 
-IN_TO_DST = uc2const.pt_to_mm * 10.0
-DST_TO_IN = uc2const.mm_to_pt * 0.1
+DST_TO_MM = 0.1
+MM_TO_DST = 10.0
+
+IN_TO_DST = uc2const.pt_to_mm * MM_TO_DST
+DST_TO_IN = uc2const.mm_to_pt * DST_TO_MM
 
 
 DST_to_SK2_TRAFO = [DST_TO_IN, 0.0, 0.0, DST_TO_IN, 0.0, 0.0]

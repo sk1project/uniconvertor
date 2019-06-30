@@ -17,13 +17,19 @@
 
 from uc2.formats.dst import dst_model, dst_const
 from uc2 import _, uc2const, sk2const, cms, libgeom
+from uc2.formats.dst.dst_const import MM_TO_DST
+import math
 
 
 class EmbroideryMachine(object):
     max_distance = dst_const.MAX_DISTANCE
-
+    max_stitch_length = dst_const.MAX_DISTANCE
+    max_jump_length = dst_const.MAX_DISTANCE
+    optimize_number_of_stitches = False
     x = 0
     y = 0
+    borer_offset_x = 0
+    borer_offset_y = 0
     stitch_count = 0
     extents_left = 0
     extents_top = 0
@@ -50,10 +56,20 @@ class EmbroideryMachine(object):
         self.extents_bottom = max(self.extents_bottom, self.y)
 
     def jump_to(self, x, y):
-        self._to(x, y, dst_const.CMD_STITCH)
+        max_distance = min(self.max_distance, self.max_jump_length)
+        if not self.optimize_number_of_stitches:
+            distance = libgeom.distance((self.x, self.y), (x, y))
+            number_pieces = math.ceil(distance / max_distance) or 1.0
+            max_distance = distance / number_pieces
+        self._to(x, y, dst_const.CMD_JUMP, max_distance)
 
     def stitch_to(self, x, y):
-        self._to(x, y, dst_const.CMD_STITCH)
+        max_distance = min(self.max_distance, self.max_stitch_length)
+        if not self.optimize_number_of_stitches:
+            distance = libgeom.distance((self.x, self.y), (x, y))
+            number_pieces = math.ceil(distance / max_distance) or 1.0
+            max_distance = distance / number_pieces
+        self._to(x, y, dst_const.CMD_STITCH, max_distance)
 
     def chang_color(self):
         self.command_color_change += 1
@@ -71,14 +87,14 @@ class EmbroideryMachine(object):
         cmd.cid = dst_const.DATA_TERMINATOR
         self.append_stitch(cmd)
 
-    def _to(self, x, y, cid):
+    def _to(self, x, y, cid, max_distance):
         end_point = (x, y)
         while True:
             current_point = (self.x, self.y)
             distance = libgeom.distance(current_point, end_point)
 
             if distance > 0:
-                coef = min(distance, self.max_distance) / distance
+                coef = min(distance, max_distance) / distance
                 x, y = libgeom.midpoint(current_point, end_point, coef)
 
             cmd = dst_model.DstCmd()
@@ -88,7 +104,7 @@ class EmbroideryMachine(object):
 
             self.append_stitch(cmd)
             self.move(cmd.dx, cmd.dy)
-            if distance <= self.max_distance:
+            if distance <= max_distance:
                 break
 
 
@@ -101,7 +117,16 @@ class SK2_to_DST_Translator(object):
     processor = None
 
     def translate(self, sk2_doc, dst_doc):
-        self.processor = EmbroideryMachine(dst_doc)
+        cfg = dst_doc.config
+        origin_x = - int(MM_TO_DST * cfg.borer_offset_x)
+        origin_y = - int(MM_TO_DST * cfg.borer_offset_y)
+
+        processor = EmbroideryMachine(dst_doc)
+        processor.x = origin_x
+        processor.y = origin_y
+        processor.max_stitch_length = MM_TO_DST * cfg.maximum_stitch_length
+        processor.max_jump_length = MM_TO_DST * cfg.maximum_jump_length
+        self.processor = processor
         self.trafo = [] + dst_const.SK2_to_DST_TRAFO
         self.sk2_doc = sk2_doc
         self.sk2_mtds = sk2_doc.methods
@@ -117,13 +142,16 @@ class SK2_to_DST_Translator(object):
             if self.sk2_mtds.is_layer_visible(layer):
                 self.translate_objs(layer.childs)
 
-        # move to 0,0 point
-        self.processor.jump_to(0.0, 0.0)
-        self.processor.stop()
-        # append data terminator
-        self.processor.end()
+        if cfg.automatic_return_to_origin:
+            self.processor.jump_to(origin_x, origin_y)
 
-        header.metadata = self.metadata()
+        self.processor.stop()
+
+        if cfg.end_instruction:
+            self.processor.end()
+
+        metadata = self.metadata()
+        header.metadata.update(metadata)
 
     def metadata(self):
         metadata = dict()
