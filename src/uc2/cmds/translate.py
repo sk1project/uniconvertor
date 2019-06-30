@@ -29,8 +29,7 @@ SAVER_IDS = uc2const.PALETTE_SAVERS + uc2const.MODEL_SAVERS \
             + uc2const.BITMAP_SAVERS
 
 
-def convert(appdata, files, options):
-    dry_run = bool(options.get('dry-run'))
+def normalize_options(options):
     for key in ('verbose', 'format', 'recursive', 'dry-run'):
         if key in options:
             options.pop(key)
@@ -39,6 +38,11 @@ def convert(appdata, files, options):
     for key in keys:
         if '-' in key:
             options.pop(key)
+
+
+def convert(appdata, files, options):
+    dry_run = bool(options.get('dry-run'))
+    normalize_options(options)
 
     msg = 'Translation of "%s" into "%s"' % (files[0], files[1])
     events.emit(events.MESSAGES, msgconst.JOB, msg)
@@ -172,7 +176,7 @@ def multiple_convert(appdata, files, options):
         try:
             convert(appdata, (filepath, out_filepath), kw)
             if verbose:
-                echo('')
+                echo()
             elif verbose_short:
                 echo('Translation of "%s"' % filepath)
                 echo('into "%s" ...[  OK  ]\n' % out_filepath)
@@ -205,7 +209,7 @@ def wildcard_convert(appdata, files, options):
         try:
             convert(appdata, (filepath, out_filepath), kw)
             if verbose:
-                echo('')
+                echo()
             elif verbose_short:
                 echo('Translation of "%s"' % filepath)
                 echo('into "%s" ...[  OK  ]\n' % out_filepath)

@@ -54,6 +54,7 @@ class UCApplication(object):
         self.config = UCConfig()
         self.config.app = self
         self.appdata = UCData(self, cfgdir, check=check)
+        self.config.load(self.appdata.app_config)
         setattr(uc2, 'config', self.config)
         setattr(uc2, 'appdata', self.appdata)
 
@@ -84,6 +85,15 @@ class UCApplication(object):
             sys.exit(0)
         elif cmds.check_args(cmds.DIR_CMDS):
             echo(os.path.dirname(os.path.dirname(__file__)))
+            sys.exit(0)
+        elif cmds.check_args(cmds.CFG_SHOW_CMDS):
+            cmds.show_config()
+            sys.exit(0)
+        elif cmds.check_args(cmds.CONFIG_CMDS):
+            options = cmds.parse_cmd_args(current_dir)[1]
+            cmds.normalize_options(options)
+            cmds.change_config(options)
+            self.config.save()
             sys.exit(0)
         elif len(sys.argv) == 2:
             cmds.show_short_help('Not enough arguments!')
@@ -140,7 +150,7 @@ class UCApplication(object):
             status = 1
 
         if self.do_verbose:
-            echo('')
+            echo()
         sys.exit(status)
 
 

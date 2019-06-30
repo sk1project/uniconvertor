@@ -114,22 +114,27 @@ IMAGES = [
     'ubuntu_16.04_64bit',
     'ubuntu_18.04_64bit',
     'ubuntu_18.10_64bit',
+    'ubuntu_19.04_64bit',
     'debian_7_32bit',
     'debian_7_64bit',
     'debian_8_32bit',
     'debian_8_64bit',
     'debian_9_32bit',
     'debian_9_64bit',
+    'centos_7_32bit',
+    'centos_7_64bit',
     'fedora_27_64bit',
     'fedora_28_64bit',
     'fedora_29_64bit',
+    'fedora_30_64bit',
     'opensuse_42.3_64bit',
     'opensuse_15.0_64bit',
     'msw-packager'
 ]
 
 LOCAL_IMAGES = [
-    'ubuntu_16.04_64bit',
+    'centos_7_32bit',
+    # 'ubuntu_16.04_64bit',
     # 'msw-packager',
 ]
 
@@ -259,6 +264,8 @@ def run_build_local():
 def build_package():
     mint_folder = os.path.join(RELEASE_DIR, 'LinuxMint')
     eos_folder = os.path.join(RELEASE_DIR, 'elementaryOS')
+    mx_folder = os.path.join(RELEASE_DIR, 'MX_Linux')
+    rhel_folder = os.path.join(RELEASE_DIR, 'RHEL')
     copies = []
     out = ' 1> /dev/null  2> /dev/null' if not DEBUG_MODE else ''
 
@@ -284,6 +291,14 @@ def build_package():
             copies.append((prefix + '_mint_19_' + suffix, mint_folder))
             if SYSFACTS.is_64bit:
                 copies.append((prefix + '_elementary5.0_' + suffix, eos_folder))
+        elif SYSFACTS.is_debian:
+            ver = SYSFACTS.version.split('.')[0]
+            if ver == '8':
+                copies.append((prefix + '_mx15_' + suffix, mx_folder))
+                copies.append((prefix + '_mx16_' + suffix, mx_folder))
+            elif ver == '9':
+                copies.append((prefix + '_mx17_' + suffix, mx_folder))
+                copies.append((prefix + '_mx18_' + suffix, mx_folder))
 
     elif SYSFACTS.is_rpm:
         echo_msg('Building RPM package')
@@ -293,6 +308,10 @@ def build_package():
         items = old_name.split('.')
         marker = bbox.get_marker(not RELEASE)
         new_name = '.'.join(items[:-2] + [marker, ] + items[-2:])
+        if SYSFACTS.is_centos:
+            if not SYSFACTS.is_64bit:
+                new_name = new_name.replace('x86_64', 'i686')
+            copies.append((new_name, rhel_folder))
     else:
         echo_msg('Unsupported distro!', code=STDOUT_FAIL)
         sys.exit(1)

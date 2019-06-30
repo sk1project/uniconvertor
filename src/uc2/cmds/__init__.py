@@ -19,13 +19,18 @@ import os
 import sys
 
 from uc2 import events, msgconst
-from .help import HELP_CMDS, show_help, show_short_help
+from .help import show_help, show_short_help
 from .translate import convert, wildcard_convert, multiple_convert
+from .translate import normalize_options
+from .configure import show_config, change_config
 
-DIR_CMDS = ('--directory', '-directory', '--dir', '-dir')
+HELP_CMDS = ('--help', '-help', '--h', '-h')
+DIR_CMDS = ('--package-dir', '-package-dir', '--pkg-dir', '-pkg-dir')
 LOG_CMDS = ('--show-log', '-show-log', '--log', '-log')
 VERBOSE_CMDS = ('--verbose', '-verbose', '-v', '--v')
 VS_CMDS = ('--verbose-short', '-verbose-short', '-vs', '--vs')
+CONFIG_CMDS = ('--configure', '-configure', '--config', '-config')
+CFG_SHOW_CMDS = ('--show-config', '-show-config')
 
 
 def check_args(cmds):
@@ -36,8 +41,6 @@ def parse_cmd_args(current_dir):
     files = []
     options_list = []
     options = {}
-
-    print sys.argv
 
     for item in sys.argv[1:]:
         if item in VERBOSE_CMDS:
