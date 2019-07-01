@@ -19,6 +19,7 @@
 import errno
 import logging
 import os
+import sys
 
 from uc2 import _, events, msgconst
 from uc2.utils import system
@@ -92,3 +93,15 @@ def lexists(path):
 
 def exists(path):
     return os.path.lexists(get_sys_path(path))
+
+
+def normalize_sys_argv():
+    """Converts sys.argv to unicode and translate relative paths as
+    absolute ones.
+    """
+    for item in range(1,len(sys.argv)):
+        if not sys.argv[item] or sys.argv[item].startswith('-'):
+            continue
+        if sys.argv[item].startswith('~'):
+            sys.argv[item] = os.path.expanduser(sys.argv[item])
+        sys.argv[item] = os.path.abspath(sys.argv[item])
