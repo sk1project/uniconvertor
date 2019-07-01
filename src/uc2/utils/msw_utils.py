@@ -21,7 +21,7 @@ import ctypes
 from ctypes import wintypes
 
 
-def fix_sys_argv():
+def unicode_sys_argv():
     """Uses shell32.GetCommandLineArgvW to fix sys.argv as a list of
     unicode strings.
     """
