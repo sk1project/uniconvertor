@@ -71,6 +71,10 @@ class EDR_Palette(object):
                 if os.path.exists(name + ext):
                     return name + ext
 
+    def palette_file_name(self, embroidery_filename):
+        file_name = os.path.splitext(embroidery_filename)[0] + self.extension[0]
+        return self.find_palette(embroidery_filename) or file_name
+
     def load_from_file(self, filename, count=255):
         with open(filename, 'rb') as stream:
             index = 0
@@ -93,3 +97,7 @@ class EDR_Palette(object):
     def next_color(self, index=None):
         self.index = self.index + 1 if index is None else index
         return self.colors.get(self.index, REPLACEMENT_COLOR)
+
+    def add_color(self, hex_color):
+        self.colors[self.index] = hex_color
+        self.index += 1

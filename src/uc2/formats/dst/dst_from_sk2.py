@@ -152,6 +152,7 @@ class SK2_to_DST_Translator(object):
 
         metadata = self.metadata()
         header.metadata.update(metadata)
+        dst_doc.palette = self.palette
 
     def metadata(self):
         metadata = dict()

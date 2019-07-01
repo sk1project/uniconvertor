@@ -34,3 +34,5 @@ class DST_Config(XmlConfigParser):
     borer_offset_y = 0.0
     # delete_empty_stitches = True
     # delete_empty_jump = True
+
+    create_edr_palette = True
