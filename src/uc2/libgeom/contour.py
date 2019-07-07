@@ -3,16 +3,16 @@
 #  Copyright (C) 2015 by Igor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, either version 3 of the License, or
-#  (at your option) any later version.
+#  it under the terms of the GNU Affero General Public License
+#  as published by the Free Software Foundation, either version 3
+#  of the License, or (at your option) any later version.
 #
 #  This program is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
-#  You should have received a copy of the GNU General Public License
+#  You should have received a copy of the GNU Affero General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import math
@@ -69,7 +69,7 @@ def circleparam(h):
     For joining lines we need circle-segments with arbitrary
     angles, we need to subdivide the approximating bezier segments.
     Iterative approach to determine at what parameter t0 you have
-    to subdivide a circle segment to get height h.	
+    to subdivide a circle segment to get height h.
     """
     t0 = 0.5
     dt = 0.25
@@ -99,7 +99,7 @@ def check_parallel(source, parallel, radius, tolerance=0.01):
     parallel. It checks, if the points for the parameters 0.25, 0.5
     and 0.75 of the tested segment are orthogonal to the resp.
     points of the source segment. 1% tolerance is default.
-    
+
     It does not check the start and endpoints, since they are
     assumed to be correct by construction.
     """
@@ -117,7 +117,7 @@ def build_parallel(p, radius, recursionlimit=6):
     """
     This builds a list of bezier segments that are "sufficiently"
     close to a given source segment. It recursively subdivides, if
-    the check for parallelity fails.	
+    the check for parallelity fails.
     """
     # find tangent to calculate orthogonal neighbor of endpoint
     c1 = c2 = []
@@ -195,8 +195,8 @@ def get_join_segment(startpoint, endpoint, radius, jointype,
     """
     This returns a list of bezier segments that joins two points
     with a given radius (fails if the radius is smaller than the
-    distance between startpoint) and endpoint). 
-    jointype is one of 	JOIN_MITER, JOIN_ROUND, JOIN_BEVEL	
+    distance between startpoint) and endpoint).
+    jointype is one of 	JOIN_MITER, JOIN_ROUND, JOIN_BEVEL
     """
 
     if jointype == sk2const.JOIN_MITER:
@@ -265,7 +265,7 @@ def get_join_segment(startpoint, endpoint, radius, jointype,
 def get_cap_segment(startpoint, endpoint, captype):
     """
     This returns a list of bezier segments that form the end cap of
-    a line. Valid captypes are: CAP_BUTT, CAP_ROUND, CAP_SQUARE	
+    a line. Valid captypes are: CAP_BUTT, CAP_ROUND, CAP_SQUARE
     """
 
     #  =====|
@@ -324,7 +324,7 @@ def unpack_seg(seg, startpoint=None):
 def intersect_segs(seg1, seg2):
     """
     Tries intersecting coherent segments.
-    If there is not intersection, returns None. 
+    If there is not intersection, returns None.
     """
     if len(seg1) == 2 and len(seg2) == 2:
         return intersect_lines(seg1[0], seg1[-1], seg2[0], seg2[-1])
@@ -448,7 +448,7 @@ def create_stroke_outline(path, radius, linejoin=sk2const.JOIN_MITER,
 def make_path(segments, close=1):
     """
     This function prepares a path given by a list of lists of
-    coordinates for the use with app.	
+    coordinates for the use with app.
     """
     first_point = segments[0][0]
     last_point = first_point

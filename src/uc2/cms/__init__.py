@@ -3,16 +3,16 @@
 #  Copyright (C) 2011-2017 by Igor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, either version 3 of the License, or
-#  (at your option) any later version.
+#  it under the terms of the GNU Affero General Public License
+#  as published by the Free Software Foundation, either version 3
+#  of the License, or (at your option) any later version.
 #
 #  This program is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
-#  You should have received a copy of the GNU General Public License
+#  You should have received a copy of the GNU Affero General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import copy
@@ -406,7 +406,7 @@ def verbose_color(color):
 def get_profile_name(filepath):
     """Returns profile name.
     If file is not suitable profile or doesn't exist
-    returns None. 
+    returns None.
     """
     try:
         filepath = fsutils.get_sys_path(filepath)
@@ -420,7 +420,7 @@ def get_profile_name(filepath):
 def get_profile_info(filepath):
     """Returns profile info.
     If file is not suitable profile or doesn't exist
-    returns None. 
+    returns None.
     """
     try:
         filepath = fsutils.get_sys_path(filepath)
@@ -434,7 +434,7 @@ def get_profile_info(filepath):
 def get_profile_descr(filepath):
     """Returns profile description tuple (name, copyright, info).
     If file is not suitable profile or doesn't exist
-    returns None. 
+    returns None.
     """
     try:
         filepath = fsutils.get_sys_path(filepath)
