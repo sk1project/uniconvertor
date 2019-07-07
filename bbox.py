@@ -228,8 +228,8 @@ def run_build(locally=False, stop_on_error=True):
         echo_msg(msg + ' ' * (35 - len(msg)) + '...', newline=False)
         output = ' 1> /dev/null 2> /dev/null' if not DEBUG_MODE else ''
         cmd = '/vagrant/bbox.py build_package --project=%s' % PROJECT
-        if image == 'msw-packager':
-            cmd = '/vagrant/bbox.py msw_build --project=%s' % PROJECT
+        if image == 'packager':
+            cmd = '/vagrant/bbox.py packaging --project=%s' % PROJECT
         if RELEASE:
             cmd += ' --release=1'
         if shell('docker run --rm -v %s:%s %s%s %s %s' %
