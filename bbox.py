@@ -399,7 +399,7 @@ MSI_DATA = {
     'Keywords': 'Vector graphics, Prepress',
 
     # Structural elements
-    '_Icon': os.path.join(CACHE_DIR, '/common/sk1.ico'),
+    '_Icon': os.path.join(CACHE_DIR, 'common/uc2.ico'),
     '_OsCondition': '601',
     '_SourceDir': '',
     '_InstallDir': '%s-%s' % (APP_FULL_NAME, APP_VER),
