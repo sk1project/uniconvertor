@@ -81,6 +81,7 @@ RELEASE_DIR = os.path.join(PROJECT_DIR, 'release')
 PKGBUILD_DIR = os.path.join(PROJECT_DIR, 'pkgbuild')
 ARCH_DIR = os.path.join(PROJECT_DIR, 'archlinux')
 LOCALES_DIR = os.path.join(PROJECT_DIR, 'src/sk1/share/locales')
+CACHE_DIR = os.path.join(PROJECT_DIR, 'subproj/build-cache')
 
 SCRIPT = 'setup.py'
 APP_NAME = 'uniconvertor'
@@ -129,7 +130,7 @@ IMAGES = [
     'fedora_30_64bit',
     'opensuse_42.3_64bit',
     'opensuse_15.0_64bit',
-    'msw-packager'
+    'packager'
 ]
 
 LOCAL_IMAGES = [
@@ -398,7 +399,7 @@ MSI_DATA = {
     'Keywords': 'Vector graphics, Prepress',
 
     # Structural elements
-    '_Icon': '/win32-devres/sk1.ico',
+    '_Icon': os.path.join(CACHE_DIR, '/common/sk1.ico'),
     '_OsCondition': '601',
     '_SourceDir': '',
     '_InstallDir': '%s-%s' % (APP_FULL_NAME, APP_VER),
@@ -415,6 +416,10 @@ MSI_DATA = {
              },
         ]
 }
+
+
+def packaging():
+    build_msw_packages()
 
 
 def build_msw_packages():
@@ -439,7 +444,7 @@ def build_msw_packages():
         # Package building
         echo_msg('Creating portable package')
 
-        portable = os.path.join('/%s-devres' % arch, 'portable.zip')
+        portable = os.path.join(CACHE_DIR, arch, 'portable.zip')
 
         echo_msg('Extracting portable files from %s' % portable)
         ZipFile(portable, 'r').extractall(portable_folder)
@@ -461,7 +466,7 @@ def build_msw_packages():
 
         for item in EXTENSIONS:
             filename = os.path.basename(item)
-            src = os.path.join('/%s-devres' % arch, 'pyd', filename)
+            src = os.path.join(CACHE_DIR, arch, 'pyd', filename)
             dst = os.path.join(portable_libs, item)
             shutil.copy(src, dst)
 
@@ -470,8 +475,7 @@ def build_msw_packages():
 
         clear_files(portable_folder, ['exe'])
 
-        nonportable = os.path.join('/%s-devres' % arch,
-                                   '%s.zip' % PROJECT)
+        nonportable = os.path.join(CACHE_DIR,  arch, '%s.zip' % PROJECT)
         readme = README_TEMPLATE % bbox.TIMESTAMP[:4]
         readme_path = os.path.join(portable_folder, 'readme.txt')
         with open(readme_path, 'wb') as fp:
@@ -521,4 +525,5 @@ option = sys.argv[1] if len(sys.argv) > 1 \
     'build_local': run_build_local,
     'build_package': build_package,
     'msw_build': build_msw_packages,
+    'packaging': packaging,
 }.get(option, build_package)()
