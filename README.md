@@ -66,7 +66,6 @@ some development packages. We describe dev-packages for Ubuntu|Debian, but for
 other distros they have similar names. So, you need:
 ```
 git
-gettext
 libcairo2-dev
 liblcms2-dev
 libmagickwand-dev
@@ -80,5 +79,4 @@ To run application you need installing also:
 python-pil 
 python-reportlab
 python-cairo
-python-cups
 ```
