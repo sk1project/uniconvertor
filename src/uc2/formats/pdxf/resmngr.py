@@ -3,16 +3,16 @@
 #  Copyright (C) 2011-2013 by Igor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, either version 3 of the License, or
-#  (at your option) any later version.
+#  it under the terms of the GNU Affero General Public License
+#  as published by the Free Software Foundation, either version 3
+#  of the License, or (at your option) any later version.
 #
 #  This program is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
-#  You should have received a copy of the GNU General Public License
+#  You should have received a copy of the GNU Affero General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import os, shutil
@@ -33,7 +33,7 @@ def convert_resource_path(path):
 class ResourceManager:
     """
     Represents resource manager object to
-    manage files included into PDXF file archive. 
+    manage files included into PDXF file archive.
     """
 
     def __init__(self, presenter):
@@ -44,7 +44,7 @@ class ResourceManager:
         """
         Returns absolute path of resource file by id.
         If requested id is not in resources or resource file is
-        absent, returns None. 
+        absent, returns None.
         """
         ret = None
         res_dict = self.presenter.model.resources
@@ -90,7 +90,7 @@ class ResourceManager:
         """
         Copies resource from other resource manager by id.
         The id is storing. If wrong id or there is no resource file
-        doesn't copy anything. 
+        doesn't copy anything.
         """
         filepath = rm.get_resource_path(id)
         if not filepath is None and os.path.isfile(filepath):

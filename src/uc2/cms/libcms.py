@@ -5,16 +5,16 @@
 #  Copyright (C) 2012-2018 by Igor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, either version 3 of the License, or
-#  (at your option) any later version.
+#  it under the terms of the GNU Affero General Public License
+#  as published by the Free Software Foundation, either version 3
+#  of the License, or (at your option) any later version.
 #
 #  This program is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
-#  You should have received a copy of the GNU General Public License
+#  You should have received a copy of the GNU Affero General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import os
@@ -170,7 +170,7 @@ def cms_create_display_profile():
     profile reading profile resource attached to the package.
     Returns a handle to lcms built-in display profile wrapped
     as a Python object.
-     
+
     The handle doesn't require to be closed after usage because
     on object delete operation Python calls native cms_close_profile()
     function automatically
@@ -203,7 +203,7 @@ def save_display_profile(path):
 def cms_create_lab_profile():
     """Artificial functionality. The function emulates built-in Lab
     profile reading profile resource attached to the package.
-    Returns a handle to lcms built-in Lab profile wrapped as a Python object. 
+    Returns a handle to lcms built-in Lab profile wrapped as a Python object.
     The handle doesn't require to be closed after usage because
     on object delete operation Python calls native cms_close_profile()
     function automatically
@@ -236,7 +236,7 @@ def save_lab_profile(path):
 def cms_create_gray_profile():
     """Artificial functionality. The function emulates built-in Gray
     profile reading profile resource attached to the package.
-    Returns a handle to lcms built-in Gray profile wrapped as a Python object. 
+    Returns a handle to lcms built-in Gray profile wrapped as a Python object.
     The handle doesn't require to be closed after usage because
     on object delete operation Python calls native cms_close_profile()
     function automatically

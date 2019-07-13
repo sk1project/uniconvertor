@@ -5,16 +5,16 @@
 # 	Copyright (C) 2018 by Igor E. Novikov
 #
 # 	This program is free software: you can redistribute it and/or modify
-# 	it under the terms of the GNU General Public License as published by
-# 	the Free Software Foundation, either version 3 of the License, or
-# 	(at your option) any later version.
+# 	it under the terms of the GNU Affero General Public License
+# 	as published by the Free Software Foundation, either version 3
+# 	of the License, or (at your option) any later version.
 #
 # 	This program is distributed in the hope that it will be useful,
 # 	but WITHOUT ANY WARRANTY; without even the implied warranty of
 # 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # 	GNU General Public License for more details.
 #
-# 	You should have received a copy of the GNU General Public License
+# 	You should have received a copy of the GNU Affero General Public License
 # 	along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 """
@@ -81,6 +81,7 @@ RELEASE_DIR = os.path.join(PROJECT_DIR, 'release')
 PKGBUILD_DIR = os.path.join(PROJECT_DIR, 'pkgbuild')
 ARCH_DIR = os.path.join(PROJECT_DIR, 'archlinux')
 LOCALES_DIR = os.path.join(PROJECT_DIR, 'src/sk1/share/locales')
+CACHE_DIR = os.path.join(PROJECT_DIR, 'subproj/build-cache')
 
 SCRIPT = 'setup.py'
 APP_NAME = 'uniconvertor'
@@ -95,7 +96,7 @@ CONST_FILES = ['src/uc2/uc2const.py']
 
 README_TEMPLATE = """
 Universal vector graphics format translator
-copyright (C) 2007-%s sK1 Project Team (https://sk1project.net)
+copyright (C) 2007-%s sK1 Project Team (https://uc2.sk1project.net)
 
 Usage: uniconvertor [OPTIONS] [INPUT FILE] [OUTPUT FILE]
 Example: uniconvertor drawing.cdr drawing.svg
@@ -129,7 +130,7 @@ IMAGES = [
     'fedora_30_64bit',
     'opensuse_42.3_64bit',
     'opensuse_15.0_64bit',
-    'msw-packager'
+    'packager'
 ]
 
 LOCAL_IMAGES = [
@@ -227,8 +228,8 @@ def run_build(locally=False, stop_on_error=True):
         echo_msg(msg + ' ' * (35 - len(msg)) + '...', newline=False)
         output = ' 1> /dev/null 2> /dev/null' if not DEBUG_MODE else ''
         cmd = '/vagrant/bbox.py build_package --project=%s' % PROJECT
-        if image == 'msw-packager':
-            cmd = '/vagrant/bbox.py msw_build --project=%s' % PROJECT
+        if image == 'packager':
+            cmd = '/vagrant/bbox.py packaging --project=%s' % PROJECT
         if RELEASE:
             cmd += ' --release=1'
         if shell('docker run --rm -v %s:%s %s%s %s %s' %
@@ -398,7 +399,7 @@ MSI_DATA = {
     'Keywords': 'Vector graphics, Prepress',
 
     # Structural elements
-    '_Icon': '/win32-devres/sk1.ico',
+    '_Icon': os.path.join(CACHE_DIR, 'common/uc2.ico'),
     '_OsCondition': '601',
     '_SourceDir': '',
     '_InstallDir': '%s-%s' % (APP_FULL_NAME, APP_VER),
@@ -415,6 +416,10 @@ MSI_DATA = {
              },
         ]
 }
+
+
+def packaging():
+    build_msw_packages()
 
 
 def build_msw_packages():
@@ -439,7 +444,7 @@ def build_msw_packages():
         # Package building
         echo_msg('Creating portable package')
 
-        portable = os.path.join('/%s-devres' % arch, 'portable.zip')
+        portable = os.path.join(CACHE_DIR, arch, 'portable.zip')
 
         echo_msg('Extracting portable files from %s' % portable)
         ZipFile(portable, 'r').extractall(portable_folder)
@@ -461,7 +466,7 @@ def build_msw_packages():
 
         for item in EXTENSIONS:
             filename = os.path.basename(item)
-            src = os.path.join('/%s-devres' % arch, 'pyd', filename)
+            src = os.path.join(CACHE_DIR, arch, 'pyd', filename)
             dst = os.path.join(portable_libs, item)
             shutil.copy(src, dst)
 
@@ -470,8 +475,7 @@ def build_msw_packages():
 
         clear_files(portable_folder, ['exe'])
 
-        nonportable = os.path.join('/%s-devres' % arch,
-                                   '%s.zip' % PROJECT)
+        nonportable = os.path.join(CACHE_DIR,  arch, '%s.zip' % PROJECT)
         readme = README_TEMPLATE % bbox.TIMESTAMP[:4]
         readme_path = os.path.join(portable_folder, 'readme.txt')
         with open(readme_path, 'wb') as fp:
@@ -521,4 +525,5 @@ option = sys.argv[1] if len(sys.argv) > 1 \
     'build_local': run_build_local,
     'build_package': build_package,
     'msw_build': build_msw_packages,
+    'packaging': packaging,
 }.get(option, build_package)()

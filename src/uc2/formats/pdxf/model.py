@@ -3,16 +3,16 @@
 #  Copyright (C) 2011-2013 by Igor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, either version 3 of the License, or
-#  (at your option) any later version.
+#  it under the terms of the GNU Affero General Public License
+#  as published by the Free Software Foundation, either version 3
+#  of the License, or (at your option) any later version.
 #
 #  This program is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
-#  You should have received a copy of the GNU General Public License
+#  You should have received a copy of the GNU Affero General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from copy import deepcopy
@@ -126,7 +126,7 @@ TAGNAME_TO_CID = {
 
 class DocumentObject(ModelObject):
     """
-    Abstract parent class for all document 
+    Abstract parent class for all document
     objects. Provides common object properties.
     """
 
@@ -177,8 +177,8 @@ class Document(DocumentObject):
 
 class Pages(DocumentObject):
     """
-    Represents container for pages. 
-    Stores default page format value and page objects in childs list. 
+    Represents container for pages.
+    Stores default page format value and page objects in childs list.
     Also has a page counter field.
     Page format: [format name, (width, height), orientation]
     """
@@ -294,7 +294,7 @@ class Layer(StructuralObject):
 class GuideLayer(Layer):
     """
     Represents guide line layer.
-    This is a special layer to store document guide lines. 
+    This is a special layer to store document guide lines.
     The object stores layer name and color used for guide line rendering.
     All child objects are in childs list.
     """
@@ -317,7 +317,7 @@ class GuideLayer(Layer):
 class GridLayer(Layer):
     """
     Represents guide line layer.
-    This is a special layer to manage document grid. 
+    This is a special layer to manage document grid.
     The object stores layer name and color used for grid rendering.
     All child objects are in childs list.
     """
@@ -342,7 +342,7 @@ class GridLayer(Layer):
 class LayerGroup(StructuralObject):
     """
     Represents container for regular layers.
-    The object is not used yet. 
+    The object is not used yet.
     All child layers are in childs list.
     """
     cid = LAYER_GROUP
@@ -399,7 +399,7 @@ class DesktopLayers(LayerGroup):
 class Guide(StructuralObject):
     """
     Represents container for regular layers.
-    The object is not used yet. 
+    The object is not used yet.
     All child layers are in childs list.
     """
     cid = GUIDE
@@ -419,7 +419,7 @@ class Guide(StructuralObject):
 # ================Selectable Objects==================
 class SelectableObject(DocumentObject):
     """
-    Abstract parent class for selectable objects. 
+    Abstract parent class for selectable objects.
     Provides common selectable object properties.
     """
     cid = SELECTABLE_CLASS
