@@ -85,6 +85,7 @@ HPGL = 111
 DXF = 120
 DWG = 121
 DST = 'dst'
+PES = 'pes'
 
 
 JPG = 300
@@ -187,6 +188,7 @@ FORMAT_DESCRIPTION = {
 
     # Embroidery Formats
     DST: _('DST - (Tajima) Design format'),
+    PES: _('PES - (Brother) Embroidery file format'),
 }
 
 FORMAT_NAMES = {
@@ -228,6 +230,7 @@ FORMAT_NAMES = {
 
     # Embroidery Formats
     DST: "DST",
+    PES: "PES",
 
     # Bitmap file formats
     JPG: "JPEG",
@@ -268,7 +271,7 @@ MODEL_LOADERS = [
 BITMAP_LOADERS = [PNG, JPG, PSD, XCF, JP2, TIF, GIF, BMP, PCX, PPM, XBM, XPM,
                   WEBP]
 PALETTE_LOADERS = [SKP, GPL, SCRIBUS_PAL, SOC, CPL, COREL_PAL, ASE, ACO, JCW]
-EXPERIMENTAL_LOADERS = [MD, RIFF, XML, ]
+EXPERIMENTAL_LOADERS = [MD, RIFF, XML, PES]
 
 MODEL_SAVERS = [SK2, SVG, SVGZ, PLT, PDF, CDR, CMX, CCX, SK1, SK, CGM, FIG, DST,]
 BITMAP_SAVERS = [PNG, ]
@@ -308,7 +311,7 @@ FORMAT_EXTENSION = {
     XML: ('xml', 'svg', 'sla',),
     LOG: ('log',),
     MD: ('md',),
-    DST: ('dst',)
+    DST: ('dst',), PES: ('pes',)
 }
 
 IMAGE_FORMATS = [JPG, TIF, BMP, PCX, GIF, PNG, PPM, XBM, XPM, WEBP, ]
