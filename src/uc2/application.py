@@ -77,6 +77,9 @@ class UCApplication(object):
         elif cmds.check_args(cmds.HELP_CMDS):
             cmds.show_help(self.appdata)
             sys.exit(0)
+        elif cmds.check_args(cmds.PARTS_CMDS):
+            cmds.show_parts(self.appdata)
+            sys.exit(0)
         elif cmds.check_args(cmds.LOG_CMDS):
             log_filepath = os.path.join(self.appdata.app_config_dir, 'uc2.log')
             log_filepath = log_filepath.decode('utf-8')

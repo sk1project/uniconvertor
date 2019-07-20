@@ -23,14 +23,17 @@ from .help import show_help, show_short_help
 from .translate import convert, wildcard_convert, multiple_convert
 from .translate import normalize_options
 from .configure import show_config, change_config
+from .parts import show_parts
 
 HELP_CMDS = ('--help', '-help', '--h', '-h')
 DIR_CMDS = ('--package-dir', '-package-dir', '--pkg-dir', '-pkg-dir')
 LOG_CMDS = ('--show-log', '-show-log', '--log', '-log')
 VERBOSE_CMDS = ('--verbose', '-verbose', '-v', '--v')
 VS_CMDS = ('--verbose-short', '-verbose-short', '-vs', '--vs')
-CONFIG_CMDS = ('--configure', '-configure', '--config', '-config')
-CFG_SHOW_CMDS = ('--show-config', '-show-config')
+CONFIG_CMDS = ('--configure', '-configure', '--config', '-config',
+               '--preferences', '-preferences', '--prefs', '-prefs')
+CFG_SHOW_CMDS = ('--show-config', '-show-config', '--show-prefs', '-show-prefs')
+PARTS_CMDS = ('--parts', '-parts', '--components')
 
 
 def check_args(cmds):
