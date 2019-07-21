@@ -468,7 +468,7 @@ def build_macos_dmg():
         shutil.copy(src, dst)
 
     # Launcher
-    src = os.path.join(CACHE_DIR, 'macos', 'uniconvertorf')
+    src = os.path.join(CACHE_DIR, 'macos', 'uniconvertor')
     dst = os.path.join('%s/bin' % app_folder, 'uniconvertor')
     shutil.copy(src, dst)
     # Readme file
@@ -510,6 +510,7 @@ def build_macos_dmg():
         'remove_build': True,
     }
     pkg.PkgBuilder(vars)
+    shutil.rmtree(pkg_folder, True)
 
 
 def build_msw_packages():
