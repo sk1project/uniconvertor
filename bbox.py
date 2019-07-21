@@ -44,7 +44,7 @@ import sys
 from zipfile import ZIP_DEFLATED
 from zipfile import ZipFile
 
-from utils import bbox, build
+from utils import bbox, build, pkg
 from utils.bbox import is_path, command, echo_msg, SYSFACTS, TIMESTAMP
 from utils.fsutils import get_files_tree
 
@@ -395,7 +395,7 @@ MSI_DATA = {
     'Manufacturer': 'sK1 Project',
     # Optional
     'Description': '%s %s Installer' % (APP_FULL_NAME, APP_VER),
-    'Comments': 'Licensed under GPL v3',
+    'Comments': 'Licensed under AGPL v3',
     'Keywords': 'Vector graphics, Prepress',
 
     # Structural elements
@@ -419,7 +419,92 @@ MSI_DATA = {
 
 
 def packaging():
-    build_msw_packages()
+    build_macos_dmg()
+    #build_msw_packages()
+
+
+def build_macos_dmg():
+    distro_folder = os.path.join(RELEASE_DIR, 'macOS')
+    arch = 'macOS_10.9_Mavericks'
+    echo_msg('=== Build for %s ===' % arch)
+    pkg_name = '%s-%s-%s_and_mewer' % (APP_NAME, APP_VER, arch)
+    if not RELEASE:
+        pkg_name = '%s-%s-%s-%s_and_mewer' % \
+                   (APP_NAME, APP_VER, TIMESTAMP, arch)
+    pkg_folder = os.path.join(PROJECT_DIR, 'package')
+    app_folder = os.path.join(pkg_folder, 'opt/uniconvertor')
+    py_pkgs = os.path.join(pkg_folder, 'opt/uniconvertor/pkgs')
+    if os.path.exists(pkg_folder):
+        shutil.rmtree(pkg_folder, True)
+    os.mkdir(pkg_folder)
+
+    if not is_path(distro_folder):
+        os.makedirs(distro_folder)
+
+    # Package building
+    echo_msg('Creating macOS package')
+
+    pkg_common_dir = os.path.join(CACHE_DIR, 'common')
+    pkg_cache_dir = os.path.join(CACHE_DIR, 'macos')
+    pkg_cache = os.path.join(pkg_cache_dir, 'cache.zip')
+
+    echo_msg('Extracting portable files from %s' % pkg_cache)
+    ZipFile(pkg_cache, 'r').extractall(pkg_folder)
+
+    for item in PKGS:
+        src = os.path.join(SRC_DIR, item)
+        echo_msg('Copying tree %s' % src)
+        shutil.copytree(src, os.path.join(py_pkgs, item))
+
+    build.compile_sources(py_pkgs)
+    clear_files('%s/uc2' % py_pkgs, ['py', 'so', 'pyo'])
+
+    for item in EXTENSIONS:
+        item = item.replace('.pyd', '.so')
+        filename = os.path.basename(item)
+        src = os.path.join(CACHE_DIR, 'macos', 'so', filename)
+        dst = os.path.join(py_pkgs, item)
+        shutil.copy(src, dst)
+
+    # Readme file
+    readme = README_TEMPLATE % bbox.TIMESTAMP[:4]
+    readme_path = os.path.join(app_folder, 'readme.txt')
+    with open(readme_path, 'wb') as fp:
+        mark = '' if RELEASE else ' build %s' % bbox.TIMESTAMP
+        fp.write('%s %s%s' % (APP_FULL_NAME, APP_VER, mark))
+        fp.write('\n\n')
+        fp.write(readme)
+    # License file
+    src = os.path.join(CACHE_DIR, 'common', 'agpl-3.0.rtf')
+    dst = os.path.join(app_folder, 'agpl-3.0.rtf')
+    shutil.copy(src, dst)
+
+    # PKG and DMG build
+    echo_msg('Creating DMG image')
+
+    vars = {
+        'src_dir': pkg_folder,  # path to distribution folder
+        'build_dir': './build_dir',  # path for build
+        'install_dir': '/',  # where to install app
+        'identifier': 'org.sK1Project.UniConvertor',  # domain.Publisher.AppName
+        'app_name': '%s %s' % (APP_FULL_NAME, APP_VER),  # pretty app name
+        'app_ver': APP_VER,  # app version
+        'pkg_name': '%s_%s.pkg' % (APP_FULL_NAME, APP_VER),  # package name
+        'preinstall': os.path.join(pkg_cache_dir,'preinstall'),
+        'postinstall': os.path.join(pkg_cache_dir,'postinstall'),
+        'license': os.path.join(pkg_common_dir,'agpl-3.0.rtf'),
+        'welcome': os.path.join(pkg_cache_dir,'welcome.rtf'),
+        'background': os.path.join(pkg_cache_dir,'background.png'),
+        'check_version': '10.9',
+        'dmg': {
+            'targets': ['./build_dir/%s_%s.pkg' % (APP_FULL_NAME, APP_VER),],
+            'dmg_filename': '%s.dmg' % pkg_name,
+            'volume_name': '%s %s' % (APP_FULL_NAME, APP_VER),
+            'dist_dir': distro_folder,
+            },
+        'remove_build': True,
+    }
+    pkg.PkgBuilder(vars)
 
 
 def build_msw_packages():
@@ -475,7 +560,7 @@ def build_msw_packages():
 
         clear_files(portable_folder, ['exe'])
 
-        nonportable = os.path.join(CACHE_DIR,  arch, '%s.zip' % PROJECT)
+        # Readme file
         readme = README_TEMPLATE % bbox.TIMESTAMP[:4]
         readme_path = os.path.join(portable_folder, 'readme.txt')
         with open(readme_path, 'wb') as fp:
@@ -483,7 +568,13 @@ def build_msw_packages():
             fp.write('%s %s%s' % (APP_FULL_NAME, APP_VER, mark))
             fp.write('\r\n\r\n')
             fp.write(readme.replace('\n', '\r\n'))
+        # License file
+        src = os.path.join(CACHE_DIR, 'common', 'agpl-3.0.rtf')
+        dst = os.path.join(portable_folder, 'agpl-3.0.rtf')
+        shutil.copy(src, dst)
 
+        # Exe files
+        nonportable = os.path.join(CACHE_DIR,  arch, '%s.zip' % PROJECT)
         echo_msg('Extracting non-portable executables from %s' % nonportable)
         ZipFile(nonportable, 'r').extractall(portable_folder)
 
