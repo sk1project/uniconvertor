@@ -457,7 +457,8 @@ def build_macos_dmg():
         shutil.copytree(src, os.path.join(py_pkgs, item))
 
     build.compile_sources(py_pkgs)
-    clear_files('%s/uc2' % py_pkgs, ['py', 'so', 'pyo'])
+    clear_files(py_pkgs, ['py', 'pyo'])
+    clear_files('%s/uc2' % py_pkgs, ['so'])
 
     for item in EXTENSIONS:
         item = item.replace('.pyd', '.so')
@@ -466,6 +467,10 @@ def build_macos_dmg():
         dst = os.path.join(py_pkgs, item)
         shutil.copy(src, dst)
 
+    # Launcher
+    src = os.path.join(CACHE_DIR, 'macos', 'uniconvertorf')
+    dst = os.path.join('%s/bin' % app_folder, 'uniconvertor')
+    shutil.copy(src, dst)
     # Readme file
     readme = README_TEMPLATE % bbox.TIMESTAMP[:4]
     readme_path = os.path.join(app_folder, 'readme.txt')
