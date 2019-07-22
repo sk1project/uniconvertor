@@ -118,26 +118,26 @@ To remove UniConvertor, just delete as a superuser:
 
 IMAGES = [
     'ubuntu_14.04_32bit',
-    # 'ubuntu_14.04_64bit',
-    # 'ubuntu_16.04_32bit',
-    # 'ubuntu_16.04_64bit',
-    # 'ubuntu_18.04_64bit',
-    # 'ubuntu_18.10_64bit',
-    # 'ubuntu_19.04_64bit',
-    # 'debian_7_32bit',
-    # 'debian_7_64bit',
-    # 'debian_8_32bit',
-    # 'debian_8_64bit',
-    # 'debian_9_32bit',
-    # # 'debian_9_64bit',
-    # 'centos_7_32bit',
-    # 'centos_7_64bit',
+    'ubuntu_14.04_64bit',
+    'ubuntu_16.04_32bit',
+    'ubuntu_16.04_64bit',
+    'ubuntu_18.04_64bit',
+    'ubuntu_18.10_64bit',
+    'ubuntu_19.04_64bit',
+    'debian_7_32bit',
+    'debian_7_64bit',
+    'debian_8_32bit',
+    'debian_8_64bit',
+    'debian_9_32bit',
+    'debian_9_64bit',
+    'centos_7_32bit',
+    'centos_7_64bit',
     'fedora_27_64bit',
-    # 'fedora_28_64bit',
-    # 'fedora_29_64bit',
-    # 'fedora_30_64bit',
-    # 'opensuse_42.3_64bit',
-    # 'opensuse_15.0_64bit',
+    'fedora_28_64bit',
+    'fedora_29_64bit',
+    'fedora_30_64bit',
+    'opensuse_42.3_64bit',
+    'opensuse_15.0_64bit',
     'packager'
 ]
 
@@ -417,12 +417,12 @@ MSI_DATA = {
     '_AddToPath': [''],
 
     '_Shortcuts': [
-            {'Name': 'UniConvertor %s readme' % APP_VER,
-             'Description': 'ReadMe file',
-             'Target': 'readme.txt',
-             'Open': [],
-             },
-        ]
+        {'Name': 'UniConvertor %s readme' % APP_VER,
+         'Description': 'ReadMe file',
+         'Target': 'readme.txt',
+         'Open': [],
+         },
+    ]
 }
 
 
@@ -499,7 +499,7 @@ def build_macos_dmg():
     # PKG and DMG build
     echo_msg('Creating DMG image')
 
-    vars = {
+    pkg.PkgBuilder({
         'src_dir': pkg_folder,  # path to distribution folder
         'build_dir': './build_dir',  # path for build
         'install_dir': '/',  # where to install app
@@ -507,11 +507,11 @@ def build_macos_dmg():
         'app_name': '%s %s' % (APP_FULL_NAME, APP_VER),  # pretty app name
         'app_ver': APP_VER,  # app version
         'pkg_name': '%s_%s.pkg' % (APP_FULL_NAME, APP_VER),  # package name
-        'preinstall': os.path.join(pkg_cache_dir,'preinstall'),
-        'postinstall': os.path.join(pkg_cache_dir,'postinstall'),
-        'license': os.path.join(pkg_common_dir,'agpl-3.0.rtf'),
-        'welcome': os.path.join(pkg_cache_dir,'welcome.rtf'),
-        'background': os.path.join(pkg_cache_dir,'background.png'),
+        'preinstall': os.path.join(pkg_cache_dir, 'preinstall'),
+        'postinstall': os.path.join(pkg_cache_dir, 'postinstall'),
+        'license': os.path.join(pkg_common_dir, 'agpl-3.0.rtf'),
+        'welcome': os.path.join(pkg_cache_dir, 'welcome.rtf'),
+        'background': os.path.join(pkg_cache_dir, 'background.png'),
         'check_version': '10.9',
         'dmg': {
             'targets': ['./build_dir/%s_%s.pkg' % (APP_FULL_NAME, APP_VER),
@@ -519,10 +519,9 @@ def build_macos_dmg():
             'dmg_filename': '%s.dmg' % pkg_name,
             'volume_name': '%s %s' % (APP_FULL_NAME, APP_VER),
             'dist_dir': distro_folder,
-            },
+        },
         'remove_build': True,
-    }
-    pkg.PkgBuilder(vars)
+    })
     shutil.rmtree(pkg_folder, True)
 
 
@@ -593,7 +592,7 @@ def build_msw_packages():
         shutil.copy(src, dst)
 
         # Exe files
-        nonportable = os.path.join(CACHE_DIR,  arch, '%s.zip' % PROJECT)
+        nonportable = os.path.join(CACHE_DIR, arch, '%s.zip' % PROJECT)
         echo_msg('Extracting non-portable executables from %s' % nonportable)
         ZipFile(nonportable, 'r').extractall(portable_folder)
 

@@ -337,6 +337,7 @@ if RPM_PACKAGE:
         url=URL,
         depends=rpm_depends.split(' '),
         build_script='setup.py',
+        scripts=scripts,
         install_path=install_path,
         data_files=data_files, )
 
