@@ -76,6 +76,9 @@ def show_config():
 
 def change_config(options):
     config = uc2.config
+    if len(options) < 2:
+        echo('Please provide configuration values to change.')
+        return
     for key, value in options.items():
         if key in BOOL_ATTRS:
             config.__dict__[key] = bool(value)
