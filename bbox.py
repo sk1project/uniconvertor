@@ -108,6 +108,14 @@ Example: uniconvertor drawing.cdr drawing.svg
  --format=   Type of output file format
 """
 
+MAC_UNINSTALL = """
+To remove UniConvertor, just delete as a superuser:
+
+/opt/uniconvertor
+/usr/local/bin/uc2
+/usr/local/bin/uniconvertor
+"""
+
 IMAGES = [
     'ubuntu_14.04_32bit',
     'ubuntu_14.04_64bit',
@@ -420,16 +428,16 @@ MSI_DATA = {
 
 def packaging():
     build_macos_dmg()
-    #build_msw_packages()
+    build_msw_packages()
 
 
 def build_macos_dmg():
     distro_folder = os.path.join(RELEASE_DIR, 'macOS')
     arch = 'macOS_10.9_Mavericks'
     echo_msg('=== Build for %s ===' % arch)
-    pkg_name = '%s-%s-%s_and_mewer' % (APP_NAME, APP_VER, arch)
+    pkg_name = '%s-%s-%s_and_newer' % (APP_NAME, APP_VER, arch)
     if not RELEASE:
-        pkg_name = '%s-%s-%s-%s_and_mewer' % \
+        pkg_name = '%s-%s-%s-%s_and_newer' % \
                    (APP_NAME, APP_VER, TIMESTAMP, arch)
     pkg_folder = os.path.join(PROJECT_DIR, 'package')
     app_folder = os.path.join(pkg_folder, 'opt/uniconvertor')
@@ -479,6 +487,10 @@ def build_macos_dmg():
         fp.write('%s %s%s' % (APP_FULL_NAME, APP_VER, mark))
         fp.write('\n\n')
         fp.write(readme)
+    # Uninstall.txt
+    uninstall = os.path.join(app_folder, 'UNINSTALL.txt')
+    with open(uninstall, 'wb') as fp:
+        fp.write(MAC_UNINSTALL)
     # License file
     src = os.path.join(CACHE_DIR, 'common', 'agpl-3.0.rtf')
     dst = os.path.join(app_folder, 'agpl-3.0.rtf')
@@ -502,7 +514,8 @@ def build_macos_dmg():
         'background': os.path.join(pkg_cache_dir,'background.png'),
         'check_version': '10.9',
         'dmg': {
-            'targets': ['./build_dir/%s_%s.pkg' % (APP_FULL_NAME, APP_VER),],
+            'targets': ['./build_dir/%s_%s.pkg' % (APP_FULL_NAME, APP_VER),
+                        uninstall],
             'dmg_filename': '%s.dmg' % pkg_name,
             'volume_name': '%s %s' % (APP_FULL_NAME, APP_VER),
             'dist_dir': distro_folder,
