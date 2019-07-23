@@ -91,7 +91,6 @@ APP_REVISION = uc2.uc2const.REVISION
 APP_VER = '%s%s' % (APP_MAJOR_VER, APP_REVISION)
 
 RELEASE = 'RELEASE' in os.environ or 'release' in ARGV
-DEBUG_MODE = 'DEBUG_MODE' in os.environ
 CONST_FILES = ['src/uc2/uc2const.py']
 
 README_TEMPLATE = """
@@ -142,10 +141,17 @@ IMAGES = [
 ]
 
 LOCAL_IMAGES = [
-    'centos_7_32bit',
+    # 'centos_7_32bit',
     # 'ubuntu_16.04_64bit',
-    # 'msw-packager',
+    'packager',
 ]
+
+# ----------- Debug section ----------
+DEBUG_MODE = True
+PUBLISH = False
+
+if DEBUG_MODE:
+    IMAGES = LOCAL_IMAGES
 
 
 def clear_folders():
@@ -248,7 +254,8 @@ def run_build(locally=False, stop_on_error=True):
                 sys.exit(1)
         else:
             echo_msg('[  OK  ]', code=STDOUT_GREEN)
-    if not locally:
+
+    if not locally and PUBLISH:
         msg = 'Publishing result'
         msg = msg + ' ' * (35 - len(msg)) + '...'
         echo_msg(msg, newline=False)
