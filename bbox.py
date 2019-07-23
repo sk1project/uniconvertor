@@ -147,11 +147,12 @@ LOCAL_IMAGES = [
 ]
 
 # ----------- Debug section ----------
-DEBUG_MODE = True
-PUBLISH = False
+DEBUG_MODE = False
+PUBLISH = True
 
 if DEBUG_MODE:
     IMAGES = LOCAL_IMAGES
+# -----------# -----------# -----------
 
 
 def clear_folders():
