@@ -11,6 +11,10 @@ matrix:
       services:
         - docker
 
+before_install:
+  - export TZ=Asia/Dubai
+  - date
+
 script:
   - git remote add upstream https://github.com/sk1project/uniconvertor
   - git fetch upstream
