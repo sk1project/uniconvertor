@@ -37,6 +37,7 @@ Usage:
 
 import datetime
 import os
+import shutil
 import sys
 from distutils.core import setup
 
@@ -159,7 +160,7 @@ os.environ["APP_INSTALL_PATH"] = "%s" % (install_path,)
 src_path = 'src'
 include_path = '/usr/include'
 modules = []
-scripts = ['src/script/uniconvertor', ]
+scripts = ['src/script/uniconvertor', 'src/script/uc2',]
 deb_scripts = []
 data_files = [
     (install_path, ['LICENSE', ]),
@@ -186,6 +187,7 @@ while True:
     fileptr2.write(line)
 fileptr.close()
 fileptr2.close()
+shutil.copy(dst_script, 'src/script/uc2')
 
 ############################################################
 # Main build procedure
@@ -335,6 +337,7 @@ if RPM_PACKAGE:
         url=URL,
         depends=rpm_depends.split(' '),
         build_script='setup.py',
+        scripts=scripts,
         install_path=install_path,
         data_files=data_files, )
 
@@ -343,7 +346,7 @@ os.chdir(CURRENT_PATH)
 if CLEAR_BUILD:
     build.clear_build()
 
-FOR_CLEAR = ['MANIFEST', 'src/script/uniconvertor', 'setup.cfg']
+FOR_CLEAR = ['MANIFEST', 'setup.cfg'] + scripts
 if CLEAR_UTILS:
     FOR_CLEAR += ['utils']
 for item in FOR_CLEAR:

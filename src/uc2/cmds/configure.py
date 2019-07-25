@@ -56,25 +56,29 @@ def to_bool(val):
 
 def show_config():
     config = uc2.config
+    echo()
     echo('UniConvertor 2.0 preferences:\n')
-    echo('--log_level=%s' % config.log_level)
+    echo('  --log_level=%s' % config.log_level)
     echo()
-    echo('--cms_use=%s' % to_bool(config.cms_use))
-    echo('--cms_rgb_profile="%s"' % (config.cms_rgb_profile or DEFAULT_RGB))
-    echo('--cms_cmyk_profile="%s"' % (config.cms_cmyk_profile or DEFAULT_CMYK))
-    echo('--cms_lab_profile="%s"' % (config.cms_lab_profile or DEFAULT_LAB))
-    echo('--cms_gray_profile="%s"' % (config.cms_gray_profile or DEFAULT_GRAY))
+    echo('  --cms_use=%s' % to_bool(config.cms_use))
+    echo('  --cms_rgb_profile="%s"' % (config.cms_rgb_profile or DEFAULT_RGB))
+    echo('  --cms_cmyk_profile="%s"' % (config.cms_cmyk_profile or DEFAULT_CMYK))
+    echo('  --cms_lab_profile="%s"' % (config.cms_lab_profile or DEFAULT_LAB))
+    echo('  --cms_gray_profile="%s"' % (config.cms_gray_profile or DEFAULT_GRAY))
     echo()
-    echo('--cms_rgb_intent="%s"' % INTENTS[config.cms_rgb_intent])
-    echo('--cms_cmyk_intent="%s"' % INTENTS[config.cms_cmyk_intent])
+    echo('  --cms_rgb_intent="%s"' % INTENTS[config.cms_rgb_intent])
+    echo('  --cms_cmyk_intent="%s"' % INTENTS[config.cms_cmyk_intent])
     echo()
-    echo('--black_point_compensation=%s' % to_bool(config.cms_bpc_flag))
-    echo('--black_preserving_transform=%s' % to_bool(config.cms_bpt_flag))
+    echo('  --black_point_compensation=%s' % to_bool(config.cms_bpc_flag))
+    echo('  --black_preserving_transform=%s' % to_bool(config.cms_bpt_flag))
     echo()
 
 
 def change_config(options):
     config = uc2.config
+    if len(options) < 2:
+        echo('Please provide configuration values to change.')
+        return
     for key, value in options.items():
         if key in BOOL_ATTRS:
             config.__dict__[key] = bool(value)
