@@ -435,7 +435,7 @@ MSI_DATA = {
 
 
 def packaging():
-    build_macos_dmg()
+    # build_macos_dmg()
     build_msw_packages()
 
 
