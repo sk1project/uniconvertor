@@ -408,6 +408,13 @@ unit_by_name = {
 }
 
 PAGE_FORMATS = {
+    'Icon 16x16': (16, 16),
+    'Icon 22x22': (22, 22),
+    'Icon 24x24': (24, 24),
+    'Icon 32x32': (32, 32),
+    'Icon 48x48': (48, 48),
+    'Icon 64x64': (64, 64),
+    'Icon 128x128': (128, 128),
     'A0': (841.0 * mm_to_pt, 1189.0 * mm_to_pt),
     'A1': (594.0 * mm_to_pt, 841.0 * mm_to_pt),
     'A2': (420.0 * mm_to_pt, 594.0 * mm_to_pt),
@@ -450,6 +457,8 @@ PAGE_FORMATS = {
 }
 
 PAGE_FORMAT_NAMES = [
+    'Icon 16x16', 'Icon 22x22', 'Icon 24x24', 'Icon 32x32',
+    'Icon 48x48', 'Icon 64x64', 'Icon 128x128',
     'A0', 'A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7',
     'Letter', 'Legal', 'Executive', 'Ledger',
     'B0', 'B1', 'B2', 'B3', 'B4', 'B5', 'B6',
