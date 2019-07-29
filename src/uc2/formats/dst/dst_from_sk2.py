@@ -55,7 +55,6 @@ class EmbroideryMachine(object):
         while True:
             current_point = (self.x, self.y)
             distance = libgeom.distance(current_point, end_point)
-            print "##", distance
             if distance > 0:
                 coef = min(distance, max_distance) / distance
                 if coef != 1.0:
@@ -147,16 +146,13 @@ class SK2_to_DST_Translator(object):
             self.translate_stroke(style, paths)
 
     def translate_stroke(self, style, paths):
-        # print '---', style#, paths
         clr = self.sk2_doc.cms.get_rgb_color(style[1][2])
         hex_color = cms.rgb_to_hexcolor(clr[1])
-        print 'hex_color', hex_color
         if not self.palette:
             self.palette.append(hex_color)
 
         if self.is_color_changed(hex_color):
             self.palette.append(hex_color)
-            print 'new', hex_color
 
             self._chang_color()
 

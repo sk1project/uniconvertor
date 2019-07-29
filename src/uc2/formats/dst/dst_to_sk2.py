@@ -140,9 +140,6 @@ class DST_to_SK2_Translator(object):
             else:
                 out.move(dx, dy)
 
-        # print 'last x, y', out.x, out.y
-        # print 'stitch_count', out.stitch_count
-
     def handle_document_metainfo(self, rec):
         metainfo = [b'', b'', b'', b'']
         metainfo[3] = b64encode(rec.chunk.split(dst_const.DATA_TERMINATOR)[0])
