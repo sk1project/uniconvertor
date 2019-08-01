@@ -453,6 +453,8 @@ PAGE_FORMATS = {
 }
 
 PAGE_FORMAT_NAMES = [
+    'Icon 16x16', 'Icon 22x22', 'Icon 24x24', 'Icon 32x32',
+    'Icon 48x48', 'Icon 64x64', 'Icon 128x128', 'Slide',
     'A0', 'A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7',
     'Letter', 'Legal', 'Executive', 'Ledger',
     'B0', 'B1', 'B2', 'B3', 'B4', 'B5', 'B6',
