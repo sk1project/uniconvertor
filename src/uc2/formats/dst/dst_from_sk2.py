@@ -161,8 +161,8 @@ class SK2_to_DST_Translator(object):
         metadata['CO'] = int(self.processor.command_color_change)
         metadata['+X'] = int(abs(self.processor.extents_right))
         metadata['-X'] = int(abs(self.processor.extents_left))
-        metadata['+Y'] = int(abs(self.processor.extents_top))
-        metadata['-Y'] = int(abs(self.processor.extents_bottom))
+        metadata['+Y'] = int(abs(self.processor.extents_bottom))
+        metadata['-Y'] = int(abs(self.processor.extents_top))
         metadata['AX'] = int(self.processor.x)
         metadata['AY'] = int(self.processor.y)
         metadata['MX'] = 0
