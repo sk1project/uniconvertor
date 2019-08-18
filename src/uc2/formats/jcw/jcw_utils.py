@@ -54,15 +54,18 @@ def parse_hsv(data):
     return [uc2const.COLOR_RGB, rgb, 1.0, '']
 
 
+SPOT_CS = (JCW_CMYK_PANTONE, JCW_SPOT_CMYK, JCW_RGB_PANTONE, JCW_SPOT_RGB,
+           JCW_HSV_PANTONE, JCW_SPOT_HSV)
+CS_MAP = dict(
+    [(cs, parse_cmyk)
+     for cs in (JCW_PMS, JCW_CMYK_PANTONE, JCW_CMYK, JCW_SPOT_CMYK)] +
+    [(cs, parse_rgb) for cs in (JCW_RGB_PANTONE, JCW_RGB, JCW_SPOT_RGB)] +
+    [(cs, parse_hsv) for cs in (JCW_HSV_PANTONE, JCW_HSV, JCW_SPOT_HSV)])
+
+
 def parse_jcw_color(cs, data):
-    if cs in (JCW_PMS, JCW_CMYK_PANTONE, JCW_CMYK, JCW_SPOT_CMYK):
-        return parse_cmyk(data)
-    elif cs in (JCW_RGB_PANTONE, JCW_RGB, JCW_SPOT_RGB):
-        return parse_rgb(data)
-    elif cs in (JCW_HSV_PANTONE, JCW_HSV, JCW_SPOT_HSV):
-        return parse_hsv(data)
-    else:
-        return []
+    color = CS_MAP[cs](data) if cs in CS_MAP else []
+    return cms.color_to_spot(color) if cs in SPOT_CS else color
 
 
 def get_jcw_color(color):
