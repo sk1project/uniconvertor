@@ -52,7 +52,7 @@ class BaseDstModel(BinaryModelObject):
         if self.childs:
             is_leaf = False
         name = dst_const.CID_TO_NAME.get(self.cid) or self.cid
-        info = ''
+        info = '%d x %d' % (self.dx, self.dy)
         return is_leaf, name, info
 
 
