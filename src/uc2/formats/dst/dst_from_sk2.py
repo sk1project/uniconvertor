@@ -137,6 +137,14 @@ class SK2_to_DST_Translator(object):
         header = dst_model.DstHeader()
         self.dst_doc.model.childs.append(header)
 
+        # Empty jumps at Start for Sync
+        for _i in range(0, cfg.empty_jumps_at_beginning or 0):
+            self.processor.jump_to(0, 0)
+
+        # Empty stitches at Start for Sync
+        for _i in range(0, cfg.empty_stitches_at_beginning or 0):
+            self.processor.stitch_to(0, 0)
+
         page = self.sk2_mtds.get_page()
         for layer in page.childs:
             if self.sk2_mtds.is_layer_visible(layer):

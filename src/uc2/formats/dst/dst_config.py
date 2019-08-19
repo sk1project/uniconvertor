@@ -23,16 +23,20 @@ class DST_Config(XmlConfigParser):
     system_encoding = 'utf-8'
     thickness = 0.72
 
+    # automatic_centering = True
+    # delete_empty_stitches = True
+    # delete_empty_jumps = True
+
+    automatic_return_to_origin = True
     end_instruction = True
     optimize_number_of_stitches = False
     maximum_stitch_length = 12.1
     maximum_jump_length = 12.1
-    automatic_return_to_origin = True
-    # automatic_centering = True
 
     borer_offset_x = 0.0
     borer_offset_y = 0.0
-    # delete_empty_stitches = True
-    # delete_empty_jump = True
+
+    empty_stitches_at_beginning = 0
+    empty_jumps_at_beginning = 2
 
     create_edr_palette = True
