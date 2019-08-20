@@ -21,20 +21,22 @@ from uc2.utils.config import XmlConfigParser
 class DST_Config(XmlConfigParser):
     filename = 'dst_config.xml'
     system_encoding = 'utf-8'
+    # import
     thickness = 0.72
-
+    automatic_thread_cut = 30  # mm
     # automatic_centering = True
-    # delete_empty_stitches = True
+    delete_empty_stitches = True
     # delete_empty_jumps = True
 
+    # export
     automatic_return_to_origin = True
     end_instruction = True
     optimize_number_of_stitches = False
-    maximum_stitch_length = 12.1
-    maximum_jump_length = 12.1
+    maximum_stitch_length = 12.1  # mm
+    maximum_jump_length = 12.1  # mm
 
-    borer_offset_x = 0.0
-    borer_offset_y = 0.0
+    borer_offset_x = 0.0  # mm
+    borer_offset_y = 0.0  # mm
 
     empty_stitches_at_beginning = 0
     empty_jumps_at_beginning = 2

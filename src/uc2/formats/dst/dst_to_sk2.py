@@ -19,11 +19,14 @@ from base64 import b64encode
 from uc2.formats.dst import dst_model, dst_const
 from uc2.formats.sk2 import sk2_model
 from uc2 import _, uc2const, sk2const, cms, libgeom
+from uc2.formats.dst.dst_const import MM_TO_DST
 
 from uc2.libgeom.trafo import apply_trafo_to_point
 
 
 class EmbroideryMachine(object):
+    automatic_thread_cut = 0
+    delete_empty_stitches = False
     x = 0
     y = 0
     stitch_count = 0
@@ -73,6 +76,15 @@ class EmbroideryMachine(object):
         self.end_stitch()
 
     def stitch(self, dx, dy):
+        if self.delete_empty_stitches and not dx and not dy:
+            return
+        if self.automatic_thread_cut and self.stitch_list:
+            last_stitch = self.stitch_list[-1]
+            distance = libgeom.distance(last_stitch, (self.x, self.y))
+            if distance >= self.automatic_thread_cut:
+                self.stop(dx, dy)
+                return
+
         self.move(dx, dy)
         self.stitch_list.append([self.x, self.y])
 
@@ -120,15 +132,19 @@ class DST_to_SK2_Translator(object):
     processor = None
 
     def translate(self, dst_doc, sk2_doc):
-        self.processor = EmbroideryMachine(dst_doc, sk2_doc)
+        cfg = dst_doc.config
+        processor = EmbroideryMachine(dst_doc, sk2_doc)
+        processor.automatic_thread_cut = MM_TO_DST * cfg.automatic_thread_cut
+        processor.delete_empty_stitches = cfg.delete_empty_stitches
+        self.processor = processor
         self.sk2_mtds = sk2_doc.methods
         self.walk(dst_doc.model.childs)
         sk2_doc.model.do_update()
 
-    def walk(self, stack):
+    def walk(self, cmd_stack):
         sequin_mode = False
         out = self.processor
-        for cmd in stack:
+        for cmd in cmd_stack:
             dx, dy = cmd.dx, cmd.dy
             if cmd.cid == dst_const.CMD_STITCH:
                 out.stitch(dx, dy)
@@ -150,7 +166,7 @@ class DST_to_SK2_Translator(object):
             else:
                 out.move(dx, dy)
 
-        header = stack[0]
+        header = cmd_stack[0]
         header.metadata.update(self.metadata())
         self.handle_document_header(header)
 
