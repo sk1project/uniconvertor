@@ -133,6 +133,7 @@ class DST_to_SK2_Translator(object):
 
     def translate(self, dst_doc, sk2_doc):
         cfg = dst_doc.config
+        sk2_doc.methods.set_doc_origin(sk2const.DOC_ORIGIN_CENTER)
         processor = EmbroideryMachine(dst_doc, sk2_doc)
         processor.automatic_thread_cut = MM_TO_DST * cfg.automatic_thread_cut
         processor.delete_empty_stitches = cfg.delete_empty_stitches
