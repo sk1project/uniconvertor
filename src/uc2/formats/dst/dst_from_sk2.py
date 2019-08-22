@@ -71,6 +71,17 @@ class EmbroideryMachine(object):
             max_distance = distance / number_pieces
         self._to(x, y, dst_const.CMD_STITCH, max_distance)
 
+    def stitch_from(self, x, y):
+        max_distance = min(self.max_distance, self.max_stitch_length)
+        current_point = (self.x, self.y)
+        end_point = (x, y)
+        distance = libgeom.distance((self.x, self.y), end_point)
+        if distance > max_distance:
+            coef = (distance - max_distance / 2.0) / distance
+            start_x, start_y = libgeom.midpoint(current_point, end_point, coef)
+            self.jump_to(start_x, start_y)
+        self.stitch_to(x, y)
+
     def chang_color(self):
         self.command_color_change += 1
         cmd = dst_model.DstCmd()
@@ -216,8 +227,7 @@ class SK2_to_DST_Translator(object):
         for path in paths:
             start_point = path[0]
             points = path[1]
-            self.processor.jump_to(start_point[0], start_point[1])
-            self.processor.stitch_to(start_point[0], start_point[1])
+            self.processor.stitch_from(start_point[0], start_point[1])
 
             for point in points:
                 self.processor.stitch_to(point[0], point[1])
