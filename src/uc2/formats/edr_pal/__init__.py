@@ -49,7 +49,7 @@ DEFAULT_COLORS = {
 
 
 class EDR_Palette(object):
-    extension = ('.edr', '.EDR')
+    extension = ('.edr', '.EDR', '.rgb', '.RGB')
     colors = None
     index = 0
 
