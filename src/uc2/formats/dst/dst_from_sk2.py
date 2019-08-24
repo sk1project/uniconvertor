@@ -15,10 +15,11 @@
 #  You should have received a copy of the GNU Affero General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import os
+import math
 from uc2.formats.dst import dst_model, dst_const
 from uc2 import _, uc2const, sk2const, cms, libgeom
 from uc2.formats.dst.dst_const import MM_TO_DST
-import math
 
 
 class EmbroideryMachine(object):
@@ -170,8 +171,12 @@ class SK2_to_DST_Translator(object):
         dst_doc.palette = self.palette
 
     def metadata(self):
+        doc_file = self.dst_doc.doc_file
+        name = os.path.basename(doc_file).split('.')[0]
+        system_encoding = self.dst_doc.config.system_encoding
+        name = name.decode(system_encoding, 'replace')
         metadata = dict()
-        metadata['LA'] = 'Name'
+        metadata['LA'] = name.encode('ascii', 'replace')
         metadata['ST'] = int(self.processor.stitch_count)
         metadata['CO'] = int(self.processor.command_color_change)
         metadata['+X'] = int(abs(self.processor.extents_right))

@@ -42,6 +42,7 @@ def dst_saver(doc, filename=None, fileptr=None, translate=True, cnf=None, **kw):
     cnf = merge_cnf(cnf, kw)
     if translate:
         dst_doc = DstPresenter(doc.appdata, cnf)
+        dst_doc.doc_file = filename
         dst_doc.translate_from_sk2(doc)
         dst_doc.save(filename, fileptr)
         dst_doc.close()
