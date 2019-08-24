@@ -43,9 +43,9 @@ class EmbroideryMachine(object):
         self.header = dst_model.DstHeader()
         self.dst_mt.childs.append(self.header)
 
-    def append_stitch(self, stitch):
+    def append_stitch(self, cmd):
         self.stitch_count += 1
-        self.dst_mt.childs.append(stitch)
+        self.dst_mt.childs.append(cmd)
 
     def move(self, dx, dy):
         self.x += dx
@@ -88,6 +88,12 @@ class EmbroideryMachine(object):
         cmd.cid = dst_const.CMD_CHANGE_COLOR
         self.append_stitch(cmd)
 
+    def trim(self):
+        sign_x = -1 if self.x > 0 else 1
+        self.jump_to(self.x + 3 * sign_x, self.y)
+        self.jump_to(self.x - 2 * sign_x, self.y)
+        self.jump_to(self.x - 1 * sign_x, self.y)
+
     def stop(self):
         cmd = dst_model.DstCmd()
         cmd.cid = dst_const.CMD_STOP
@@ -96,7 +102,7 @@ class EmbroideryMachine(object):
     def end(self):
         cmd = dst_model.DstCmd()
         cmd.cid = dst_const.DATA_TERMINATOR
-        self.append_stitch(cmd)
+        self.dst_mt.childs.append(cmd)
 
     def _to(self, x, y, cid, max_distance):
         end_point = (x, y)
@@ -138,34 +144,22 @@ class SK2_to_DST_Translator(object):
         processor.max_stitch_length = MM_TO_DST * cfg.maximum_stitch_length
         processor.max_jump_length = MM_TO_DST * cfg.maximum_jump_length
         self.processor = processor
-        self.trafo = [] + dst_const.SK2_to_DST_TRAFO
         self.sk2_doc = sk2_doc
         self.sk2_mtds = sk2_doc.methods
         self.dst_doc = dst_doc
+        self.trafo = [] + dst_const.SK2_to_DST_TRAFO
         self.palette = []
 
-        self.dst_doc.model.childs = []
         header = dst_model.DstHeader()
-        self.dst_doc.model.childs.append(header)
-
-        # Empty jumps at Start for Sync
-        for _i in range(0, cfg.empty_jumps_at_beginning or 0):
-            self.processor.jump_to(0, 0)
-
-        # Empty stitches at Start for Sync
-        for _i in range(0, cfg.empty_stitches_at_beginning or 0):
-            self.processor.stitch_to(0, 0)
+        self.dst_doc.model.childs = [header]
 
         page = self.sk2_mtds.get_page()
-        for layer in page.childs:
-            if self.sk2_mtds.is_layer_visible(layer):
-                self.translate_objs(layer.childs)
+        self.translate_page(page)
 
         if cfg.automatic_return_to_origin:
             self.processor.jump_to(origin_x, origin_y)
 
         self.processor.stop()
-
         if cfg.end_instruction:
             self.processor.end()
 
@@ -188,6 +182,25 @@ class SK2_to_DST_Translator(object):
         metadata['MY'] = 0
         metadata['PD'] = b'******'
         return metadata
+
+    def translate_page(self, page):
+        cfg = self.dst_doc.config
+        # Empty jumps at Start for Sync
+        for _i in range(0, cfg.empty_jumps_at_beginning or 0):
+            self.processor.jump_to(0, 0)
+
+        # Empty stitches at Start for Sync
+        for _i in range(0, cfg.empty_stitches_at_beginning or 0):
+            self.processor.stitch_to(0, 0)
+
+        for layer in page.childs:
+            if self.sk2_mtds.is_layer_visible(layer):
+                self.translate_objs(layer.childs)
+
+    def translate_bg_color(self):
+        desktop_bg = self.sk2_mtds.get_desktop_bg()
+        hex_color = cms.rgb_to_hexcolor(desktop_bg)
+        self.palette.append(hex_color)
 
     def translate_objs(self, objs):
         for obj in objs:
@@ -231,6 +244,7 @@ class SK2_to_DST_Translator(object):
 
             for point in points:
                 self.processor.stitch_to(point[0], point[1])
+            self.processor.trim()
 
     def is_color_changed(self, hex_color):
         return not (self.palette and self.palette[-1] == hex_color)
