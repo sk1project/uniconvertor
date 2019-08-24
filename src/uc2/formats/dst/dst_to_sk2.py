@@ -192,8 +192,9 @@ class DST_to_SK2_Translator(object):
         self.sk2_mtds.set_doc_metainfo(metainfo)
 
     def handle_document_header(self, rec):
-        height = float(rec.metadata.get('+Y')) + float(rec.metadata.get('-Y'))
-        width = float(rec.metadata.get('+X')) + float(rec.metadata.get('-X'))
+        meta = rec.metadata
+        height = max(meta['+Y'], meta['-Y']) * 2
+        width = max(meta['+X'], meta['-X']) * 2
         width, height = apply_trafo_to_point(
             (width, height),
             dst_const.DST_to_SK2_TRAFO
