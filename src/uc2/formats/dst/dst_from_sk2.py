@@ -163,6 +163,8 @@ class SK2_to_DST_Translator(object):
         if cfg.end_instruction:
             self.processor.end()
 
+        self.translate_bg_color()
+
         metadata = self.metadata()
         header.metadata.update(metadata)
         dst_doc.palette = self.palette

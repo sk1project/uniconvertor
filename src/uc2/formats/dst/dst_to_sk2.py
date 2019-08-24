@@ -147,7 +147,15 @@ class DST_to_SK2_Translator(object):
         self.processor = processor
         self.sk2_mtds = sk2_doc.methods
         self.walk(dst_doc.model.childs)
+        self.translate_bg_color()
         sk2_doc.model.do_update()
+
+    def translate_bg_color(self):
+        palette = self.processor.palette
+        if len(palette.colors) == self.processor.palette.index + 2:
+            hex_color = self.processor.palette.next_color()
+            desktop_bg = cms.hexcolor_to_rgb(hex_color)
+            self.sk2_mtds.set_desktop_bg(desktop_bg)
 
     def walk(self, cmd_stack):
         sequin_mode = False
