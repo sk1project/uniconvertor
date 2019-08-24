@@ -26,16 +26,19 @@ from uc2.libgeom.trafo import apply_trafo_to_point
 
 class EmbroideryMachine(object):
     automatic_thread_cut = 0
+    jumps_on_thread_cut = 0
     delete_empty_stitches = False
+    delete_empty_jumps = False
     x = 0
     y = 0
-    stitch_count = 0
     extents_left = 0
     extents_top = 0
     extents_right = 0
     extents_bottom = 0
-
-    command_color_change = 0
+    jump_count = 0
+    stitch_count = 0
+    color_change_count = 0
+    jump_in_sequence = 0
 
     def __init__(self, dst_doc, sk2_doc, palette=None):
         self.dst_doc = dst_doc
@@ -43,7 +46,7 @@ class EmbroideryMachine(object):
         self.palette = palette or dst_doc.palette
         self.sk2_mtds = sk2_doc.methods
         self.stitch_list = []
-        self.rope_width = abs(self.dst_doc.config.thickness or 0.72)
+        self.rope_width = abs(self.dst_doc.config.thickness * uc2const.mm_to_pt)
         self.page = self.sk2_mtds.get_page()
         self.hex_color = self.palette.next_color(0)
         self.layer = self.sk2_mtds.get_layer(self.page)
@@ -53,13 +56,13 @@ class EmbroideryMachine(object):
     def move(self, dx, dy):
         self.x += dx
         self.y += dy
-        self.stitch_count += 1
         self.extents_left = min(self.extents_left, self.x)
         self.extents_right = max(self.extents_right, self.x)
         self.extents_top = min(self.extents_top, self.y)
         self.extents_bottom = max(self.extents_bottom, self.y)
 
     def color_change(self, dx, dy):
+        self.color_change_count += 1
         self.move(dx, dy)
         self.end_stitch()
 
@@ -69,22 +72,26 @@ class EmbroideryMachine(object):
         self.layer.name = hex_color
         self.layer.color = hex_color
         self.hex_color = hex_color
-        self.command_color_change += 1
 
     def stop(self, dx, dy):
         self.move(dx, dy)
         self.end_stitch()
 
-    def stitch(self, dx, dy):
+    def jump_to(self, dx, dy):
+        self.jump_count += 1
+        if self.delete_empty_jumps and not dx and not dy:
+            return
+        self.move(dx, dy)
+
+    def stitch_to(self, dx, dy):
+        self.stitch_count += 1
         if self.delete_empty_stitches and not dx and not dy:
             return
         if self.automatic_thread_cut and self.stitch_list:
             last_stitch = self.stitch_list[-1]
             distance = libgeom.distance(last_stitch, (self.x, self.y))
             if distance >= self.automatic_thread_cut:
-                self.stop(dx, dy)
-                return
-
+                self.end_stitch()
         self.move(dx, dy)
         self.stitch_list.append([self.x, self.y])
 
@@ -148,13 +155,13 @@ class DST_to_SK2_Translator(object):
         for cmd in cmd_stack:
             dx, dy = cmd.dx, cmd.dy
             if cmd.cid == dst_const.CMD_STITCH:
-                out.stitch(dx, dy)
+                out.stitch_to(dx, dy)
             elif cmd.cid == dst_const.CMD_JUMP:
                 if sequin_mode:
                     out.sequin_eject(dx, dy)  # XXX: didn't check it
                 else:
                     out.end_stitch()
-                    out.move(dx, dy)
+                    out.jump_to(dx, dy)  # TODO: detect trim
             elif cmd.cid == dst_const.CMD_CHANGE_COLOR:
                 out.color_change(dx, dy)
             elif cmd.cid == dst_const.CMD_SEQUIN_MODE:
@@ -194,7 +201,7 @@ class DST_to_SK2_Translator(object):
     def metadata(self):
         metadata = dict()
         metadata['ST'] = int(self.processor.stitch_count)
-        metadata['CO'] = int(self.processor.command_color_change)
+        metadata['CO'] = int(self.processor.color_change_count)
         metadata['+X'] = int(abs(self.processor.extents_right))
         metadata['-X'] = int(abs(self.processor.extents_left))
         metadata['+Y'] = int(abs(self.processor.extents_top))

@@ -22,11 +22,12 @@ class DST_Config(XmlConfigParser):
     filename = 'dst_config.xml'
     system_encoding = 'utf-8'
     # import
-    thickness = 0.72
+    thickness = 0.25  # mm
     automatic_thread_cut = 30  # mm
+    jumps_on_thread_cut = 0  # count
     # automatic_centering = True
-    delete_empty_stitches = True
-    # delete_empty_jumps = True
+    delete_empty_stitches = False
+    delete_empty_jumps = True
 
     # export
     automatic_return_to_origin = True
@@ -38,7 +39,7 @@ class DST_Config(XmlConfigParser):
     borer_offset_x = 0.0  # mm
     borer_offset_y = 0.0  # mm
 
-    empty_stitches_at_beginning = 0
-    empty_jumps_at_beginning = 2
+    empty_stitches_at_beginning = 0  # count
+    empty_jumps_at_beginning = 2  # count
 
     create_edr_palette = True
