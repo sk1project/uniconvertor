@@ -83,10 +83,11 @@ class AbstractLoader(object):
         return line
 
     def check_loading(self):
-        position = float(self.fileptr.tell()) / float(self.file_size) * 0.95
-        if position - self.position > 0.05:
-            self.position = position
-            self.parsing_msg(position)
+        if self.file_size:
+            position = float(self.fileptr.tell()) / float(self.file_size) * 0.95
+            if position - self.position > 0.05:
+                self.position = position
+                self.parsing_msg(position)
 
     def send_progress_message(self, msg, val):
         events.emit(events.FILTER_INFO, msg, val)
