@@ -19,6 +19,8 @@ import os
 
 from uc2.utils.fsutils import get_fileptr
 from uc2.utils.mixutils import merge_cnf
+from uc2.formats.dst.dst_const import DST_SIGNATURE
+from uc2.formats.dst.dst_colors import get_available_color_scheme
 
 
 def dst_loader(appdata, filename=None, fileptr=None, translate=True, cnf=None,
@@ -27,6 +29,7 @@ def dst_loader(appdata, filename=None, fileptr=None, translate=True, cnf=None,
     from uc2.formats.sk2.sk2_presenter import SK2_Presenter
     cnf = merge_cnf(cnf, kw)
     doc = DstPresenter(appdata, cnf)
+    doc.colors = get_available_color_scheme(doc, filename)
     doc.load(filename, fileptr)
     if translate:
         sk2_doc = SK2_Presenter(appdata, cnf)
@@ -49,15 +52,20 @@ def dst_saver(doc, filename=None, fileptr=None, translate=True, cnf=None, **kw):
     else:
         doc.save(filename)
 
+    if dst_doc.config.create_edr_palette:
+        from uc2.formats.skp import SKP_Presenter
+        from uc2.formats.edr_pal import edr_pal_saver
+        skp_doc = SKP_Presenter(doc.appdata)
+        skp_doc.model.colors = dst_doc.colors or []
+        edr_pal_saver(
+            skp_doc, filename=filename.rsplit('.')[0] + '.edr',
+            translate=False, convert=True
+        )
+
 
 def check_dst(path):
-    file_size = os.path.getsize(path)
+    size = len(DST_SIGNATURE)
     fileptr = get_fileptr(path)
-
-    if file_size > 3:
-        string = fileptr.read(3)
-    else:
-        string = fileptr.read()
-
+    signature = fileptr.read(size)
     fileptr.close()
-    return string.startswith('LA:')
+    return DST_SIGNATURE == signature

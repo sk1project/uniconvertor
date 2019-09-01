@@ -29,7 +29,7 @@ from uc2.formats.dst.dst_from_sk2 import SK2_to_DST_Translator
 
 class DstPresenter(BinaryModelPresenter):
     cid = uc2const.DST
-    palette = None
+    colors = None
 
     def __init__(self, appdata, cnf=None):
         self.config = DST_Config()

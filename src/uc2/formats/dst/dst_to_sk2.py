@@ -17,6 +17,7 @@
 
 from base64 import b64encode
 from uc2.formats.dst import dst_model, dst_const
+from uc2.formats.dst import dst_colors
 from uc2.formats.sk2 import sk2_model
 from uc2 import _, uc2const, sk2const, cms, libgeom
 from uc2.formats.dst.dst_const import MM_TO_DST
@@ -29,6 +30,8 @@ class EmbroideryMachine(object):
     jumps_on_thread_cut = 0
     delete_empty_stitches = False
     delete_empty_jumps = False
+    colors = None
+    current_color_index = 0
     x = 0
     y = 0
     extents_left = 0
@@ -40,18 +43,18 @@ class EmbroideryMachine(object):
     color_change_count = 0
     jump_in_sequence = 0
 
-    def __init__(self, dst_doc, sk2_doc, palette=None):
+    def __init__(self, dst_doc, sk2_doc):
         self.dst_doc = dst_doc
         self.sk2_doc = sk2_doc
-        self.palette = palette or dst_doc.palette
+        self.colors = dst_doc.colors or dst_colors.DEFAULT_COLORS
         self.sk2_mtds = sk2_doc.methods
         self.stitch_list = []
         self.rope_width = abs(self.dst_doc.config.thickness * uc2const.mm_to_pt)
         self.page = self.sk2_mtds.get_page()
-        self.hex_color = self.palette.next_color(0)
         self.layer = self.sk2_mtds.get_layer(self.page)
-        self.layer.name = self.hex_color
-        self.layer.color = self.hex_color
+        color = self.get_current_color()
+        layer_name = color[3]
+        self.layer.name = layer_name
 
     def move(self, dx, dy):
         self.x += dx
@@ -61,17 +64,21 @@ class EmbroideryMachine(object):
         self.extents_top = min(self.extents_top, self.y)
         self.extents_bottom = max(self.extents_bottom, self.y)
 
-    def color_change(self, dx, dy):
-        self.color_change_count += 1
+    def get_current_color(self):
+        try:
+            color = self.colors[self.current_color_index]
+        except (IndexError, KeyError):
+            color = dst_colors.REPLACEMENT_COLOR
+        return color
+
+    def change_color(self, dx, dy):
         self.move(dx, dy)
         self.end_stitch()
-
-        hex_color = self.palette.next_color()
-        layer = self.sk2_mtds.add_layer(self.page, hex_color)
-        self.layer = layer
-        self.layer.name = hex_color
-        self.layer.color = hex_color
-        self.hex_color = hex_color
+        self.color_change_count += 1
+        self.current_color_index += 1
+        color = self.get_current_color()
+        layer_name = color[3]
+        self.layer = self.sk2_mtds.add_layer(self.page, layer_name)
 
     def stop(self, dx, dy):
         self.move(dx, dy)
@@ -115,8 +122,7 @@ class EmbroideryMachine(object):
     def get_style(self):
         fill = []
         text_style = []
-        rgb = cms.hexcolor_to_rgb(self.hex_color)
-        color = [uc2const.COLOR_RGB, rgb, 1.0, self.hex_color]
+        color = self.get_current_color()
         width = self.rope_width
         stroke = self.get_stroke(color, width)
         return [fill, stroke, text_style, []]
@@ -135,6 +141,7 @@ class EmbroideryMachine(object):
 
 
 class DST_to_SK2_Translator(object):
+    sk2_doc = None
     sk2_mtds = None
     processor = None
 
@@ -145,16 +152,16 @@ class DST_to_SK2_Translator(object):
         processor.automatic_thread_cut = MM_TO_DST * cfg.automatic_thread_cut
         processor.delete_empty_stitches = cfg.delete_empty_stitches
         self.processor = processor
+        self.sk2_doc = sk2_doc
         self.sk2_mtds = sk2_doc.methods
         self.walk(dst_doc.model.childs)
         self.translate_bg_color()
         sk2_doc.model.do_update()
 
     def translate_bg_color(self):
-        palette = self.processor.palette
-        if len(palette.colors) == self.processor.palette.index + 2:
-            hex_color = self.processor.palette.next_color()
-            desktop_bg = cms.hexcolor_to_rgb(hex_color)
+        if len(self.processor.colors) - 1 > self.processor.color_change_count:
+            color = self.processor.colors[-1]
+            desktop_bg = self.sk2_doc.cms.get_rgb_color(color)[1]
             self.sk2_mtds.set_desktop_bg(desktop_bg)
 
     def walk(self, cmd_stack):
@@ -171,7 +178,7 @@ class DST_to_SK2_Translator(object):
                     out.end_stitch()
                     out.jump_to(dx, dy)  # TODO: detect trim
             elif cmd.cid == dst_const.CMD_CHANGE_COLOR:
-                out.color_change(dx, dy)
+                out.change_color(dx, dy)
             elif cmd.cid == dst_const.CMD_SEQUIN_MODE:
                 out.sequin_eject(dx, dy)  # XXX: didn't check it
                 sequin_mode = not sequin_mode

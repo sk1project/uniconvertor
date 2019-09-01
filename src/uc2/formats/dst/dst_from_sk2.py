@@ -131,7 +131,7 @@ class SK2_to_DST_Translator(object):
     sk2_mtds = None
     dst_doc = None
     trafo = None
-    palette = None
+    colors = None
     processor = None
 
     def translate(self, sk2_doc, dst_doc):
@@ -149,7 +149,7 @@ class SK2_to_DST_Translator(object):
         self.sk2_mtds = sk2_doc.methods
         self.dst_doc = dst_doc
         self.trafo = [] + dst_const.SK2_to_DST_TRAFO
-        self.palette = []
+        self.colors = []
 
         header = dst_model.DstHeader()
         self.dst_doc.model.childs = [header]
@@ -168,7 +168,7 @@ class SK2_to_DST_Translator(object):
 
         metadata = self.metadata()
         header.metadata.update(metadata)
-        dst_doc.palette = self.palette
+        dst_doc.colors = self.colors
 
     def metadata(self):
         doc_file = self.dst_doc.doc_file
@@ -206,8 +206,8 @@ class SK2_to_DST_Translator(object):
 
     def translate_bg_color(self):
         desktop_bg = self.sk2_mtds.get_desktop_bg()
-        hex_color = cms.rgb_to_hexcolor(desktop_bg)
-        self.palette.append(hex_color)
+        color = [uc2const.COLOR_RGB, desktop_bg, 1.0, 'background color']
+        self.colors.append(color)
 
     def translate_objs(self, objs):
         for obj in objs:
@@ -235,13 +235,12 @@ class SK2_to_DST_Translator(object):
             self.translate_stroke(style, paths)
 
     def translate_stroke(self, style, paths):
-        clr = self.sk2_doc.cms.get_rgb_color(style[1][2])
-        hex_color = cms.rgb_to_hexcolor(clr[1])
-        if not self.palette:
-            self.palette.append(hex_color)
+        color = style[1][2]
+        if not self.colors:
+            self.colors.append(color)
 
-        if self.is_color_changed(hex_color):
-            self.palette.append(hex_color)
+        if self.is_color_changed(color):
+            self.colors.append(color)
             self.processor.chang_color()
 
         for path in paths:
@@ -253,5 +252,5 @@ class SK2_to_DST_Translator(object):
                 self.processor.stitch_to(point[0], point[1])
             self.processor.trim()
 
-    def is_color_changed(self, hex_color):
-        return not (self.palette and self.palette[-1] == hex_color)
+    def is_color_changed(self, color):
+        return not (self.colors and self.colors[-1] == color)

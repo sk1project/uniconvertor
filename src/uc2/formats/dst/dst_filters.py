@@ -17,7 +17,6 @@
 
 
 from uc2.formats.generic_filters import AbstractLoader, AbstractSaver
-from uc2.formats.edr_pal import EDR_Palette
 from uc2.formats.dst import dst_model
 from uc2.formats.dst import dst_const
 
@@ -27,7 +26,6 @@ class DST_Loader(AbstractLoader):
 
     def do_load(self):
         stream = self.fileptr
-        self.presenter.palette = EDR_Palette(self.filepath)
         self.model.childs = []
         parent_stack = self.model.childs
 
@@ -52,11 +50,3 @@ class DST_Saver(AbstractSaver):
     def do_save(self):
         for rec in self.model.childs:
             self.fileptr.write(rec.chunk)
-
-        if self.config.create_edr_palette:
-            dst_doc = self.presenter
-            edr_palette = EDR_Palette()
-            edr_palette.colors.clear()
-            [edr_palette.add_color(c) for c in dst_doc.palette]
-            palette_name = edr_palette.palette_file_name(dst_doc.doc_file)
-            edr_palette.save_palette(palette_name)
