@@ -58,7 +58,7 @@ def dst_saver(doc, filename=None, fileptr=None, translate=True, cnf=None, **kw):
         skp_doc = SKP_Presenter(doc.appdata)
         skp_doc.model.colors = dst_doc.colors or []
         edr_pal_saver(
-            skp_doc, filename=filename.rsplit('.')[0] + '.edr',
+            skp_doc, filename=filename.rsplit('.', 1)[0] + '.edr',
             translate=False, convert=True
         )
 
