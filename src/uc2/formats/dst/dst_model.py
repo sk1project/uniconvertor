@@ -37,14 +37,14 @@ class BaseDstModel(BinaryModelObject):
 
     def update(self):
         if self.chunk:
-            self.parse()
+            self.deserialize()
         else:
-            self.chunk = self.get_content()
+            self.serialize()
 
-    def parse(self):
+    def deserialize(self):
         pass
 
-    def get_content(self):
+    def serialize(self):
         pass
 
     def resolve(self):
@@ -109,13 +109,6 @@ class DstHeader(BaseDstModel):
         BaseDstModel.__init__(self,  *args, **kwargs)
         self.metadata = {}
 
-    def parse(self):
-        self.metadata = {}
-        for i in self.chunk.split('\r'):
-            if i[2] == ':':
-                key, val = i.split(':', 1)
-                self.metadata[key] = val.replace(' ', '')
-
     def update_for_sword(self):
         self.cache_fields = []
         length_meta = 0
@@ -125,7 +118,14 @@ class DstHeader(BaseDstModel):
             self.cache_fields.append(rec)
             length_meta += length
 
-    def get_content(self):
+    def deserialize(self):
+        self.metadata = {}
+        for i in self.chunk.split('\r'):
+            if i[2] == ':':
+                key, val = i.split(':', 1)
+                self.metadata[key] = val.replace(' ', '')
+
+    def serialize(self):
         header_template = (
             b"LA:{LA:<16}\r" +
             b"ST:{ST:>7d}\r" +
@@ -161,7 +161,7 @@ class DstHeader(BaseDstModel):
         spaces = dst_const.DST_HEADER_SIZE - len(header)
         if spaces > 0:
             header += b'\x20' * spaces
-        return header
+        self.chunk = header
 
 
 class DstCmd(BaseDstModel):
@@ -181,7 +181,14 @@ class DstCmd(BaseDstModel):
     """
     cid = dst_const.DST_UNKNOWN
 
-    def parse(self):
+    def update_for_sword(self):
+        self.cache_fields = []
+        for i, c in enumerate(self.chunk, 0):
+            d = dst_datatype.packer_b.unpack(c)[0]
+            field = (i, 1, "d{} {:08b}".format(i+1, d))
+            self.cache_fields.append(field)
+
+    def deserialize(self):
         chunk_length = len(self.chunk)
         if chunk_length == 3:
             self.dx, self.dy, self.cid = dst_datatype.unpack_stitch(self.chunk)
@@ -190,18 +197,11 @@ class DstCmd(BaseDstModel):
         else:
             self.dx, self.dy, self.cid = 0, 0, dst_const.DST_UNKNOWN
 
-    def update_for_sword(self):
-        self.cache_fields = []
-        for i, c in enumerate(self.chunk, 0):
-            d = dst_datatype.packer_b.unpack(c)[0]
-            field = (i, 1, "d{} {:08b}".format(i+1, d))
-            self.cache_fields.append(field)
-
-    def get_content(self):
+    def serialize(self):
         if self.cid == dst_const.DATA_TERMINATOR:
             data = dst_const.DATA_TERMINATOR
         elif self.cid == dst_const.DST_UNKNOWN:
             data = self.chunk
         else:
             data = dst_datatype.pack_stitch(self.dx, self.dy, self.cid)
-        return data
+        self.chunk = data
