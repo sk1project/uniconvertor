@@ -30,9 +30,12 @@ class DST_Loader(AbstractLoader):
         parent_stack = self.model.childs
 
         # read header
-        chunk = stream.read(dst_const.DST_HEADER_SIZE)
-        header = dst_model.DstHeader(chunk)
-        parent_stack.append(header)
+        signature_size = len(dst_const.DST_SIGNATURE)
+        chunk = stream.read(signature_size)
+        if chunk == dst_const.DST_SIGNATURE:
+            chunk += stream.read(dst_const.DST_HEADER_SIZE - signature_size)
+            header = dst_model.DstHeader(chunk)
+            parent_stack.append(header)
 
         # read stitch commands
         while True:
