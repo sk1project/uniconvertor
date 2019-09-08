@@ -109,6 +109,7 @@ COREL_PAL = 'corel_pal'
 ASE = 'ase'
 ACO = 'aco'
 JCW = 'jcw'
+EDR = 'edr_pal'
 
 ICC = 600
 ICM = 601
@@ -255,6 +256,7 @@ FORMAT_NAMES = {
     ASE: "ASE",
     ACO: "ACO",
     JCW: "JCW",
+    EDR: 'EDR_PAL',
 
     # Color profiles
     ICC: "ICC",
