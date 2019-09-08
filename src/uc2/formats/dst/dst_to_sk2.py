@@ -89,6 +89,7 @@ class EmbroideryMachine(object):
         if self.delete_empty_jumps and not dx and not dy:
             return
         self.move(dx, dy)
+        self.end_stitch()
 
     def stitch_to(self, dx, dy):
         self.stitch_count += 1
@@ -147,7 +148,6 @@ class DST_to_SK2_Translator(object):
 
     def translate(self, dst_doc, sk2_doc):
         cfg = dst_doc.config
-        sk2_doc.methods.set_doc_origin(sk2const.DOC_ORIGIN_CENTER)
         processor = EmbroideryMachine(dst_doc, sk2_doc)
         processor.automatic_thread_cut = MM_TO_DST * cfg.automatic_thread_cut
         processor.delete_empty_stitches = cfg.delete_empty_stitches
@@ -155,73 +155,58 @@ class DST_to_SK2_Translator(object):
         self.sk2_doc = sk2_doc
         self.sk2_mtds = sk2_doc.methods
         self.walk(dst_doc.model.childs)
-        self.translate_bg_color()
+        self.translate_desktop_bg()
+        self.translate_page()
         sk2_doc.model.do_update()
 
-    def translate_bg_color(self):
+    def translate_desktop_bg(self):
         if len(self.processor.colors) - 1 > self.processor.color_change_count:
             color = self.processor.colors[-1]
             desktop_bg = self.sk2_doc.cms.get_rgb_color(color)[1]
             self.sk2_mtds.set_desktop_bg(desktop_bg)
 
-    def walk(self, cmd_stack):
-        sequin_mode = False
-        out = self.processor
-        for cmd in cmd_stack:
-            dx, dy = cmd.dx, cmd.dy
-            if cmd.cid == dst_const.CMD_STITCH:
-                out.stitch_to(dx, dy)
-            elif cmd.cid == dst_const.CMD_JUMP:
-                if sequin_mode:
-                    out.sequin_eject(dx, dy)  # XXX: didn't check it
-                else:
-                    out.end_stitch()
-                    out.jump_to(dx, dy)  # TODO: detect trim
-            elif cmd.cid == dst_const.CMD_CHANGE_COLOR:
-                out.change_color(dx, dy)
-            elif cmd.cid == dst_const.CMD_SEQUIN_MODE:
-                out.sequin_eject(dx, dy)  # XXX: didn't check it
-                sequin_mode = not sequin_mode
-            elif cmd.cid == dst_const.DST_HEADER:
-                self.handle_document_metainfo(cmd)
-            elif cmd.cid == dst_const.CMD_STOP:
-                out.stop(dx, dy)
-            else:
-                out.move(dx, dy)
-
-        header = cmd_stack[0]
-        header.metadata.update(self.metadata())
-        self.handle_document_header(header)
-
-    def handle_document_metainfo(self, rec):
-        metainfo = [b'', b'', b'', b'']
-        metainfo[3] = b64encode(rec.chunk.split(dst_const.DATA_TERMINATOR)[0])
-        self.sk2_mtds.set_doc_metainfo(metainfo)
-
-    def handle_document_header(self, rec):
-        meta = rec.metadata
-        height = max(meta['+Y'], meta['-Y']) * 2
-        width = max(meta['+X'], meta['-X']) * 2
+    def translate_page(self):
+        processor = self.processor
+        height = max(abs(processor.extents_top), abs(processor.extents_bottom))
+        width = max(abs(processor.extents_right), abs(processor.extents_left))
         width, height = apply_trafo_to_point(
-            (width, height),
+            (width * 2, height * 2),
             dst_const.DST_to_SK2_TRAFO
         )
+        size = (width or 25.0, height or 25.0)
         orient = uc2const.PORTRAIT
         if width > height:
             orient = uc2const.LANDSCAPE
-        page_format = [_('Custom size'), (width, height), orient]
-
         page = self.sk2_mtds.get_page()
-        self.sk2_mtds.set_page_format(page, page_format)
+        self.sk2_mtds.set_page_format(page, [_('Custom size'), size, orient])
+        self.sk2_mtds.set_doc_origin(sk2const.DOC_ORIGIN_CENTER)
 
-    def metadata(self):
-        metadata = dict()
-        metadata['ST'] = int(self.processor.stitch_count)
-        metadata['CO'] = int(self.processor.color_change_count)
-        metadata['+X'] = int(abs(self.processor.extents_right))
-        metadata['-X'] = int(abs(self.processor.extents_left))
-        metadata['+Y'] = int(abs(self.processor.extents_top))
-        metadata['-Y'] = int(abs(self.processor.extents_bottom))
-        metadata['AX'] = int(self.processor.x)
-        metadata['AY'] = int(self.processor.y)
-        return metadata
+    def walk(self, command_list):
+        sequin_mode = False
+        processor = self.processor
+        for cmd in command_list:
+            if cmd.cid == dst_const.CMD_STITCH:
+                processor.stitch_to(cmd.dx, cmd.dy)
+            elif cmd.cid == dst_const.CMD_JUMP:
+                if sequin_mode:
+                    # XXX: didn't check it
+                    processor.sequin_eject(cmd.dx, cmd.dy)
+                else:
+                    processor.jump_to(cmd.dx, cmd.dy)
+            elif cmd.cid == dst_const.CMD_CHANGE_COLOR:
+                processor.change_color(cmd.dx, cmd.dy)
+            elif cmd.cid == dst_const.CMD_SEQUIN_MODE:
+                # XXX: didn't check it
+                processor.sequin_eject(cmd.dx, cmd.dy)
+                sequin_mode = not sequin_mode
+            elif cmd.cid == dst_const.DST_HEADER:
+                self.handle_doc_metainfo(cmd)
+            elif cmd.cid == dst_const.CMD_STOP:
+                processor.stop(cmd.dx, cmd.dy)
+            else:
+                processor.move(cmd.dx, cmd.dy)
+
+    def handle_doc_metainfo(self, rec):
+        metainfo = [b'', b'', b'', b'']
+        metainfo[3] = b64encode(rec.chunk.split(dst_const.DATA_TERMINATOR)[0])
+        self.sk2_mtds.set_doc_metainfo(metainfo)
