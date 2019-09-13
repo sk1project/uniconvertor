@@ -41,7 +41,7 @@ class EmbroideryMachine(object):
     jump_count = 0
     stitch_count = 0
     color_change_count = 0
-    jump_in_sequence = 0
+    trim_count = 0
 
     def __init__(self, methods):
         self.methods = methods
@@ -70,6 +70,11 @@ class EmbroideryMachine(object):
         self.current_color_index += 1
 
     def stop(self, dx, dy):
+        self.move(dx, dy)
+        self.methods.end_stitch()
+
+    def trim(self, dx, dy):
+        self.trim_count += 1
         self.move(dx, dy)
         self.methods.end_stitch()
 
