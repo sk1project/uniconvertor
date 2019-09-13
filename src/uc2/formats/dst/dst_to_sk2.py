@@ -16,10 +16,10 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from base64 import b64encode
-from uc2.formats.dst import dst_model, dst_const
+from uc2.formats.dst import dst_const
 from uc2.formats.dst import dst_colors
 from uc2.formats.sk2 import sk2_model
-from uc2 import _, uc2const, sk2const, cms, libgeom
+from uc2 import _, uc2const, sk2const, libgeom
 from uc2.formats.dst.dst_const import MM_TO_DST
 
 from uc2.libgeom.trafo import apply_trafo_to_point
@@ -43,18 +43,10 @@ class EmbroideryMachine(object):
     color_change_count = 0
     jump_in_sequence = 0
 
-    def __init__(self, dst_doc, sk2_doc):
-        self.dst_doc = dst_doc
-        self.sk2_doc = sk2_doc
-        self.colors = dst_doc.colors or dst_colors.DEFAULT_COLORS
-        self.sk2_mtds = sk2_doc.methods
+    def __init__(self, methods):
+        self.methods = methods
+        self.colors = []
         self.stitch_list = []
-        self.rope_width = abs(self.dst_doc.config.thickness * uc2const.mm_to_pt)
-        self.page = self.sk2_mtds.get_page()
-        self.layer = self.sk2_mtds.get_layer(self.page)
-        color = self.get_current_color()
-        layer_name = color[3]
-        self.layer.name = layer_name
 
     def move(self, dx, dy):
         self.x += dx
@@ -73,23 +65,20 @@ class EmbroideryMachine(object):
 
     def change_color(self, dx, dy):
         self.move(dx, dy)
-        self.end_stitch()
+        self.methods.end_stitch()
         self.color_change_count += 1
         self.current_color_index += 1
-        color = self.get_current_color()
-        layer_name = color[3]
-        self.layer = self.sk2_mtds.add_layer(self.page, layer_name)
 
     def stop(self, dx, dy):
         self.move(dx, dy)
-        self.end_stitch()
+        self.methods.end_stitch()
 
     def jump_to(self, dx, dy):
         self.jump_count += 1
         if self.delete_empty_jumps and not dx and not dy:
             return
         self.move(dx, dy)
-        self.end_stitch()
+        self.methods.end_stitch()
 
     def stitch_to(self, dx, dy):
         self.stitch_count += 1
@@ -99,61 +88,33 @@ class EmbroideryMachine(object):
             last_stitch = self.stitch_list[-1]
             distance = libgeom.distance(last_stitch, (self.x, self.y))
             if distance >= self.automatic_thread_cut:
-                self.end_stitch()
+                self.methods.end_stitch()
         self.move(dx, dy)
         self.stitch_list.append([self.x, self.y])
 
     def sequin_eject(self, dx, dy):
         self.move(dx, dy)
 
-    def end_stitch(self):
-        if len(self.stitch_list) > 1:
-            methods = self.sk2_doc.methods
-            path = self.stitch_list
-            curve = sk2_model.Curve(
-                self.sk2_doc.config,
-                parent=None,
-                style=self.get_style(),
-                paths=[[path[0], path[1:], sk2const.CURVE_OPENED]],
-                trafo=[] + dst_const.DST_to_SK2_TRAFO
-            )
-            methods.append_object(curve, self.layer)
-            self.stitch_list = []
-
-    def get_style(self):
-        fill = []
-        text_style = []
-        color = self.get_current_color()
-        width = self.rope_width
-        stroke = self.get_stroke(color, width)
-        return [fill, stroke, text_style, []]
-
-    def get_stroke(self, color, width):
-        cap_style = sk2const.CAP_ROUND
-        join_style = sk2const.JOIN_ROUND
-        rule = sk2const.STROKE_MIDDLE
-        dash = []
-        miter_limit = 4.0
-        behind_flag = 0
-        scalable_flag = 0
-        markers = [[], []]
-        return [rule, width, color, dash, cap_style, join_style, miter_limit,
-                behind_flag, scalable_flag, markers]
-
 
 class DST_to_SK2_Translator(object):
+    dst_doc = None
     sk2_doc = None
     sk2_mtds = None
     processor = None
+    layer = None
 
     def translate(self, dst_doc, sk2_doc):
         cfg = dst_doc.config
-        processor = EmbroideryMachine(dst_doc, sk2_doc)
+        processor = EmbroideryMachine(self)
         processor.automatic_thread_cut = MM_TO_DST * cfg.automatic_thread_cut
         processor.delete_empty_stitches = cfg.delete_empty_stitches
+        processor.colors = dst_doc.colors or dst_colors.DEFAULT_COLORS
+
         self.processor = processor
+        self.dst_doc = dst_doc
         self.sk2_doc = sk2_doc
         self.sk2_mtds = sk2_doc.methods
+        self.handle_change_color()
         self.walk(dst_doc.model.childs)
         self.translate_desktop_bg()
         self.translate_page()
@@ -195,6 +156,7 @@ class DST_to_SK2_Translator(object):
                     processor.jump_to(cmd.dx, cmd.dy)
             elif cmd.cid == dst_const.CMD_CHANGE_COLOR:
                 processor.change_color(cmd.dx, cmd.dy)
+                self.handle_change_color(cmd)
             elif cmd.cid == dst_const.CMD_SEQUIN_MODE:
                 # XXX: didn't check it
                 processor.sequin_eject(cmd.dx, cmd.dy)
@@ -210,3 +172,46 @@ class DST_to_SK2_Translator(object):
         metainfo = [b'', b'', b'', b'']
         metainfo[3] = b64encode(rec.chunk.split(dst_const.DATA_TERMINATOR)[0])
         self.sk2_mtds.set_doc_metainfo(metainfo)
+
+    def handle_change_color(self, _rec=None):
+        page = self.sk2_mtds.get_page()
+        if self.layer is None:
+            self.layer = self.sk2_mtds.get_layer(page)
+        else:
+            self.layer = self.sk2_mtds.add_layer(page)
+        color = self.processor.get_current_color()
+        self.layer.name = color[3]
+
+    def end_stitch(self):
+        if len(self.processor.stitch_list) > 1:
+            methods = self.sk2_doc.methods
+            path = self.processor.stitch_list
+            curve = sk2_model.Curve(
+                self.sk2_doc.config,
+                parent=None,
+                style=self.get_style(),
+                paths=[[path[0], path[1:], sk2const.CURVE_OPENED]],
+                trafo=[] + dst_const.DST_to_SK2_TRAFO
+            )
+            methods.append_object(curve, self.layer)
+            self.processor.stitch_list = []
+
+    def get_style(self):
+        fill = []
+        text_style = []
+        stroke = self.get_stroke()
+        return [fill, stroke, text_style, []]
+
+    def get_stroke(self):
+        cap_style = sk2const.CAP_ROUND
+        join_style = sk2const.JOIN_ROUND
+        rule = sk2const.STROKE_MIDDLE
+        dash = []
+        miter_limit = 4.0
+        behind_flag = 0
+        scalable_flag = 0
+        markers = [[], []]
+        color = self.processor.get_current_color()
+        width = abs(self.dst_doc.config.thickness * uc2const.mm_to_pt)
+        return [rule, width, color, dash, cap_style, join_style, miter_limit,
+                behind_flag, scalable_flag, markers]
