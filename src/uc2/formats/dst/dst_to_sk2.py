@@ -83,7 +83,6 @@ class EmbroideryMachine(object):
         if self.delete_empty_jumps and not dx and not dy:
             return
         self.move(dx, dy)
-        self.methods.end_stitch()
 
     def stitch_to(self, dx, dy):
         self.stitch_count += 1
@@ -159,6 +158,7 @@ class DST_to_SK2_Translator(object):
                     processor.sequin_eject(cmd.dx, cmd.dy)
                 else:
                     processor.jump_to(cmd.dx, cmd.dy)
+                    processor.trim(0, 0)
             elif cmd.cid == dst_const.CMD_CHANGE_COLOR:
                 processor.change_color(cmd.dx, cmd.dy)
                 self.handle_change_color(cmd)
