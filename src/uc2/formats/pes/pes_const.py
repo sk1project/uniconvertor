@@ -27,3 +27,27 @@ PES_UNKNOWN = "Unknown"
 CID_TO_NAME = {
     PES_UNKNOWN: "Unknown",
 }
+
+from uc2 import uc2const
+
+PES_TO_MM = 0.1
+MM_TO_PES = 10.0
+
+IN_TO_PES = uc2const.pt_to_mm * MM_TO_PES
+PES_TO_IN = uc2const.mm_to_pt * PES_TO_MM
+
+PES_SIGNATURE = '#PES'
+PEC_SIGNATURE = '#PEC'
+
+PES_to_SK2_TRAFO = [PES_TO_IN, 0.0, 0.0, PES_TO_IN, 0.0, 0.0]
+
+CMD_STITCH = 'Stitch'
+# CMD_SEQUIN_MODE = 0b01000011
+CMD_JUMP = 'Jump'
+CMD_CHANGE_COLOR = 'Change Color'
+PES_THUMBNAIL = 'THUMBNAIL'
+# CMD_STOP = 0b11110011
+CMD_TRIM = 'TRIM'
+CMD_END = 'END'
+
+DATA_TERMINATOR = b'\xFF'

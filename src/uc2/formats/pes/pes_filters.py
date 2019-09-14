@@ -17,10 +17,8 @@
 
 
 from uc2.formats.generic_filters import AbstractLoader, AbstractSaver
-from uc2.formats.edr_pal import EDR_Palette
 from uc2.formats.pes import pes_model
 from uc2.formats.pes import pes_const
-from uc2.formats.pes import pes_datatype
 import struct
 
 
@@ -29,7 +27,6 @@ class PES_Loader(AbstractLoader):
 
     def do_load(self):
         stream = self.fileptr
-        self.presenter.palette = EDR_Palette(self.filepath)
         self.model.childs = []
         parent_stack = self.model.childs
 
@@ -37,31 +34,43 @@ class PES_Loader(AbstractLoader):
         magic_chunk = stream.read(8)
         self.model.chunk = magic_chunk
 
-        if magic_chunk.startswith('#PES'):
+        if magic_chunk.startswith(pes_const.PES_SIGNATURE):
             # read pes block
             pecstart_chunk = stream.read(4)
             pecstart_offset = struct.unpack('<I', pecstart_chunk)[0]
             pes_header_size = pecstart_offset - 8 - 4
 
             pes_data_chunk = stream.read(pes_header_size)
-            pes_chunk_chunk = pecstart_chunk + pes_data_chunk
-            pes_header = pes_model.PesHeader(pes_chunk_chunk)
+            pes_header = pes_model.PesHeader()
+            pes_header.header = pecstart_chunk + pes_data_chunk
             parent_stack.append(pes_header)
 
         # read pec block
         pec_chunk = stream.read(pes_const.PEC_HEADER_SIZE)
-        pec_header = pes_model.PecHeader(pec_chunk)
+        pec_header = pes_model.PecHeader()
+        pec_header.chunk = pec_chunk
+
         parent_stack.append(pec_header)
+        chunk = stream.read(20)
 
-        thumbnail_chunk1 = stream.read(2)
-        thumbnail_chunk2 = stream.read(3)
-        thumbnail_chunk2_ = pes_datatype.unpack_uint24le(thumbnail_chunk2)
-
-        pec_body_size = thumbnail_chunk2_ - 2 - 3
-
-        pec_body_chunk = stream.read(pec_body_size)
-        chunk = thumbnail_chunk1 + thumbnail_chunk2 + pec_body_chunk
-        pec_body = pes_model.PecBody(chunk)
+        pec_body = pes_model.PecBody()
+        pec_body.chunk = chunk
+        pec_body.childs = []
+        while True:
+            chunk = stream.read(1)
+            if not chunk:
+                break
+            if chunk == pes_const.DATA_TERMINATOR:
+                cmd = pes_model.PecCmd()
+                cmd.cid = pes_const.CMD_END
+                cmd.chunk = chunk
+                pec_body.childs.append(cmd)
+                break
+            else:
+                chunk += stream.read(1)
+                cmd = pes_model.PecCmd()
+                cmd.parse(self, chunk)
+                pec_body.childs.append(cmd)
         parent_stack.append(pec_body)
 
         # XXX: this is so as not to lose data at the end of the file
@@ -72,8 +81,9 @@ class PES_Loader(AbstractLoader):
             chunk_size = min(chunk_size, 0x5000)
 
             unknown_chunk = stream.read(chunk_size)
-            unknown = pes_model.PesUnknown(unknown_chunk)
-            parent_stack.append(unknown)
+            unknown_cmd = pes_model.PesUnknown()
+            unknown_cmd.chunk = unknown_chunk
+            parent_stack.append(unknown_cmd)
 
 
 class PES_Saver(AbstractSaver):
@@ -82,11 +92,3 @@ class PES_Saver(AbstractSaver):
     def do_save(self):
         for rec in self.model.childs:
             self.fileptr.write(rec.chunk)
-
-        if self.config.create_edr_palette:
-            dst_doc = self.presenter
-            edr_palette = EDR_Palette()
-            edr_palette.colors.clear()
-            [edr_palette.add_color(c) for c in dst_doc.palette]
-            palette_name = edr_palette.palette_file_name(dst_doc.doc_file)
-            edr_palette.save_palette(palette_name)

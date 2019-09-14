@@ -21,7 +21,9 @@ from uc2.utils.config import XmlConfigParser
 class PES_Config(XmlConfigParser):
     filename = 'pes_config.xml'
     system_encoding = 'utf-8'
-    thickness = 0.72
+    # import
+    thickness = 0.4  # mm
+    automatic_thread_cut = 30  # mm
 
     # end_instruction = True
     # optimize_number_of_stitches = False
@@ -32,7 +34,7 @@ class PES_Config(XmlConfigParser):
     #
     # borer_offset_x = 0.0
     # borer_offset_y = 0.0
-    # # delete_empty_stitches = True
+    delete_empty_stitches = False
     # # delete_empty_jump = True
     #
     create_edr_palette = True

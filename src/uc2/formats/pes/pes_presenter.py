@@ -16,20 +16,20 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-import os
+#import os
 
 from uc2 import uc2const
 from uc2.formats.generic import BinaryModelPresenter
 from uc2.formats.pes import pes_model
 from uc2.formats.pes.pes_config import PES_Config
 from uc2.formats.pes.pes_filters import PES_Loader, PES_Saver
-# from uc2.formats.pes.pes_to_sk2 import PES_to_SK2_Translator
+from uc2.formats.pes.pes_translators import PEC_to_SK2_Translator
 # from uc2.formats.pes.pes_from_sk2 import SK2_to_PES_Translator
 
 
 class PesPresenter(BinaryModelPresenter):
     cid = uc2const.PES
-    palette = None
+    colors = None
 
     def __init__(self, appdata, cnf=None):
         self.config = PES_Config()
@@ -49,6 +49,6 @@ class PesPresenter(BinaryModelPresenter):
     #     translator = SK2_to_PES_Translator()
     #     translator.translate(sk2_doc, self)
 
-    # def translate_to_sk2(self, sk2_doc):
-    #     translator = PES_to_SK2_Translator()
-    #     translator.translate(self, sk2_doc)
+    def translate_to_sk2(self, sk2_doc):
+        translator = PEC_to_SK2_Translator()
+        translator.translate(self, sk2_doc)

@@ -17,6 +17,7 @@
 
 import os
 
+from uc2.formats.pes.pes_const import PES_SIGNATURE, PEC_SIGNATURE
 from uc2.utils.fsutils import get_fileptr
 from uc2.utils.mixutils import merge_cnf
 
@@ -59,4 +60,4 @@ def check_pes(path):
         string = fileptr.read()
 
     fileptr.close()
-    return string.startswith('#PES') or string.startswith('#PEC')
+    return string in (PES_SIGNATURE, PEC_SIGNATURE)
