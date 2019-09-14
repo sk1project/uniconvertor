@@ -22,7 +22,7 @@ class DST_Config(XmlConfigParser):
     filename = 'dst_config.xml'
     system_encoding = 'utf-8'
     # import
-    thickness = 0.25  # mm
+    thickness = 0.4  # mm
     automatic_thread_cut = 30  # mm
     jumps_on_thread_cut = 0  # count
     # automatic_centering = True
