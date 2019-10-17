@@ -95,7 +95,7 @@ CONST_FILES = ['src/uc2/uc2const.py']
 
 README_TEMPLATE = """
 Universal vector graphics format translator
-copyright (C) 2007-%s sK1 Project Team (https://uc2.sk1project.net)
+copyright (C) 2007-%s sK1 Project Team (https://sk1project.net/uc2/)
 
 Usage: uniconvertor [OPTIONS] [INPUT FILE] [OUTPUT FILE]
 Example: uniconvertor drawing.cdr drawing.svg

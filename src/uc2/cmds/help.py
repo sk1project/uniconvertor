@@ -24,8 +24,8 @@ HELP_TEMPLATE = '''
 %s
 
 Universal vector graphics format translator
-copyright (C) 2007-%s sK1 Project Team (https://uc2.sk1project.net)
-For detailed help visit https://uc2.sk1project.net/help/
+copyright (C) 2007-%s sK1 Project Team (https://sk1project.net/uc2/)
+For detailed help visit https://sk1project.net/uc2/help/
 
 Usage: uniconvertor [OPTIONS] INPUT_FILE OUTPUT_FILE
 Example: uniconvertor drawing.cdr drawing.svg
@@ -113,4 +113,4 @@ def show_short_help(msg):
     echo(msg)
     echo('USAGE: uniconvertor [OPTIONS] [INPUT FILE] [OUTPUT FILE]')
     echo('Use --help for more details.')
-    echo('For detailed help visit https://uc2.sk1project.net/help/' + '\n')
+    echo('For detailed help visit https://sk1project.net/uc2/help/' + '\n')
