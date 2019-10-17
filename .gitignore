@@ -8,3 +8,4 @@
 *.mo
 /.idea
 .vagrant
+/utils
