@@ -8,7 +8,7 @@
 
 </center>
 
-UniConvertor 2.0 is a multiplatform universal vector graphics translator.
+UniConvertor 2.0 is a cross-platform universal vector graphics translator.
 Uses sK1 2.0 model to convert one format to another. 
 
 sK1 Project (https://sk1project.net)
