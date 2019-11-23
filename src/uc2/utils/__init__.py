@@ -17,8 +17,8 @@
 
 import base64
 import math
-import time
 import struct
+import time
 
 
 def generate_base64_id():
@@ -133,7 +133,7 @@ def double2py_float(data, be=False):
     Converts 8 bytes to Python float value.
     """
     sig = '>d' if be else '<d'
-    return struct.unpack('<d', data)[0]
+    return struct.unpack(sig, data)[0]
 
 
 def py_float2float(val, be=False):
@@ -164,7 +164,7 @@ def latin1_bytes_2str(data):
     Converts Latin1 bytes to Python string value.
     """
     length = len(data)
-    return unicode(struct.unpack(str(length) + 's', data)[0], 'latin1').\
+    return unicode(struct.unpack(str(length) + 's', data)[0], 'latin1'). \
         encode('utf-8')
 
 
@@ -173,7 +173,7 @@ def utf_16_le_bytes_2str(data):
     Converts utf16 bytes to Python string value.
     """
     length = len(data)
-    return unicode(struct.unpack(str(length) + 's', data)[0], 'utf_16_le').\
+    return unicode(struct.unpack(str(length) + 's', data)[0], 'utf_16_le'). \
         encode('utf-8')
 
 
