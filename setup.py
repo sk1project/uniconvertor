@@ -92,7 +92,7 @@ MAINTAINER = AUTHOR
 MAINTAINER_EMAIL = AUTHOR_EMAIL
 LICENSE = 'GPL v3'
 URL = 'https://sk1project.net'
-DOWNLOAD_URL = URL
+DOWNLOAD_URL = 'https://github.com/sk1project/uniconvertor/releases'
 CLASSIFIERS = [
     'Development Status :: 6 - Mature',
     'Environment :: Console',
