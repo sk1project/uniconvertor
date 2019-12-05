@@ -3,9 +3,14 @@
 *.exe
 *.o
 *.so
-*.pyd
-*.pyc
+*.py[cdo]
+__pycache__/
 *.mo
 /.idea
 .vagrant
 /utils
+
+/build/
+/dist/
+/*.egg-info/
+/.cache/
