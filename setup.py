@@ -106,6 +106,7 @@ CLASSIFIERS = [
     'Programming Language :: C',
     "Topic :: Multimedia :: Graphics :: Graphics Conversion",
 ]
+INSTALL_REQUIRES = ['Pillow', 'reportlab', 'pycairo']
 loaders = uc2const.MODEL_LOADERS + uc2const.PALETTE_LOADERS + \
           uc2const.BITMAP_LOADERS
 savers = uc2const.MODEL_SAVERS + uc2const.PALETTE_SAVERS + \
@@ -277,6 +278,7 @@ setup(
     license=LICENSE,
     url=URL,
     download_url=DOWNLOAD_URL,
+    install_requires=INSTALL_REQUIRES,
     long_description=LONG_DESCRIPTION,
     classifiers=CLASSIFIERS,
     packages=build.get_source_structure('src/uc2') + ['uc2'],
