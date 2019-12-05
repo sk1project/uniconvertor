@@ -64,3 +64,15 @@ To run application you need installing also:
 python-pil
 python-reportlab
 python-cairo
+
+
+Running unittests
+=====================
+
+For developers or packagers, there are unittests. To run the unittest,
+proceed as follows:
+
+   pip install pytest
+   pip install .
+   cd unittests
+   pytest
