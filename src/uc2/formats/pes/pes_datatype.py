@@ -15,31 +15,26 @@
 #  You should have received a copy of the GNU Affero General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from uc2.utils.config import XmlConfigParser
+import struct
+from uc2.formats.pes import pes_const
+
+packer_b = struct.Struct("B")
+packer_b2 = struct.Struct("BB")
 
 
-class DST_Config(XmlConfigParser):
-    filename = 'dst_config.xml'
-    system_encoding = 'utf-8'
-    # import
-    thickness = 0.4  # mm
-    automatic_thread_cut = 30  # mm
-    jumps_on_thread_cut = 0  # count
-    # automatic_centering = True
-    delete_empty_stitches = False
-    delete_empty_jumps = True
+def unpack_stitch(data):
+    d1, d2 = packer_b2.unpack(data[:2])
+    print d1, d2
 
-    # export
-    automatic_return_to_origin = True
-    end_instruction = True
-    optimize_number_of_stitches = False
-    maximum_stitch_length = 12.1  # mm
-    maximum_jump_length = 12.1  # mm
+    # x = decode_x(d1, d2, d3)
+    # y = decode_y(d1, d2, d3)
+    # cmd = decode_command(d3)
+    x = 0
+    y = 0
+    cmd = 0
+    return x, y, cmd
 
-    borer_offset_x = 0.0  # mm
-    borer_offset_y = 0.0  # mm
 
-    empty_stitches_at_beginning = 0  # count
-    empty_jumps_at_beginning = 2  # count
-
-    create_edr_palette = True
+def unpack_uint24le(b):
+    b = bytearray(b)
+    return (b[0] & 0xFF) + ((b[1] & 0xFF) << 8) + ((b[2] & 0xFF) << 16)

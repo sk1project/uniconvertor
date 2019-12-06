@@ -15,31 +15,39 @@
 #  You should have received a copy of the GNU Affero General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from uc2.utils.config import XmlConfigParser
 
+PEC_HEADER_SIZE = 512
 
-class DST_Config(XmlConfigParser):
-    filename = 'dst_config.xml'
-    system_encoding = 'utf-8'
-    # import
-    thickness = 0.4  # mm
-    automatic_thread_cut = 30  # mm
-    jumps_on_thread_cut = 0  # count
-    # automatic_centering = True
-    delete_empty_stitches = False
-    delete_empty_jumps = True
+PES_DOCUMENT = "PES Document"
+PES_HEADER = "PES Header"
+PEC_HEADER = "PEC Header"
+PEC_BODY = "PEC Body"
+PES_UNKNOWN = "Unknown"
 
-    # export
-    automatic_return_to_origin = True
-    end_instruction = True
-    optimize_number_of_stitches = False
-    maximum_stitch_length = 12.1  # mm
-    maximum_jump_length = 12.1  # mm
+CID_TO_NAME = {
+    PES_UNKNOWN: "Unknown",
+}
 
-    borer_offset_x = 0.0  # mm
-    borer_offset_y = 0.0  # mm
+from uc2 import uc2const
 
-    empty_stitches_at_beginning = 0  # count
-    empty_jumps_at_beginning = 2  # count
+PES_TO_MM = 0.1
+MM_TO_PES = 10.0
 
-    create_edr_palette = True
+IN_TO_PES = uc2const.pt_to_mm * MM_TO_PES
+PES_TO_IN = uc2const.mm_to_pt * PES_TO_MM
+
+PES_SIGNATURE = '#PES'
+PEC_SIGNATURE = '#PEC'
+
+PES_to_SK2_TRAFO = [PES_TO_IN, 0.0, 0.0, PES_TO_IN, 0.0, 0.0]
+
+CMD_STITCH = 'Stitch'
+# CMD_SEQUIN_MODE = 0b01000011
+CMD_JUMP = 'Jump'
+CMD_CHANGE_COLOR = 'Change Color'
+PES_THUMBNAIL = 'THUMBNAIL'
+# CMD_STOP = 0b11110011
+CMD_TRIM = 'TRIM'
+CMD_END = 'END'
+
+DATA_TERMINATOR = b'\xFF'

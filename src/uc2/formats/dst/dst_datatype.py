@@ -50,7 +50,7 @@ def unpack_stitch(data):
 
 
 def pack_stitch(x, y, cmd):
-    val = code_x(x) | code_y(y) | cmd
+    val = code_x(int(x)) | code_y(int(y)) | cmd
     return pack_24_be(val)
 
 
