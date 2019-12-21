@@ -31,7 +31,7 @@ class AbstractCPLPalette(BinaryModelObject):
     def resolve(self, name=''):
         is_leaf = False
         info = '%d' % (len(self.childs))
-        return (is_leaf, self.resolve_name, info)
+        return is_leaf, self.resolve_name, info
 
     def save(self, saver):
         saver.write(self.chunk)
@@ -324,7 +324,7 @@ class CPL10_SpotColor(CPL7_Color):
         self.cache_fields.append((29, len(self.name), 'color name'))
 
     def resolve(self, name=''):
-        return (True, 'SPOT color', '')
+        return True, 'SPOT color', ''
 
     def get_color(self):
         cs = self.colorspace

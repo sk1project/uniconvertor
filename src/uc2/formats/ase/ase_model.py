@@ -56,7 +56,7 @@ class ASE_Palette(BinaryModelObject):
         is_leaf = False
         info = '%d' % (len(self.childs))
         name = 'ASE palette'
-        return (is_leaf, name, info)
+        return is_leaf, name, info
 
     def update(self):
         self.nblocs = len(self.childs)
@@ -94,7 +94,7 @@ class ASE_Block(BinaryModelObject):
         is_leaf = True
         info = '%d' % (len(self.childs))
         name = ase_const.ASE_NAMES[self.identifier]
-        return (is_leaf, name, info)
+        return is_leaf, name, info
 
     def save(self, saver):
         saver.write(self.chunk)

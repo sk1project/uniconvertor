@@ -63,7 +63,7 @@ class ACO_Palette(BinaryModelObject):
         is_leaf = False
         info = '%d' % (len(self.childs))
         name = 'ACO palette'
-        return (is_leaf, name, info)
+        return is_leaf, name, info
 
     def get_color_list(self):
         return self.childs[-1].get_color_list()
@@ -100,7 +100,7 @@ class ACO1_Header(BinaryModelObject):
         is_leaf = False
         info = '%d' % (len(self.childs))
         name = 'ACO1 header'
-        return (is_leaf, name, info)
+        return is_leaf, name, info
 
     def update_for_sword(self):
         self.cache_fields.append((0, 2, 'ACO version'))
@@ -146,7 +146,7 @@ class ACO1_Color(BinaryModelObject):
         is_leaf = True
         info = '%d' % (len(self.childs))
         name = 'ACO1 Color'
-        return (is_leaf, name, info)
+        return is_leaf, name, info
 
     def update_for_sword(self):
         self.cache_fields.append((0, 2, 'Colorspace'))
@@ -178,7 +178,7 @@ class ACO2_Header(ACO1_Header):
         is_leaf = False
         info = '%d' % (len(self.childs))
         name = 'ACO2 header'
-        return (is_leaf, name, info)
+        return is_leaf, name, info
 
     def set_color_list(self, colors):
         self.childs = []
@@ -206,7 +206,7 @@ class ACO2_Color(ACO1_Color):
         is_leaf = True
         info = '%d' % (len(self.childs))
         name = 'ACO1 Color'
-        return (is_leaf, name, info)
+        return is_leaf, name, info
 
     def update_for_sword(self):
         self.cache_fields.append((0, 2, 'Colorspace'))
