@@ -42,4 +42,4 @@ class SOC_Palette(TextModelObject):
         is_leaf = False
         info = '%d' % (len(self.colors))
         name = 'SOC Palette'
-        return (is_leaf, name, info)
+        return is_leaf, name, info
