@@ -34,10 +34,10 @@ class SK1Palette(TextModelObject):
     builtin = False
 
     def __init__(self, name='', colors=None):
-        colors = colors or []
+        self.colors = colors or []
         self.name = name
-        if not colors:
-            self.colors = []
+        self.source = self.comments = ''
+        self.columns = 1
 
     def resolve(self, name=''):
         is_leaf = False
