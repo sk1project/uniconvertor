@@ -1,6 +1,6 @@
 # UniConvertor 2.0
 
-![build status](https://api.travis-ci.org/sk1project-build-bot/uniconvertor.svg?branch=master)
+![build status](https://api.travis-ci.org/sk1project-build-bot/uniconvertor.svg?branch=master) ![platform](https://img.shields.io/badge/platform-Linux-blue.svg) ![platform](https://img.shields.io/badge/platform-Windows-blue.svg) ![platform](https://img.shields.io/badge/platform-Mac-blue.svg) ![license](https://img.shields.io/github/license/sk1project/uniconvertor)
 
 <center>
 
