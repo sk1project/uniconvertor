@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #
 #  Copyright (C) 2019 by Maxim S. Barabash
 #
@@ -17,9 +18,7 @@
 
 from uc2.uc2const import COLOR_RGB, COLOR_CMYK, COLOR_GRAY
 
-
-XAR_SIGNATURE = b'XARA\xa3\xa3\r\n'
-
+XAR_SIGNATURE = 'XARA' + '\xa3\xa3\r\n'
 
 CO_ORDINATES_DPI = 72000.0
 
@@ -450,17 +449,14 @@ TAG_TEXT_EXTRA_FONT_INFO = 4212
 TAG_TEXT_EXTRA_TT_FONT_DEF = 4213
 TAG_TEXT_EXTRA_ATM_FONT_DEF = 4214
 
-
 # Tag that is not in specification
 TAG_SPREAD_PHOTO_PROPERTIES = 4147
 TAG_FLASH_PROPERTIES_4 = 4383
 TAG_PAGE_PROPERTIES_2 = 4429
 TAG_LIVE_SHARE_ATTRIBUTE = 4499
 
-
 FILE_TYPE_PAPER_PUBLISH = b'CXN'
 FILE_TYPE_WEB = b'CXW'
-
 
 # Colors
 RGB_BLACK = [COLOR_RGB, [0.0, 0.0, 0.0], 1.0, 'black']
@@ -483,7 +479,6 @@ REF_DEFAULTCOLOUR_CYAN = -7
 REF_DEFAULTCOLOUR_MAGENTA = -8
 REF_DEFAULTCOLOUR_YELLOW = -9
 REF_DEFAULTCOLOUR_KEY = -10
-
 
 REPLACEMENTCOLOUR = RGB_BLACK
 
@@ -543,7 +538,6 @@ CAP_SQUARE = 2
 
 FILL_NONZERO = 0
 FILL_EVENODD = 2
-
 
 # Defaults
 
@@ -637,7 +631,6 @@ XAR_DEFAULT_STYLE = {
     'fill_trafo': None,
     'path_flags': None,
 }
-
 
 """
 description: Schema xar records
@@ -733,7 +726,7 @@ XAR_RECORD_DATA_SPEC = {
                  '0': {'value': FILE_TYPE_PAPER_PUBLISH},
                  '1': {'value': FILE_TYPE_WEB}
              }
-            },
+             },
             {'type': 'uint32', 'id': 'file_size'},
             {'type': 'uint32', 'id': 'web_link'},
             {'type': 'uint32', 'id': 'refinement_flags'},
@@ -803,7 +796,7 @@ XAR_RECORD_DATA_SPEC = {
                  4: {'type': 'bool', 'id': 'negate_x'},
                  5: {'type': 'bool', 'id': 'negate_y'},
              }
-            }
+             }
         ]
     },
     TAG_GRIDRULERSETTINGS: {'id': 'TAG_GRIDRULERSETTINGS'},
@@ -818,7 +811,7 @@ XAR_RECORD_DATA_SPEC = {
                  2: {'type': 'bool', 'id': 'is_printable'},
                  3: {'type': 'bool', 'id': 'is_active'},
              }
-            },
+             },
             {'type': 'STRING', 'id': 'layer_name'},
         ]
     },
@@ -941,7 +934,7 @@ XAR_RECORD_DATA_SPEC = {
                  0: {'type': 'bool', 'id': 'multilayer_flag'},
                  1: {'type': 'bool', 'id': 'all_layers_visible_flag'},
              }
-            }
+             }
         ]
     },
     TAG_DOCUMENTINFORMATION: {'id': 'TAG_DOCUMENTINFORMATION'},
@@ -995,7 +988,7 @@ XAR_RECORD_DATA_SPEC = {
                  1: {'type': 'bool', 'id': 'is_rotate'},
                  2: {'type': 'bool', 'id': 'is_end_point'},
              }
-            }
+             }
         ]
     },
     TAG_GUIDELINE: {
