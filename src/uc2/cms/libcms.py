@@ -2,7 +2,7 @@
 #
 #  cms - module which provides binding to LittleCMS2 library.
 #
-#  Copyright (C) 2012-2018 by Igor E. Novikov
+#  Copyright (C) 2012-2018 by Ihor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License
