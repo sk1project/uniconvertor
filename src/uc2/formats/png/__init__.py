@@ -38,6 +38,12 @@ def png_saver(sk2_doc, filename=None, fileptr=None, translate=True, cnf=None,
     page = sk2_doc.methods.get_page()
     w, h = page.page_format[1]
     trafo = (1.0, 0, 0, -1.0, w / 2.0, h / 2.0)
+    if 'scale-png-output' in cnf.keys():
+        scale = float(cnf['scale-png-output'])
+        if scale > 0:
+            w = int(w * scale)
+            h = int(h * scale)
+            trafo = (scale, 0, 0, -scale, w / 2.0, h / 2.0)
 
     canvas_matrix = cairo.Matrix(*trafo)
     surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, int(w), int(h))
