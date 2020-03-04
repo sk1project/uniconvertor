@@ -52,6 +52,7 @@ installation (deb or rpm). You can create package using command:
 python setup.py bdist_deb (for Ubuntu|Mint|Debian etc.)
 python setup.py bdist_rpm (for Fedora|OpenSuse|Mageia etc.)
 ```
+
 By installing the package you have full control over all the installed files 
 and can easily remove them from the system (it's important for application
 preview).
