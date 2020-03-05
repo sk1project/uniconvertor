@@ -61,6 +61,4 @@ def check_png(path):
     fileptr = get_fileptr(path)
     mstr = fileptr.read(len(PNG_ID))
     fileptr.close()
-    if mstr == PNG_ID:
-        return True
-    return False
+    return mstr == PNG_ID
