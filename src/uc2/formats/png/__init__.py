@@ -44,21 +44,14 @@ def png_saver(sk2_doc, filename=None, fileptr=None, translate=True, cnf=None,
     surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, int(w), int(h))
     ctx = cairo.Context(surface)
     ctx.set_matrix(canvas_matrix)
-
-    rend = CairoRenderer(sk2_doc.cms)
-    antialias_flag = True
-    if 'antialiasing' in cnf.keys():
-        if not cnf['antialiasing'] in ('True', '1'):
-            antialias_flag = False
-    rend.antialias_flag = antialias_flag
+    
+    antialias_flag = not cnf.get('antialiasing') in (False, 0)
     layers = sk2_doc.methods.get_visible_layers(page)
+    rend = CairoRenderer(sk2_doc.cms)
 
     for item in layers:
-        if not item.properties[3] and antialias_flag:
-            rend.antialias_flag = False
+        rend.antialias_flag = not any([not item.properties[3], not antialias_flag])
         rend.render(ctx, item.childs)
-        if not item.properties[3] and antialias_flag:
-            rend.antialias_flag = True
 
     surface.write_to_png(fileptr)
     fileptr.close()
