@@ -147,6 +147,7 @@ class UCApplication(object):
 
         # EXECUTION ----------------------------
         status = 0
+        # noinspection PyBroadException
         try:
             command(self.appdata, files, options)
         except Exception:
@@ -155,5 +156,3 @@ class UCApplication(object):
         if self.do_verbose:
             echo()
         sys.exit(status)
-
-
