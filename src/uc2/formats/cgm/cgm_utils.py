@@ -167,7 +167,7 @@ def get_markup(header, params):
             markup += [(hdsz + params_sz - 2, 2,
                         'color index precision type'), ]
         elif element_id == cgm_const.MAXIMUM_COLOUR_INDEX:
-            markup += [(hdsz, 2, 'max color index'), ]
+            markup += [(hdsz, 1, 'max color index'), ]
         elif element_id == cgm_const.METAFILE_ELEMENT_LIST:
             markup += [(hdsz, 2, 'list length'),
                        (hdsz + 2, params_sz - 2, 'list of 2-byte elements'), ]
