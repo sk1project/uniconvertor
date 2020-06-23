@@ -95,7 +95,7 @@ class CmxRiffElement(cmx_instr.CmxObject):
         sz = '%d' % self.get_chunk_size()
         offset = hex(self.get_offset())
         name = '<%s>' % self.get_name()
-        return self._get_icon(), name, offset  # sz
+        return self._get_icon(), name, offset, sz
 
     def update_for_sword(self):
         self.cache_fields = [(0, 4, 'Chunk identifier'),
