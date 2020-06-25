@@ -58,6 +58,11 @@ class UCApplication(object):
         setattr(uc2, 'config', self.config)
         setattr(uc2, 'appdata', self.appdata)
 
+    def init_mngrs(self):
+        if not self.default_cms:
+            self.default_cms = app_cms.AppColorManager(self)
+            self.palettes = PaletteManager(self)
+
     def verbose(self, *args):
         status = msgconst.MESSAGES[args[0]]
         LOG_MAP[args[0]](args[1])
@@ -142,8 +147,7 @@ class UCApplication(object):
         self.log_filepath = os.path.join(self.appdata.app_config_dir, 'uc2.log')
         config_logging(self.log_filepath, log_level)
 
-        self.default_cms = app_cms.AppColorManager(self)
-        self.palettes = PaletteManager(self)
+        self.init_mngrs()
 
         # EXECUTION ----------------------------
         status = 0
