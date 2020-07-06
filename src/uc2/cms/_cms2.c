@@ -1,6 +1,6 @@
 /* cms - small module which provides binding to LittleCMS library version 2.
  *
- * Copyright (C) 2011-2012 by Ihor E.Novikov
+ * Copyright (C) 2011-2012 by Igor E.Novikov
  *
  * 	This program is free software: you can redistribute it and/or modify
  *	it under the terms of the GNU Affero General Public License
@@ -87,7 +87,7 @@ pycms_OpenProfile(PyObject *self, PyObject *args) {
 		return Py_None;
 	}
 
-	return Py_BuildValue("O", PyCObject_FromVoidPtr((void *)hProfile, (void *)cmsCloseProfile));
+	return Py_BuildValue("O", PyCapsule_New((void *)hProfile, NULL, (void *)cmsCloseProfile));
 }
 
 static PyObject *
@@ -109,7 +109,7 @@ pycms_OpenProfileFromString(PyObject *self, PyObject *args) {
 		return Py_None;
 	}
 
-	return Py_BuildValue("O", PyCObject_FromVoidPtr((void *)hProfile, (void *)cmsCloseProfile));
+	return Py_BuildValue("O", PyCapsule_New((void *)hProfile, NULL, (void *)cmsCloseProfile));
 }
 
 static PyObject *
@@ -124,7 +124,7 @@ pycms_CreateRGBProfile(PyObject *self, PyObject *args) {
 		return Py_None;
 	}
 
-	return Py_BuildValue("O", PyCObject_FromVoidPtr((void *)hProfile, (void *)cmsCloseProfile));
+	return Py_BuildValue("O", PyCapsule_New((void *)hProfile, NULL, (void *)cmsCloseProfile));
 }
 
 static PyObject *
@@ -139,7 +139,7 @@ pycms_CreateLabProfile(PyObject *self, PyObject *args) {
 		return Py_None;
 	}
 
-	return Py_BuildValue("O", PyCObject_FromVoidPtr((void *)hProfile, (void *)cmsCloseProfile));
+	return Py_BuildValue("O", PyCapsule_New((void *)hProfile, NULL, (void *)cmsCloseProfile));
 }
 
 static PyObject *
@@ -157,7 +157,7 @@ pycms_CreateGrayProfile(PyObject *self, PyObject *args) {
 		return Py_None;
 	}
 
-	return Py_BuildValue("O", PyCObject_FromVoidPtr((void *)hProfile, (void *)cmsCloseProfile));
+	return Py_BuildValue("O", PyCapsule_New((void *)hProfile, NULL, (void *)cmsCloseProfile));
 }
 
 static PyObject *
@@ -178,8 +178,8 @@ pycms_BuildTransform (PyObject *self, PyObject *args) {
 		return Py_None;
 	}
 
-	hInputProfile = (cmsHPROFILE) PyCObject_AsVoidPtr(inputProfile);
-	hOutputProfile = (cmsHPROFILE) PyCObject_AsVoidPtr(outputProfile);
+	hInputProfile = (cmsHPROFILE) PyCapsule_GetPointer(inputProfile, NULL);
+	hOutputProfile = (cmsHPROFILE) PyCapsule_GetPointer(outputProfile, NULL);
 	flags = (cmsUInt32Number) inFlags;
 
 	hTransform = cmsCreateTransform(hInputProfile, getLCMStype(inMode),
@@ -190,7 +190,7 @@ pycms_BuildTransform (PyObject *self, PyObject *args) {
 		return Py_None;
 	}
 
-	return Py_BuildValue("O", PyCObject_FromVoidPtr((void *)hTransform, (void *)cmsDeleteTransform));
+	return Py_BuildValue("O", PyCapsule_New((void *)hTransform, NULL, (void *)cmsDeleteTransform));
 }
 
 static PyObject *
@@ -215,9 +215,9 @@ pycms_BuildProofingTransform (PyObject *self, PyObject *args) {
 		return Py_None;
 	}
 
-	hInputProfile = (cmsHPROFILE) PyCObject_AsVoidPtr(inputProfile);
-	hOutputProfile = (cmsHPROFILE) PyCObject_AsVoidPtr(outputProfile);
-	hProofingProfile = (cmsHPROFILE) PyCObject_AsVoidPtr(proofingProfile);
+	hInputProfile = (cmsHPROFILE) PyCapsule_GetPointer(inputProfile, NULL);
+	hOutputProfile = (cmsHPROFILE) PyCapsule_GetPointer(outputProfile, NULL);
+	hProofingProfile = (cmsHPROFILE) PyCapsule_GetPointer(proofingProfile, NULL);
 	flags = (cmsUInt32Number) inFlags;
 
 	hTransform = cmsCreateProofingTransform(hInputProfile, getLCMStype(inMode),
@@ -228,7 +228,7 @@ pycms_BuildProofingTransform (PyObject *self, PyObject *args) {
 		return Py_None;
 	}
 
-	return Py_BuildValue("O", PyCObject_FromVoidPtr((void *)hTransform, (void *)cmsDeleteTransform));
+	return Py_BuildValue("O", PyCapsule_New((void *)hTransform, NULL, (void *)cmsDeleteTransform));
 }
 
 static PyObject *
@@ -272,7 +272,7 @@ pycms_TransformPixel (PyObject *self, PyObject *args) {
 	inbuf[2]=(unsigned char)channel3;
 	inbuf[3]=(unsigned char)channel4;
 
-	hTransform = (cmsHTRANSFORM) PyCObject_AsVoidPtr(transform);
+	hTransform = (cmsHTRANSFORM) PyCapsule_GetPointer(transform, NULL);
 
 	cmsDoTransform(hTransform, inbuf, inbuf, 1);
 
@@ -302,7 +302,7 @@ pycms_TransformPixel2 (PyObject *self, PyObject *args) {
 	inbuf[2]=(unsigned char)(channel3*255);
 	inbuf[3]=(unsigned char)(channel4*255);
 
-	hTransform = (cmsHTRANSFORM) PyCObject_AsVoidPtr(transform);
+	hTransform = (cmsHTRANSFORM) PyCapsule_GetPointer(transform, NULL);
 
 	cmsDoTransform(hTransform, inbuf, inbuf, 1);
 
@@ -331,7 +331,7 @@ pycms_TransformBitmap (PyObject *self, PyObject *args) {
 	inImg=inImage->image;
 	outImg=outImage->image;
 
-	hTransform = (cmsHTRANSFORM) PyCObject_AsVoidPtr(transform);
+	hTransform = (cmsHTRANSFORM) PyCapsule_GetPointer(transform, NULL);
 
 	for (i = 0; i < height; i++) {
 		cmsDoTransform(hTransform, inImg->image[i],	outImg->image[i], width);
@@ -357,14 +357,14 @@ pycms_GetProfileName (PyObject *self, PyObject *args) {
 	}
 
 	buffer=malloc(BUFFER_SIZE);
-	hProfile = (cmsHPROFILE) PyCObject_AsVoidPtr(profile);
+	hProfile = (cmsHPROFILE) PyCapsule_GetPointer(profile, NULL);
 
 	cmsGetProfileInfoASCII(hProfile,
 			cmsInfoDescription,
 			cmsNoLanguage, cmsNoCountry,
 			buffer, BUFFER_SIZE);
 
-	ret=Py_BuildValue("s", buffer);
+	ret=Py_BuildValue("y", buffer);
 	free(buffer);
 	return ret;
 }
@@ -383,14 +383,14 @@ pycms_GetProfileInfo (PyObject *self, PyObject *args) {
 	}
 
 	buffer=malloc(BUFFER_SIZE);
-	hProfile = (cmsHPROFILE) PyCObject_AsVoidPtr(profile);
+	hProfile = (cmsHPROFILE) PyCapsule_GetPointer(profile, NULL);
 
 	cmsGetProfileInfoASCII(hProfile,
 			cmsInfoModel,
 			cmsNoLanguage, cmsNoCountry,
 			buffer, BUFFER_SIZE);
 
-	ret=Py_BuildValue("s", buffer);
+	ret=Py_BuildValue("y", buffer);
 	free(buffer);
 	return ret;
 }
@@ -409,14 +409,14 @@ pycms_GetProfileInfoCopyright (PyObject *self, PyObject *args) {
 	}
 
 	buffer=malloc(BUFFER_SIZE);
-	hProfile = (cmsHPROFILE) PyCObject_AsVoidPtr(profile);
+	hProfile = (cmsHPROFILE) PyCapsule_GetPointer(profile, NULL);
 
 	cmsGetProfileInfoASCII(hProfile,
 			cmsInfoCopyright,
 			cmsNoLanguage, cmsNoCountry,
 			buffer, BUFFER_SIZE);
 
-	ret=Py_BuildValue("s", buffer);
+	ret=Py_BuildValue("y", buffer);
 	free(buffer);
 	return ret;
 }
@@ -441,7 +441,7 @@ pycms_GetPixelsFromImage (PyObject *self, PyObject *args) {
 		memcpy(&pixbuf[i*width*bytes_per_pixel], inImg->image[i], width*bytes_per_pixel);
 	}
 
-	return Py_BuildValue("O", PyCObject_FromVoidPtr((void *)pixbuf, (void *)free));
+	return Py_BuildValue("O", PyCapsule_New((void *)pixbuf, NULL, (void *)free));
 }
 
 static PyObject *
@@ -458,7 +458,7 @@ pycms_SetImagePixels (PyObject *self, PyObject *args) {
 		return Py_None;
 	}
 
-	pixbuf = (unsigned char *) PyCObject_AsVoidPtr(pixels);
+	pixbuf = (unsigned char *) PyCapsule_GetPointer(pixels, NULL);
 	inImg=inImage->image;
 
 	for (i = 0; i < height; i++) {
@@ -484,19 +484,21 @@ pycms_TransformPixels (PyObject *self, PyObject *args) {
 		return Py_None;
 	}
 
-	hTransform = (cmsHTRANSFORM) PyCObject_AsVoidPtr(transform);
-	pixbuf = (unsigned char *) PyCObject_AsVoidPtr(pixels);
+	hTransform = (cmsHTRANSFORM) PyCapsule_GetPointer(transform, NULL);
+	pixbuf = (unsigned char *) PyCapsule_GetPointer(pixels, NULL);
 	result=malloc(width*4);
 
 	cmsDoTransform(hTransform, pixbuf, result, width);
 
-	return Py_BuildValue("O",  PyCObject_FromVoidPtr((void *)result, (void *)free));
+	return Py_BuildValue("O",  PyCapsule_New((void *)result, NULL, (void *)free));
 }
 
 static PyObject *
 pycms_GetVersion (PyObject *self, PyObject *args) {
 	return Py_BuildValue("i",  LCMS_VERSION);
 }
+
+//============Module Initialization==============
 
 static
 PyMethodDef pycms_methods[] = {
@@ -521,8 +523,37 @@ PyMethodDef pycms_methods[] = {
 	{NULL, NULL}
 };
 
-void
-init_cms(void)
-{
-    Py_InitModule("_cms", pycms_methods);
+struct module_state {
+    PyObject *error;
+};
+
+#define GETSTATE(m) ((struct module_state*)PyModule_GetState(m))
+
+static int pycms_traverse(PyObject *m, visitproc visit, void *arg) {
+    Py_VISIT(GETSTATE(m)->error);
+    return 0;
+}
+
+static int pycms_clear(PyObject *m) {
+    Py_CLEAR(GETSTATE(m)->error);
+    return 0;
+}
+
+static struct PyModuleDef moduledef = {
+    PyModuleDef_HEAD_INIT,
+    "_cms",
+    NULL,
+    sizeof(struct module_state),
+    pycms_methods,
+    NULL,
+    pycms_traverse,
+    pycms_clear,
+    NULL
+};
+
+#define INITERROR return NULL
+
+PyMODINIT_FUNC
+PyInit__cms(void) {
+    return PyModule_Create(&moduledef);
 }

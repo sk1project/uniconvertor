@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2015 by Ihor E. Novikov
+#  Copyright (C) 2015 by Igor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License
@@ -56,7 +56,7 @@ class ASE_Palette(BinaryModelObject):
         is_leaf = False
         info = '%d' % (len(self.childs))
         name = 'ASE palette'
-        return is_leaf, name, info
+        return (is_leaf, name, info)
 
     def update(self):
         self.nblocs = len(self.childs)
@@ -94,7 +94,7 @@ class ASE_Block(BinaryModelObject):
         is_leaf = True
         info = '%d' % (len(self.childs))
         name = ase_const.ASE_NAMES[self.identifier]
-        return is_leaf, name, info
+        return (is_leaf, name, info)
 
     def save(self, saver):
         saver.write(self.chunk)
@@ -113,7 +113,7 @@ class ASE_Group(ASE_Block):
 
     def parse(self, loader):
         ASE_Block.parse(self, loader)
-        self.group_name = self.chunk[8:-2].decode('utf_16_be').encode('utf-8')
+        self.group_name = self.chunk[8:-2].decode('utf_16_be')
 
     def update_for_sword(self):
         ASE_Block.update_for_sword(self)
@@ -122,10 +122,10 @@ class ASE_Group(ASE_Block):
         self.cache_fields.append((8, size * 2, 'Group name'))
 
     def update(self):
-        group_name = self.group_name.decode('utf-8')
+        group_name = self.group_name
         name_size = len(group_name) + 1
         self.chunk = struct.pack('>H', name_size)
-        self.chunk += group_name.encode('utf_16_be') + '\x00\x00'
+        self.chunk += group_name.encode('utf_16_be') + b'\x00\x00'
         size = len(self.chunk)
         self.chunk = self.identifier + struct.pack('>I', size) + self.chunk
 
@@ -166,8 +166,7 @@ class ASE_Color(ASE_Block):
         ASE_Block.parse(self, loader)
         size = struct.unpack('>H', self.chunk[6:8])[0]
         pos = 8 + 2 * size
-        self.color_name = self.chunk[8:pos - 2].\
-            decode('utf_16_be').encode('utf-8')
+        self.color_name = self.chunk[8:pos - 2].decode('utf_16_be')
         self.colorspace = self.chunk[pos:pos + 4]
         pos += 4
         if self.colorspace in (ase_const.ASE_RGB, ase_const.ASE_LAB):
@@ -198,10 +197,10 @@ class ASE_Color(ASE_Block):
         self.cache_fields.append((pos, 2, 'Color marker'))
 
     def update(self):
-        color_name = self.color_name.decode('utf-8')
+        color_name = self.color_name
         name_size = len(color_name) + 1
         self.chunk = struct.pack('>H', name_size)
-        self.chunk += color_name.encode('utf_16_be') + '\x00\x00'
+        self.chunk += color_name.encode('utf_16_be') + b'\x00\x00'
         self.chunk += self.colorspace
         for item in self.color_vals:
             self.chunk += struct.pack('>f', item)

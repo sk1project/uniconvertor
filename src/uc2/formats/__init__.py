@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# 	Copyright (C) 2012-2017 by Ihor E. Novikov
+# 	Copyright (C) 2012-2017 by Igor E. Novikov
 #
 # 	This program is free software: you can redistribute it and/or modify
 # 	it under the terms of the GNU Affero General Public License
@@ -16,10 +16,8 @@
 # 	along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import logging
-import os
 from importlib import import_module
 
-from fallback import fallback_check, im_loader
 from uc2 import events, msgconst
 from uc2 import uc2const
 from uc2.utils import fsutils
@@ -33,8 +31,6 @@ CHECKERS = {}
 
 
 def _get_loader(pid):
-    if pid in uc2const.BITMAP_LOADERS:
-        return im_loader
     if not isinstance(pid, str):
         return None
     if pid in LOADERS:
@@ -65,8 +61,6 @@ def _get_saver(pid):
 
 
 def _get_checker(pid):
-    if pid in uc2const.BITMAP_LOADERS:
-        return fallback_check
     if not isinstance(pid, str):
         return None
     if pid in CHECKERS:
@@ -127,14 +121,6 @@ def get_loader(path, experimental=False, return_id=False):
                     loader = _get_loader(item)
                     ret_id = item
                     break
-
-    if loader is None:
-        msg = 'By file content loader is not found for %s' % path
-        events.emit(events.MESSAGES, msgconst.WARNING, msg)
-        msg = 'Try using fallback loader'
-        events.emit(events.MESSAGES, msgconst.INFO, msg)
-        if fallback_check(path):
-            loader = im_loader
 
     if loader is None:
         msg = 'Loader is not found for %s' % path

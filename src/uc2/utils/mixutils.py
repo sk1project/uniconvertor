@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2017 by Ihor E. Novikov
+#  Copyright (C) 2017 by Igor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License
@@ -44,7 +44,6 @@ def config_logging(filepath, level='INFO'):
         level=level,
         filename=filepath,
         filemode='w',
-        stream=sys.stderr,
     )
 
 
@@ -64,3 +63,22 @@ def echo(msg='', newline=True, flush=True, code=''):
     sys.stdout.write(msg)
     if flush:
         sys.stdout.flush()
+
+
+class Decomposable:
+    def destroy(self):
+        for key in self.__dict__.keys():
+            obj = self.__dict__[key]
+            self.__dict__[key] = None
+            if isinstance(obj, Decomposable):
+                obj.destroy()
+
+
+class DecomposableTreeObject:
+    childs = []
+
+    def destroy(self):
+        for child in self.childs:
+            child.destroy()
+        for item in self.__dict__.keys():
+            self.__dict__[item] = None

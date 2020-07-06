@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2011-2017 by Ihor E. Novikov
+#  Copyright (C) 2011-2017 by Igor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License
@@ -18,14 +18,14 @@
 import copy
 from copy import deepcopy
 
-import libcms
+from . import libcms
 
 from uc2 import uc2const
 from uc2.uc2const import COLOR_RGB, COLOR_CMYK, COLOR_LAB, COLOR_GRAY, \
     COLOR_SPOT, COLOR_DISPLAY, COLOR_REG
 from uc2.uc2const import IMAGE_MONO, IMAGE_GRAY, IMAGE_RGB, IMAGE_CMYK, \
     IMAGE_LAB, IMAGE_TO_COLOR
-from uc2.utils import fsutils
+
 
 CS = [COLOR_RGB, COLOR_CMYK, COLOR_LAB, COLOR_GRAY]
 
@@ -110,6 +110,8 @@ def hexcolor_to_rgb(hexcolor):
     """Converts hex color string as a list of float values.
     For example: #ff00ff => [1.0, 0.0, 1.0]
     """
+    if not hexcolor.startswith('#'):
+        hexcolor = '#%s' % hexcolor
     if len(hexcolor) == 4:
         vals = (hexcolor[1] * 2, hexcolor[2] * 2, hexcolor[3] * 2)
     else:
@@ -409,7 +411,6 @@ def get_profile_name(filepath):
     returns None.
     """
     try:
-        filepath = fsutils.get_sys_path(filepath)
         profile = libcms.cms_open_profile_from_file(filepath)
         ret = libcms.cms_get_profile_name(profile)
     except Exception:
@@ -423,7 +424,6 @@ def get_profile_info(filepath):
     returns None.
     """
     try:
-        filepath = fsutils.get_sys_path(filepath)
         profile = libcms.cms_open_profile_from_file(filepath)
         ret = libcms.cms_get_profile_info(profile)
     except Exception:
@@ -437,7 +437,6 @@ def get_profile_descr(filepath):
     returns None.
     """
     try:
-        filepath = fsutils.get_sys_path(filepath)
         profile = libcms.cms_open_profile_from_file(filepath)
         ret = (libcms.cms_get_profile_name(profile),)
         ret += (libcms.cms_get_profile_copyright(profile),)
@@ -658,7 +657,8 @@ class ColorManager(object):
                        COLOR_GRAY: self.get_grayscale_color}
         return methods_map[cs](color)
 
-    def mix_colors(self, color0, color1, coef=.5):
+    @staticmethod
+    def mix_colors(color0, color1, coef=.5):
         supported = [COLOR_RGB, COLOR_CMYK, COLOR_GRAY]
         if not color0[0] in supported:
             return None
@@ -772,3 +772,9 @@ class ColorManager(object):
                 return self.do_proof_bitmap_transform(img)
         else:
             return self.convert_image(img, outmode, cs_out)
+
+    @staticmethod
+    def get_color_name(color):
+        if len(color) > 3:
+            return color[3]
+        return ''

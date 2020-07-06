@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2011-2018 by Ihor E. Novikov
+#  Copyright (C) 2011-2018 by Igor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License
@@ -16,7 +16,6 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import os
-import sys
 
 from uc2.utils import translator
 
@@ -25,13 +24,12 @@ appdata = None
 
 _ = translator.MsgTranslator()
 
-
 def uc2_init():
     """UniConvertor initializing routine."""
 
-    _pkgdir = __path__[0].decode(sys.getfilesystemencoding()).encode('utf-8')
+    _pkgdir = __path__[0]
 
-    from application import UCApplication
+    from .application import UCApplication
 
     app = UCApplication(_pkgdir)
     return app

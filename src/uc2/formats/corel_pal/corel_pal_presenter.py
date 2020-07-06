@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2015 by Ihor E. Novikov
+#  Copyright (C) 2015 by Igor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License
@@ -60,8 +60,7 @@ class CorelPalette_Presenter(TaggedModelPresenter):
     def convert_from_skp(self, skp_doc):
         mtds = self.methods
         skp = skp_doc.model
-        encoding = self.config.encoding
-        mtds.set_palette_name(skp.name.decode('utf-8').encode(encoding))
+        mtds.set_palette_name(skp.name)
 
         comments = ''
         if skp.source:
@@ -69,7 +68,7 @@ class CorelPalette_Presenter(TaggedModelPresenter):
         if skp.comments:
             for item in skp.comments.splitlines():
                 comments += item + '\n'
-        mtds.set_palette_comments(comments.decode('utf-8').encode(encoding))
+        mtds.set_palette_comments(comments)
         for item in skp.colors:
             mtds.add_color(item)
         mtds.clear_model()
@@ -77,9 +76,8 @@ class CorelPalette_Presenter(TaggedModelPresenter):
     def convert_to_skp(self, skp_doc):
         skp = skp_doc.model
         mtds = self.methods
-        encoding = self.config.encoding
 
-        skp.name = mtds.get_palette_name().decode(encoding).encode('utf-8')
+        skp.name = mtds.get_palette_name()
         if self.doc_file:
             filename = os.path.basename(self.doc_file)
             skp.comments = 'Converted from %s' % filename

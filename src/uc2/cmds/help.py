@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2019 by Ihor E. Novikov
+#  Copyright (C) 2019 by Igor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License
@@ -23,12 +23,12 @@ from uc2.utils.mixutils import echo
 HELP_TEMPLATE = '''
 %s
 
-Universal vector graphics format translator
-copyright (C) 2007-%s sK1 Project Team (https://sk1project.net/uc2/)
-For detailed help visit https://sk1project.net/uc2/help/
+Color palette translator
+copyright (C) 2018-%s sK1 Project Team (https://sk1project.net/color-picker/)
+For detailed help visit https://sk1project.net/color-picker/help/
 
-Usage: uniconvertor [OPTIONS] INPUT_FILE OUTPUT_FILE
-Example: uniconvertor drawing.cdr drawing.svg
+Usage: color-picker-cmd [OPTIONS] INPUT_FILE OUTPUT_FILE
+Example: color-picker-cmd drawing.cdr drawing.svg
 
  Available options:
  -h, --help      Display this help and exit
@@ -40,8 +40,8 @@ Example: uniconvertor drawing.cdr drawing.svg
  
 ---Bulk operations:---------------------------------
  
-Usage: uniconvertor [OPTIONS] FILE_PATTERN OUTPUT_DIRECTORY
-Example: uniconvertor --recursive --format=PDF ~/clipart/*.svg ~/clipart_pdf/
+Usage: color-picker-cmd [OPTIONS] FILE_PATTERN OUTPUT_DIRECTORY
+Example: color-picker-cmd --recursive --format=GPL ~/palettes/*.ase ~/palettes_gpl/
 
  Available options:
  -vs, --verbose-short    Show minimized internal logs
@@ -50,32 +50,18 @@ Example: uniconvertor --recursive --format=PDF ~/clipart/*.svg ~/clipart_pdf/
  
 ---Configuring:-------------------------------------
 
-Usage: uniconvertor --configure [OPTIONS]
-Example: uniconvertor --configure --cms_use=yes
+Usage: color-picker-cmd --configure [OPTIONS]
+Example: color-picker-cmd --configure --cms_use=yes
 
  Available options:
- uniconvertor --show-config
+ color-picker-cmd --show-config
 
 ---INPUT FILE FORMATS-------------------------------
 
- Supported input vector graphics file formats:
-   %s
-
- Supported input palette file formats:
-   %s
-
- Supported input image file formats:
    %s
 
 ---OUTPUT FILE FORMATS------------------------------
 
- Supported output vector graphics file formats:
-   %s
-
- Supported output palette file formats:
-   %s
-
- Supported output image file formats:
    %s
 
 ----------------------------------------------------
@@ -100,17 +86,14 @@ def show_help(appdata):
     app_name = '%s %s%s%s' % (appdata.app_name, appdata.version,
                               appdata.revision, mark)
     echo(HELP_TEMPLATE % (app_name, str(datetime.date.today().year),
-                          _get_infos(uc2const.MODEL_LOADERS),
                           _get_infos(uc2const.PALETTE_LOADERS),
-                          _get_infos(uc2const.BITMAP_LOADERS),
-                          _get_infos(uc2const.MODEL_SAVERS),
-                          _get_infos(uc2const.PALETTE_SAVERS),
-                          _get_infos(uc2const.BITMAP_SAVERS),))
+                          _get_infos(uc2const.PALETTE_SAVERS),))
 
 
 def show_short_help(msg):
     echo()
     echo(msg)
-    echo('USAGE: uniconvertor [OPTIONS] [INPUT FILE] [OUTPUT FILE]')
+    echo('USAGE: color-picker-cmd [OPTIONS] [INPUT FILE] [OUTPUT FILE]')
     echo('Use --help for more details.')
-    echo('For detailed help visit https://sk1project.net/uc2/help/' + '\n')
+    echo('For detailed help visit '
+         'https://sk1project.net/color-picker/help/' + '\n')

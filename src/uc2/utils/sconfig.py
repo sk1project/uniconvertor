@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2017-2018 by Ihor E. Novikov
+#  Copyright (C) 2017-2018 by Igor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License
@@ -16,9 +16,7 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import logging
-import os
 
-from uc2.utils.fs import path_system, path_unicode
 from uc2.utils import fsutils
 
 LOG = logging.getLogger(__name__)
@@ -41,7 +39,7 @@ class SerializedConfig(object):
         self.filename = filename
         if fsutils.exists(filename):
             try:
-                fileobj = fsutils.get_fileptr(filename)
+                fileobj = fsutils.get_fileptr(filename, binary=False)
             except Exception:
                 return
 
@@ -51,10 +49,10 @@ class SerializedConfig(object):
                     break
                 if line.startswith('#'):
                     continue
-                line = path_system('self.%s' % line)
+                line = 'self.%s' % line
                 try:
                     code = compile(line, '<string>', 'exec')
-                    exec code
+                    exec(code)
                 except Exception as e:
                     LOG.error('ERROR>>> %s\n%s', line, e)
             fileobj.close()
@@ -66,18 +64,18 @@ class SerializedConfig(object):
             return
 
         try:
-            fileobj = fsutils.get_fileptr(filename, True)
+            fileobj = fsutils.get_fileptr(filename, True, binary=False)
         except Exception:
             return
 
         defaults = SerializedConfig.__dict__
-        items = self.__dict__.items()
+        items = list(self.__dict__.items())
         items.sort()
         for key, value in items:
             if key in defaults and defaults[key] == value:
                 continue
             if key in ['filename', 'app']:
                 continue
-            line = path_unicode('%s = %s\n' % (key, value.__repr__()))
+            line = '%s = %s\n' % (key, value.__repr__())
             fileobj.write(line)
         fileobj.close()

@@ -1,8 +1,8 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 #
 # -*- coding: utf-8 -*-
 #
-# 	Copyright (C) 2017 by Ihor E. Novikov
+# 	Copyright (C) 2017, 2020 by Ihor E. Novikov
 #
 # 	This program is free software: you can redistribute it and/or modify
 # 	it under the terms of the GNU Affero General Public License

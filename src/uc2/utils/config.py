@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2012 by Ihor E. Novikov
+#  Copyright (C) 2012 by Igor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License
@@ -22,7 +22,6 @@ from xml.sax import handler
 from xml.sax.saxutils import XMLGenerator
 from xml.sax.xmlreader import InputSource
 
-from uc2.utils.fs import path_system, path_unicode
 from uc2.utils import fsutils
 from uc2.utils.fsutils import get_fileptr
 
@@ -94,10 +93,10 @@ class XmlConfigParser(object):
             LOG.error('Cannot write preferences into %s %s', filename, e)
             return
 
-        writer = XMLGenerator(out=fileobj, encoding=self.system_encoding)
+        writer = XMLGenerator(out=fileobj, encoding='utf-8')
         writer.startDocument()
         defaults = XmlConfigParser.__dict__
-        items = self.__dict__.items()
+        items = list(self.__dict__.items())
         items.sort()
         writer.startElement('preferences', {})
         writer.characters('\n')
@@ -109,7 +108,7 @@ class XmlConfigParser(object):
             writer.characters('\t')
             writer.startElement('%s' % key, {})
 
-            str_value = path_unicode(value.__str__())
+            str_value = value.__str__()
             if isinstance(value, str):
                 str_value = "'%s'" % (escape_quote(str_value))
 
@@ -136,10 +135,11 @@ class XMLPrefReader(handler.ContentHandler):
 
     def endElement(self, name):
         if name != 'preferences':
+            line = ''
             try:
-                line = path_system('self.value=' + self.value)
+                line = 'self.value=' + self.value
                 code = compile(line, '<string>', 'exec')
-                exec code
+                exec(code)
                 self.pref.__dict__[self.key] = self.value
             except Exception as e:
                 LOG.error('Error in "%s" %s', line, e)

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2015 by Ihor E. Novikov
+#  Copyright (C) 2015 by Igor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License
@@ -24,9 +24,6 @@ from uc2.formats.scribus_pal.scribus_pal_filters import ScribusPalette_Loader, \
     ScribusPalette_Saver
 from uc2.formats.scribus_pal.scribus_pal_model import ScribusPalette, SPColor
 from uc2.uc2const import COLOR_RGB, COLOR_CMYK, COLOR_SPOT, COLOR_REG
-
-
-def create_new_palette(config): pass
 
 
 class ScribusPalettePresenter(TaggedModelPresenter):

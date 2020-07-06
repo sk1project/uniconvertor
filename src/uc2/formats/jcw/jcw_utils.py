@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2015 by Ihor E. Novikov
+#  Copyright (C) 2015 by Igor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License
@@ -75,4 +75,4 @@ def get_jcw_color(color):
         vals = cms.gray_to_cmyk(color[1])
         return struct.pack('<4H', *dec_to_val(vals))
     else:
-        return struct.pack('<3H', *dec_to_val(color[1])) + '\x00\x00'
+        return struct.pack('<3H', *dec_to_val(color[1])) + b'\x00\x00'

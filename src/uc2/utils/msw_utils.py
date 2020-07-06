@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2019 by Ihor E. Novikov
+#  Copyright (C) 2019 by Igor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License
@@ -38,5 +38,5 @@ def unicode_sys_argv():
     argv = CommandLineToArgvW(cmd_line, ctypes.byref(argc))
 
     if argc.value:
-        rng = xrange(argc.value - len(sys.argv), argc.value)
+        rng = range(argc.value - len(sys.argv), argc.value)
         sys.argv = [argv[i] for i in rng]

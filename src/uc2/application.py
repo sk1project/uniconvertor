@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2012-2017 by Ihor E. Novikov
+#  Copyright (C) 2012-2017 by Igor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License
@@ -33,7 +33,7 @@ LOG_MAP = {
     msgconst.JOB: LOG.info,
     msgconst.INFO: LOG.info,
     msgconst.OK: LOG.info,
-    msgconst.WARNING: LOG.warn,
+    msgconst.WARNING: LOG.warning,
     msgconst.ERROR: LOG.error,
     msgconst.STOP: lambda *args: args,
 }
@@ -50,18 +50,13 @@ class UCApplication(object):
 
     def __init__(self, path='', cfgdir='~', check=True):
         self.path = path
-        cfgdir = fsutils.expanduser(fsutils.get_utf8_path(cfgdir))
+        cfgdir = fsutils.expanduser(cfgdir)
         self.config = UCConfig()
         self.config.app = self
         self.appdata = UCData(self, cfgdir, check=check)
         self.config.load(self.appdata.app_config)
         setattr(uc2, 'config', self.config)
         setattr(uc2, 'appdata', self.appdata)
-
-    def init_mngrs(self):
-        if not self.default_cms:
-            self.default_cms = app_cms.AppColorManager(self)
-            self.palettes = PaletteManager(self)
 
     def verbose(self, *args):
         status = msgconst.MESSAGES[args[0]]
@@ -87,7 +82,6 @@ class UCApplication(object):
             sys.exit(0)
         elif cmds.check_args(cmds.LOG_CMDS):
             log_filepath = os.path.join(self.appdata.app_config_dir, 'uc2.log')
-            log_filepath = log_filepath.decode('utf-8')
             with open(log_filepath, 'rb') as fileptr:
                 echo(fileptr.read())
             sys.exit(0)
@@ -147,11 +141,11 @@ class UCApplication(object):
         self.log_filepath = os.path.join(self.appdata.app_config_dir, 'uc2.log')
         config_logging(self.log_filepath, log_level)
 
-        self.init_mngrs()
+        self.default_cms = app_cms.AppColorManager(self)
+        self.palettes = PaletteManager(self)
 
         # EXECUTION ----------------------------
         status = 0
-        # noinspection PyBroadException
         try:
             command(self.appdata, files, options)
         except Exception:
@@ -160,3 +154,5 @@ class UCApplication(object):
         if self.do_verbose:
             echo()
         sys.exit(status)
+
+

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2012 by Ihor E. Novikov
+#  Copyright (C) 2012 by Igor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License
@@ -17,17 +17,17 @@
 
 from uc2 import uc2const
 
-RIFF_ID = 'RIFF'
+RIFF_ID = b'RIFF'
 
-CDR5 = 'CDR5'
-CDR6 = 'CDR6'
-CDR7 = 'CDR7'
-CDR8 = 'CDR8'
-CDR9 = 'CDR9'
-CDR10 = 'CDRA'
-CDR11 = 'CDRB'
-CDR12 = 'CDRC'
-CDR13 = 'CDRD'
+CDR5 = b'CDR5'
+CDR6 = b'CDR6'
+CDR7 = b'CDR7'
+CDR8 = b'CDR8'
+CDR9 = b'CDR9'
+CDR10 = b'CDRA'
+CDR11 = b'CDRB'
+CDR12 = b'CDRC'
+CDR13 = b'CDRD'
 
 CDR_VERSIONS = [CDR6, CDR7, CDR8, CDR9, CDR10, CDR11, CDR12, CDR13, ]
 cdrunit_to_pt = uc2const.mm_to_pt / 10000.0

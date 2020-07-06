@@ -2,7 +2,7 @@
 #
 #  cms - module which provides binding to LittleCMS2 library.
 #
-#  Copyright (C) 2012-2018 by Ihor E. Novikov
+#  Copyright (C) 2012-2018 by Igor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License
@@ -18,11 +18,11 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import os
+
 from PIL import Image
 
-import _cms
-
 from uc2 import uc2const
+from . import _cms
 
 
 class CmsError(Exception):
@@ -109,7 +109,7 @@ def cms_create_srgb_profile():
 
     :return: handle to lcms built-in sRGB profile
     """
-    import srgb_profile_rc
+    from . import srgb_profile_rc
     profile = srgb_profile_rc.get_resource(True)
     return cms_open_profile_from_file(profile.name)
 
@@ -119,7 +119,7 @@ def get_srgb_profile_resource():
 
     :return: path to sRGB profile
     """
-    import srgb_profile_rc
+    from . import srgb_profile_rc
     return srgb_profile_rc.get_resource(True)
 
 
@@ -128,7 +128,7 @@ def save_srgb_profile(path):
 
     :param path: sRGB profile path as a string
     """
-    import srgb_profile_rc
+    from . import srgb_profile_rc
     srgb_profile_rc.save_resource(path)
 
 
@@ -142,7 +142,7 @@ def cms_create_cmyk_profile():
 
     :return: handle to lcms built-in CMYK profile
     """
-    import cmyk_profile_rc
+    from . import cmyk_profile_rc
     profile = cmyk_profile_rc.get_resource(True)
     return cms_open_profile_from_file(profile.name)
 
@@ -152,7 +152,7 @@ def get_cmyk_profile_resource():
 
     :return: path to built-in CMYK profile
     """
-    import cmyk_profile_rc
+    from . import cmyk_profile_rc
     return cmyk_profile_rc.get_resource(True)
 
 
@@ -161,7 +161,7 @@ def save_cmyk_profile(path):
 
     :param path: CMYK profile path as a string
     """
-    import cmyk_profile_rc
+    from . import cmyk_profile_rc
     cmyk_profile_rc.save_resource(path)
 
 
@@ -177,7 +177,7 @@ def cms_create_display_profile():
 
     :return: handle to lcms built-in display profile
     """
-    import display_profile_rc
+    from . import display_profile_rc
     profile = display_profile_rc.get_resource(True)
     return cms_open_profile_from_file(profile.name)
 
@@ -187,7 +187,7 @@ def get_display_profile_resource():
 
     :return: path to built-in display profile
     """
-    import display_profile_rc
+    from . import display_profile_rc
     return display_profile_rc.get_resource(True)
 
 
@@ -196,7 +196,7 @@ def save_display_profile(path):
 
     :param path: display profile path as a string
     """
-    import display_profile_rc
+    from . import display_profile_rc
     display_profile_rc.save_resource(path)
 
 
@@ -210,7 +210,7 @@ def cms_create_lab_profile():
 
     :return: handle to lcms built-in display profile
     """
-    import lab_profile_rc
+    from . import lab_profile_rc
     profile = lab_profile_rc.get_resource(True)
     return cms_open_profile_from_file(profile.name)
 
@@ -220,7 +220,7 @@ def get_lab_profile_resource():
 
     :return: path to built-in Lab profile
     """
-    import lab_profile_rc
+    from . import lab_profile_rc
     return lab_profile_rc.get_resource(True)
 
 
@@ -229,7 +229,7 @@ def save_lab_profile(path):
 
     :param path: Lab profile path as a string
     """
-    import lab_profile_rc
+    from . import lab_profile_rc
     lab_profile_rc.save_resource(path)
 
 
@@ -243,7 +243,7 @@ def cms_create_gray_profile():
 
     :return: handle to lcms built-in Gray profile
     """
-    import gray_profile_rc
+    from . import gray_profile_rc
     profile = gray_profile_rc.get_resource(True)
     return cms_open_profile_from_file(profile.name)
 
@@ -253,7 +253,7 @@ def get_gray_profile_resource():
 
     :return: path to built-in Gray profile
     """
-    import gray_profile_rc
+    from . import gray_profile_rc
     return gray_profile_rc.get_resource(True)
 
 
@@ -262,7 +262,7 @@ def save_gray_profile(path):
 
     :param path: Gray profile path as a string
     """
-    import gray_profile_rc
+    from . import gray_profile_rc
     gray_profile_rc.save_resource(path)
 
 
@@ -449,7 +449,7 @@ def cms_get_profile_name(profile):
     :param profile: valid lcms profile handle
     :return: profile name string
     """
-    return _cms.getProfileName(profile).strip().decode('cp1252').encode('utf-8')
+    return _cms.getProfileName(profile).decode('cp1252').strip()
 
 
 def cms_get_profile_info(profile):
@@ -458,7 +458,7 @@ def cms_get_profile_info(profile):
     :param profile: valid lcms profile handle
     :return: profile description info string
     """
-    return _cms.getProfileInfo(profile).strip().decode('cp1252').encode('utf-8')
+    return _cms.getProfileInfo(profile).decode('cp1252').strip()
 
 
 def cms_get_profile_copyright(profile):
@@ -467,4 +467,4 @@ def cms_get_profile_copyright(profile):
     :param profile: valid lcms profile handle
     :return: profile copyright info string
     """
-    return _cms.getProfileInfoCopyright(profile).strip().decode('cp1252').encode('utf-8')
+    return _cms.getProfileInfoCopyright(profile).decode('cp1252').strip()

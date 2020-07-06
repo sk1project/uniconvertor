@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2015 by Ihor E. Novikov
+#  Copyright (C) 2015 by Igor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License
@@ -33,7 +33,7 @@ class SPObject(TaggedModelObject):
     def resolve(self):
         is_node = len(self.childs)
         return not is_node, self.tag, \
-               '%d' % (len(self.childs)) if is_node else ''
+            '%d' % (len(self.childs)) if is_node else ''
 
 
 class ScribusPalette(SPObject):

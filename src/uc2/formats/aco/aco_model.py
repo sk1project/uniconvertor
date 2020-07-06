@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2017 by Ihor E. Novikov
+#  Copyright (C) 2017 by Igor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License
@@ -28,7 +28,7 @@ class ACO_Palette(BinaryModelObject):
     The chunk value is artificial to avoid SWord application error.
     """
 
-    chunk = '\x00'
+    chunk = b'\x00'
     version = aco_const.ACO1_VER
     ncolors = 0
 

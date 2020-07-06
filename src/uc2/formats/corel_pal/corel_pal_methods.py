@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2015 by Ihor E. Novikov
+#  Copyright (C) 2015 by Igor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License
@@ -73,10 +73,9 @@ class CorelPalette_Methods:
         for cs in self.get_colorspaces().childs:
             vals = [[], []]
             if len(cs.childs) == 1 and cs.childs[0].attrs['cs'] == 'LAB':
-                encoding = self.config.encoding
                 vals = self.get_color_vals(cs.childs[0].attrs['tints'])
-                name = cs.attrs['name'].decode(encoding)
-                palette_name = self.get_palette_name().decode(encoding)
+                name = cs.attrs['name']
+                palette_name = self.get_palette_name()
                 vals = [COLOR_LAB, vals, 1.0, name, palette_name]
             else:
                 for item in cs.childs:
@@ -165,17 +164,16 @@ class CorelPalette_Methods:
             color = self.cms.get_rgb_color(color)
         page = self.get_page_obj()
         clr = XMLObject('color')
-        clr.attrs['cs'] = CS_MATCH[color[0]]. \
-            decode('utf-8').encode(self.config.encoding)
+        clr.attrs['cs'] = CS_MATCH[color[0]]
         name = self.get_color_name(color)
-        clr.attrs['name'] = name.decode('utf-8').encode(self.config.encoding)
+        clr.attrs['name'] = name
         clr.attrs['tints'] = self.get_tints(color[1])
         page.childs.append(clr)
 
     def add_spot_color(self, color):
         page = self.get_page_obj()
         clr = XMLObject('color')
-        name = color[3].decode('utf-8').encode(self.config.encoding)
+        name = color[3]
         clr.attrs['cs'] = name
         clr.attrs['name'] = name
         clr.attrs['tints'] = '1'
@@ -191,13 +189,13 @@ class CorelPalette_Methods:
 
         if color[1][1]:
             clr = XMLObject('color')
-            clr.attrs['cs'] = 'CMYK'.encode(self.config.encoding)
+            clr.attrs['cs'] = 'CMYK'
             clr.attrs['tints'] = self.get_tints(color[1][1])
             cs.childs.append(clr)
 
         if color[1][0]:
             clr = XMLObject('color')
-            clr.attrs['cs'] = 'RGB'.encode(self.config.encoding)
+            clr.attrs['cs'] = 'RGB'
             clr.attrs['tints'] = self.get_tints(color[1][0])
             cs.childs.append(clr)
 
@@ -216,8 +214,8 @@ class CorelPalette_Methods:
             vals = deepcopy(self.colorspaces[color.attrs['cs']])
             if vals[0] == COLOR_LAB:
                 return vals
-            name = color.attrs['cs'].decode(self.config.encoding)
-            palette_name = self.get_palette_name().decode(self.config.encoding)
+            name = color.attrs['cs']
+            palette_name = self.get_palette_name()
             return [cs, vals, 1.0, name, palette_name]
         else:
             return None

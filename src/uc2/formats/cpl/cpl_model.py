@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2015 by Ihor E. Novikov
+#  Copyright (C) 2015 by Igor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License
@@ -100,7 +100,7 @@ class CPL7_Color(AbstractCPLColor):
 
     colorspace = 0
     name = ''
-    valbytes = ''
+    valbytes = b''
 
     def __init__(self):
         AbstractCPLColor.__init__(self)
@@ -109,7 +109,7 @@ class CPL7_Color(AbstractCPLColor):
         self.colorspace = loader.readword()
         self.valbytes = loader.readbytes(10)
         size = loader.readbyte()
-        self.name = loader.readstr(size).decode('latin1').encode('utf-8')
+        self.name = loader.readstr(size)
         ln = 2 + 10 + 1 + size
         loader.fileptr.seek(-ln, 1)
         self.chunk = loader.readbytes(ln)
@@ -157,7 +157,7 @@ class CPL7_ColorUTF(AbstractCPLColor):
         self.colorspace = loader.readword()
         self.valbytes = loader.readbytes(10)
         size = loader.readbyte()
-        self.name = loader.readstr(size * 2).decode('utf_16_le').encode('utf-8')
+        self.name = loader.readustr(size)
         ln = 2 + 10 + 1 + size * 2
         loader.fileptr.seek(-ln, 1)
         self.chunk = loader.readbytes(ln)
@@ -242,7 +242,7 @@ class CPL10_Palette(AbstractCPLPalette):
         # Palette name (header 0)
         loader.fileptr.seek(self.headers[0], 0)
         name_size = loader.readbyte()
-        self.name = loader.readbytes(name_size).decode('latin1').encode('utf-8')
+        self.name = loader.readstr(name_size)
         chunk_size += 1 + name_size
 
         # Palette type (header 1)
@@ -324,7 +324,7 @@ class CPL10_SpotColor(CPL7_Color):
         self.cache_fields.append((29, len(self.name), 'color name'))
 
     def resolve(self, name=''):
-        return True, 'SPOT color', ''
+        return (True, 'SPOT color', '')
 
     def get_color(self):
         cs = self.colorspace
@@ -406,7 +406,7 @@ class CPL12_Palette(AbstractCPLPalette):
     def update_for_save(self):
         for child in self.childs:
             child.update_for_save()
-        self.chunk = ''
+        self.chunk = b''
         self.chunk += cpl_const.CPL12
         self.chunk += cpl_const.CPL12_NHEADERS
         size = len(self.name) * 2
@@ -414,7 +414,7 @@ class CPL12_Palette(AbstractCPLPalette):
         for i in range(3):
             self.chunk += utils.py_int2dword(i) + utils.py_int2dword(pos[i])
         self.chunk += utils.py_int2byte(len(self.name))
-        self.chunk += self.name.decode('utf-8').encode('utf_16_le')
+        self.chunk += self.name.encode('utf_16_le')
         self.chunk += cpl_const.CPL12_PALTYPE
         self.chunk += utils.py_int2word(len(self.childs))
 
@@ -453,7 +453,7 @@ class CPL12_Color(CPL7_Color):
         self.chunk = utils.py_int2word(self.colorspace)
         self.chunk += self.valbytes
         self.chunk += utils.py_int2byte(len(self.name))
-        self.chunk += self.name.decode('utf-8').encode('utf_16_le')
+        self.chunk += self.name.encode('utf_16_le')
 
 
 class CPL12_SpotPalette(CPL12_Palette):

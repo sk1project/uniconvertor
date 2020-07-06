@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2015 by Ihor E. Novikov
+#  Copyright (C) 2015 by Igor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License
@@ -17,22 +17,22 @@
 
 from uc2.uc2const import COLOR_CMYK, COLOR_GRAY, COLOR_LAB, COLOR_RGB
 
-ASEF = 'ASEF'
-ASE_VER = '\x00\x01\x00\x00'
-ASE_GROUP = '\xc0\x01'
-ASE_GROUP_END = '\xc0\x02'
-ASE_COLOR = '\x00\x01'
+ASEF = b'ASEF'
+ASE_VER = b'\x00\x01\x00\x00'
+ASE_GROUP = b'\xc0\x01'
+ASE_GROUP_END = b'\xc0\x02'
+ASE_COLOR = b'\x00\x01'
 
 ASE_NAMES = {
-    ASE_GROUP: 'ASE Group',
-    ASE_GROUP_END: 'ASE Group End',
-    ASE_COLOR: 'ASE Color',
+    ASE_GROUP: b'ASE Group',
+    ASE_GROUP_END: b'ASE Group End',
+    ASE_COLOR: b'ASE Color',
 }
 
-ASE_RGB = 'RGB '
-ASE_CMYK = 'CMYK'
-ASE_LAB = 'LAB '
-ASE_GRAY = 'Gray'
+ASE_RGB = b'RGB '
+ASE_CMYK = b'CMYK'
+ASE_LAB = b'LAB '
+ASE_GRAY = b'Gray'
 
 CS_MATCH = {
     ASE_RGB: COLOR_RGB,
@@ -45,6 +45,6 @@ CS_MATCH = {
     COLOR_GRAY: ASE_GRAY,
 }
 
-ASE_GLOBAL = '\x00\x00'
-ASE_SPOT = '\x00\x01'
-ASE_PROCESS = '\x00\x02'
+ASE_GLOBAL = b'\x00\x00'
+ASE_SPOT = b'\x00\x01'
+ASE_PROCESS = b'\x00\x02'

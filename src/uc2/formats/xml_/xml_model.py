@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2015-2016 by Ihor E. Novikov
+#  Copyright (C) 2015-2016 by Igor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License
@@ -45,7 +45,7 @@ class XMLObject(TaggedModelObject):
         is_node = len(self.childs)
         info = ''
         if is_node: info = '%d' % (len(self.childs))
-        return (not is_node, self.tag, info)
+        return not is_node, self.tag, info
 
 
 class XmlContentText(XMLObject):

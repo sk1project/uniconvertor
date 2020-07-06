@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2019 by Ihor E. Novikov
+#  Copyright (C) 2019 by Igor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License
@@ -57,7 +57,7 @@ def to_bool(val):
 def show_config():
     config = uc2.config
     echo()
-    echo('UniConvertor 2.0 preferences:\n')
+    echo('Color Picker preferences:\n')
     echo('  --log_level=%s' % config.log_level)
     echo()
     echo('  --cms_use=%s' % to_bool(config.cms_use))

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2012 by Ihor E. Novikov
+#  Copyright (C) 2012 by Igor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License
@@ -21,8 +21,8 @@ from uc2 import _
 The package provides generic application constants
 """
 # Version
-VERSION = '2.0'
-REVISION = 'rc5'
+VERSION = '2.1'
+REVISION = 'rc'
 BUILD = ''
 
 # Placement constants
@@ -85,7 +85,6 @@ HPGL = 111
 DXF = 120
 DWG = 121
 DST = 'dst'
-PES = 'pes'
 
 
 JPG = 300
@@ -109,7 +108,6 @@ COREL_PAL = 'corel_pal'
 ASE = 'ase'
 ACO = 'aco'
 JCW = 'jcw'
-EDR = 'edr_pal'
 
 ICC = 600
 ICM = 601
@@ -189,7 +187,6 @@ FORMAT_DESCRIPTION = {
 
     # Embroidery Formats
     DST: _('DST - (Tajima) Design format'),
-    PES: _('PES - (Brother) Embroidery file format'),
 }
 
 FORMAT_NAMES = {
@@ -231,7 +228,6 @@ FORMAT_NAMES = {
 
     # Embroidery Formats
     DST: "DST",
-    PES: "PES",
 
     # Bitmap file formats
     JPG: "JPEG",
@@ -256,7 +252,6 @@ FORMAT_NAMES = {
     ASE: "ASE",
     ACO: "ACO",
     JCW: "JCW",
-    EDR: 'EDR_PAL',
 
     # Color profiles
     ICC: "ICC",
@@ -268,24 +263,22 @@ FORMAT_NAMES = {
 }
 
 MODEL_LOADERS = [
-    SK2, SVG, SVGZ, CDR, CMX, CCX, XAR, WMF, PLT, SK1, SK, FIG, CGM, DST, PES
+    SK2, SVG, SVGZ, CDR, CMX, CCX, XAR, WMF, PLT, SK1, SK, FIG, CGM, DST,
 ]  # CDT,
 BITMAP_LOADERS = [PNG, JPG, PSD, XCF, JP2, TIF, GIF, BMP, PCX, PPM, XBM, XPM,
                   WEBP]
 PALETTE_LOADERS = [SKP, GPL, SCRIBUS_PAL, SOC, CPL, COREL_PAL, ASE, ACO, JCW]
-EXPERIMENTAL_LOADERS = [MD, RIFF, XML]
+EXPERIMENTAL_LOADERS = [MD, RIFF, XML, ]
 
-MODEL_SAVERS = [
-    SK2, SVG, SVGZ, PLT, PDF, CDR, CMX, CCX, SK1, SK, CGM, FIG, DST,
-]
+MODEL_SAVERS = [SK2, SVG, SVGZ, PLT, PDF, CDR, CMX, CCX, SK1, SK, CGM, FIG, DST]
 BITMAP_SAVERS = [PNG, ]
 PALETTE_SAVERS = [SKP, GPL, SCRIBUS_PAL, SOC, CPL, COREL_PAL, ASE, ACO, JCW]
-EXPERIMENTAL_SAVERS = [MD, RIFF, XML, WMF]
+EXPERIMENTAL_SAVERS = [MD, RIFF, XML, WMF, DST, ]
 
 PATTERN_FORMATS = [EPS, PNG, JPG, JP2, TIF, GIF, BMP, PCX, PPM, XBM, XPM]
 
-LOADER_FORMATS = MODEL_LOADERS + BITMAP_LOADERS + PALETTE_LOADERS
-SAVER_FORMATS = MODEL_SAVERS + BITMAP_SAVERS + PALETTE_SAVERS
+LOADER_FORMATS = PALETTE_LOADERS  # + BITMAP_LOADERS + MODEL_LOADERS
+SAVER_FORMATS = PALETTE_SAVERS  # + BITMAP_SAVERS + MODEL_SAVERS
 
 FORMAT_EXTENSION = {
     ALL_FORMATS: '',
@@ -315,7 +308,7 @@ FORMAT_EXTENSION = {
     XML: ('xml', 'svg', 'sla',),
     LOG: ('log',),
     MD: ('md',),
-    DST: ('dst',), PES: ('pes', 'pec')
+    DST: ('dst',)
 }
 
 IMAGE_FORMATS = [JPG, TIF, BMP, PCX, GIF, PNG, PPM, XBM, XPM, WEBP, ]

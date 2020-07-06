@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2019 by Ihor E. Novikov
+#  Copyright (C) 2019 by Igor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License
@@ -43,28 +43,6 @@ def show_parts(appdata):
         part = 'LCMS'
         from uc2 import cms
         _show_part(part, cms.libcms.get_version())
-
-        part = 'Cairo'
-        from uc2 import libcairo
-        _show_part(part, libcairo.get_version()[0])
-
-        part = 'pycairo'
-        _show_part(part, libcairo.get_version()[1])
-
-        part = 'Pillow'
-        from uc2 import libimg
-        _show_part(part, libimg.get_version())
-
-        part = 'ImageMagick'
-        _show_part(part, libimg.get_magickwand_version()[0])
-
-        part = 'Pango'
-        from uc2 import libpango
-        _show_part(part, libpango.get_version())
-
-        part = 'Reportlab'
-        import reportlab
-        _show_part(part, reportlab.Version)
 
     except Exception as e:
         _show_part(part, 'FAIL')

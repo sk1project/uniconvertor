@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2015 by Ihor E. Novikov
+#  Copyright (C) 2015 by Igor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License
@@ -17,21 +17,20 @@
 
 from uc2 import utils
 from uc2.formats.generic import BinaryModelObject
-from uc2.formats.jcw.jcw_const import JCW_ID, JCW_NAMESIZE, JCW_COLOR_NAMES, \
-    JCW_VER, JCW_CMYK
 from uc2.formats.jcw.jcw_utils import parse_jcw_color, get_jcw_color
+from uc2.formats.jcw import jcw_const
 
 
 class JCW_Palette(BinaryModelObject):
     resolve_name = 'JCW Palette'
     name = ''
-    palette_id = JCW_ID
-    version = JCW_VER
+    palette_id = jcw_const.JCW_ID
+    version = jcw_const.JCW_VER
     ncolors = 0
     colorspace = 0
     namesize = 21
 
-    def __init__(self, colorspace=JCW_CMYK, namesize=0):
+    def __init__(self, colorspace=jcw_const.JCW_CMYK, namesize=0):
         self.childs = []
         self.cache_fields = []
         if namesize:
@@ -61,8 +60,8 @@ class JCW_Palette(BinaryModelObject):
     def update_for_save(self):
         for child in self.childs:
             child.update_for_save()
-        self.chunk = JCW_ID
-        self.chunk += JCW_VER
+        self.chunk = jcw_const.JCW_ID
+        self.chunk += jcw_const.JCW_VER
         self.chunk += utils.py_int2word(len(self.childs))
         self.chunk += utils.py_int2byte(self.colorspace)
         self.chunk += utils.py_int2byte(self.namesize)
@@ -81,7 +80,7 @@ class JCW_Palette(BinaryModelObject):
 class JCW_Color(BinaryModelObject):
     valbytes = ''
     name = ''
-    namesize = JCW_NAMESIZE
+    namesize = jcw_const.JCW_NAMESIZE
     colorspace = 0
 
     def __init__(self, colorspace, namesize, color=None):
@@ -96,30 +95,28 @@ class JCW_Color(BinaryModelObject):
     def parse(self, loader):
         self.chunk = loader.readbytes(8 + self.namesize)
         self.valbytes = self.chunk[0:8]
-        self.name = self.chunk[8:]. \
-            decode('iso-8859-1', errors='ignore').encode('utf-8')
+        self.name = self.chunk[8:].strip(b'\x00').\
+            decode('iso-8859-1', errors='ignore')
 
     def update_for_sword(self):
         self.cache_fields.append((0, 8, 'color vals'))
         self.cache_fields.append((8, self.namesize, 'color name'))
 
     def update_for_save(self):
-        self.chunk = ''
+        self.chunk = b''
         self.chunk += self.valbytes
-        self.chunk += self.name.decode('utf-8'). \
-            encode('iso-8859-1', errors='ignore')
+        self.chunk += self.name.encode('iso-8859-1', errors='ignore')
         if len(self.name) < self.namesize:
-            self.chunk += '\x00' * (self.namesize - len(self.name))
+            self.chunk += b'\x00' * (self.namesize - len(self.name))
 
     def save(self, saver):
         saver.write(self.chunk)
 
     def resolve(self, name=''):
-        name = JCW_COLOR_NAMES[self.colorspace] + ' color'
+        name = jcw_const.JCW_COLOR_NAMES[self.colorspace] + ' color'
         return 'True', name, 0
 
     def get_color(self):
         clr = parse_jcw_color(self.colorspace, self.valbytes)
-        if clr:
-            clr[3] += self.name
+        clr[3] += self.name if clr else ''
         return clr

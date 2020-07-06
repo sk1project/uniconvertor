@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2012-2017 by Ihor E. Novikov
+#  Copyright (C) 2012-2017 by Igor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License
@@ -19,12 +19,12 @@ import logging
 
 from uc2 import _, uc2const
 from uc2 import events, msgconst
-from uc2.utils import fs, fsutils
+from uc2.utils import fs, fsutils, mixutils
 
 LOG = logging.getLogger(__name__)
 
 
-class ModelObject(object):
+class ModelObject(mixutils.DecomposableTreeObject):
     """
     Abstract parent class for all model
     objects. Provides common object properties.
@@ -32,13 +32,6 @@ class ModelObject(object):
     cid = 0
     parent = None
     config = None
-    childs = []
-
-    def destroy(self):
-        for child in self.childs:
-            child.destroy()
-        for item in self.__dict__.keys():
-            self.__dict__[item] = None
 
     def update(self):
         pass
@@ -103,7 +96,7 @@ class TaggedModelObject(ModelObject):
 
 
 class BinaryModelObject(ModelObject):
-    chunk = ''
+    chunk = b''
     cache_fields = []
 
     def save(self, saver):
@@ -202,20 +195,18 @@ class ModelPresenter(object):
         if self.model is not None:
             self.model.destroy()
         self.model = None
-        filename = filename.encode('utf-8') \
-            if isinstance(filename, unicode) else filename
         model_name = uc2const.FORMAT_NAMES[self.cid]
         self.send_ok(_('<%s> document model is destroyed for %s') %
                      (model_name, filename))
 
         if self.doc_dir and fsutils.exists(self.doc_dir):
             try:
-                fs.xremove_dir(fsutils.get_sys_path(self.doc_dir))
+                fs.xremove_dir(self.doc_dir)
                 self.send_ok(_('Cache is cleared for') + ' %s' % filename)
             except Exception as e:
                 msg = _('Cache clearing is unsuccessful')
                 self.send_error(msg)
-                LOG.warn(msg + ' %s', e)
+                LOG.warning(msg + ' %s', e)
                 LOG.exception(e)
 
     def update_msg(self, val):

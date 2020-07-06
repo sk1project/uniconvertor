@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2003-2015 by Ihor E. Novikov
+#  Copyright (C) 2003-2015 by Igor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License
@@ -164,8 +164,7 @@ def latin1_bytes_2str(data):
     Converts Latin1 bytes to Python string value.
     """
     length = len(data)
-    return unicode(struct.unpack(str(length) + 's', data)[0], 'latin1'). \
-        encode('utf-8')
+    return struct.unpack(str(length) + 's', data)[0].decode('latin1')
 
 
 def utf_16_le_bytes_2str(data):
@@ -173,8 +172,7 @@ def utf_16_le_bytes_2str(data):
     Converts utf16 bytes to Python string value.
     """
     length = len(data)
-    return unicode(struct.unpack(str(length) + 's', data)[0], 'utf_16_le'). \
-        encode('utf-8')
+    return struct.unpack(str(length) + 's', data)[0].decode('utf_16_le')
 
 
 def get_chunk_size(size_field):
@@ -215,7 +213,7 @@ def dib_to_bmp(dib):
 
     pixel_offset = struct.pack('<I', 14 + offset)
     file_size = struct.pack('<I', 14 + len(dib))
-    return 'BM' + file_size + '\x00\x00\x00\x00' + pixel_offset + dib
+    return b'BM' + file_size + b'\x00\x00\x00\x00' + pixel_offset + dib
 
 
 def bmp_to_dib(bmp):

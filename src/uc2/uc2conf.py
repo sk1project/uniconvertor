@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2011 by Ihor E. Novikov
+#  Copyright (C) 2011 by Igor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License
@@ -24,8 +24,8 @@ from uc2.utils import fsutils
 
 class UCData:
     app = None
-    app_name = 'UniConvertor'
-    app_proc = 'uniconvertor'
+    app_name = 'Color Picker'
+    app_proc = 'color-picker-cmd'
     app_org = 'sK1 Project'
     app_domain = 'sk1project.net'
     app_icon = None
@@ -41,7 +41,8 @@ class UCData:
 
         self.app = app
         if not self.app_config_dir:
-            path = fsutils.expanduser(os.path.join(cfgdir, '.config', 'uc2'))
+            path = fsutils.expanduser(os.path.join(cfgdir, '.config',
+                                                   'color-picker-cmd'))
             self.app_config_dir = path
         if check:
             self.check_config_dirs()
@@ -65,13 +66,11 @@ class UCData:
             filename = 'built-in_%s.icm' % item
             path = os.path.join(self.app_color_profile_dir, filename)
             if not fsutils.exists(path):
-                path = fsutils.get_sys_path(path)
                 libcms.cms_save_default_profile(path, item)
 
 
 class UCConfig(SerializedConfig):
     # ============== GENERIC SECTION ===================
-    system_encoding = 'utf-8'  # default encoding (GUI uses utf-8 only)
     log_level = 'INFO'
 
     # ============== COLOR MANAGEMENT SECTION ===================
