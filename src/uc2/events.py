@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2011-2017 by Igor E. Novikov
+#  Copyright (C) 2011-2020 by Igor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License
@@ -47,11 +47,12 @@ def connect(channel, receiver):
     to provided channel.
     """
     if callable(receiver):
+        # noinspection PyBroadException
         try:
             channel.append(receiver)
-        except Exception as e:
-            msg = 'Cannot connect <%s> receiver to <%s> channel. %s'
-            LOG.error(msg, receiver, channel, e)
+        except Exception:
+            msg = 'Cannot connect <%s> receiver to <%s> channel'
+            LOG.exception(msg, receiver, channel)
 
 
 def disconnect(channel, receiver):
@@ -60,11 +61,12 @@ def disconnect(channel, receiver):
     from provided channel.
     """
     if callable(receiver):
+        # noinspection PyBroadException
         try:
             channel.remove(receiver)
-        except Exception as e:
-            msg = 'Cannot disconnect <%s> receiver from <%s> channel. %s'
-            LOG.error(msg, receiver, channel, e)
+        except Exception:
+            msg = 'Cannot disconnect <%s> receiver from <%s> channel'
+            LOG.exception(msg, receiver, channel)
 
 
 def emit(channel, *args):
@@ -72,12 +74,13 @@ def emit(channel, *args):
     Sends signal to all receivers in channel.
     """
     for receiver in channel[1:]:
+        # noinspection PyBroadException
         try:
             if callable(receiver):
                 receiver(*args)
-        except Exception as e:
-            msg = 'Error calling <%s> receiver with %s %s'
-            LOG.error(msg, receiver, args, e)
+        except Exception:
+            msg = 'Error calling <%s> receiver with %s'
+            LOG.exception(msg, receiver, args)
             continue
 
 

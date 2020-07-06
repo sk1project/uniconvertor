@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2012-2017 by Igor E. Novikov
+#  Copyright (C) 2012-2020 by Igor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License
@@ -154,5 +154,3 @@ class UCApplication(object):
         if self.do_verbose:
             echo()
         sys.exit(status)
-
-

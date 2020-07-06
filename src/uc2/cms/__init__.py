@@ -285,6 +285,7 @@ def do_simple_transform(color, cs_in, cs_out):
     """
     if cs_in == cs_out:
         return copy.copy(color)
+
     if cs_in == COLOR_RGB:
         if cs_out == COLOR_CMYK:
             return rgb_to_cmyk(color)
@@ -346,17 +347,17 @@ def colorb(color=None, cmyk=False):
     return result
 
 
-def decode_colorb(colorb, color_type):
+def decode_colorb(colorb_list, color_type):
     """
     Decodes colorb list into generic color values.
     """
     result = []
     if color_type == uc2const.COLOR_CMYK:
-        values = colorb
+        values = colorb_list
     elif color_type == uc2const.COLOR_GRAY:
-        values = [colorb[0], ]
+        values = [colorb_list[0], ]
     else:
-        values = colorb[:3]
+        values = colorb_list[:3]
 
     if color_type == uc2const.COLOR_LAB:
         result.append(values[0] / 100.0)
@@ -390,11 +391,11 @@ def verbose_color(color):
         if alpha < 1.0:
             ret += ' Alpha-%d' % val_255([alpha, ])[0]
     elif cs == COLOR_LAB:
-        l, a, b = val
-        l = l * 100.0
+        L, a, b = val
+        L = L * 100.0
         a = a * 255.0 - 128.0
         b = b * 255.0 - 128.0
-        ret = 'L %d a %d b %d' % (l, a, b)
+        ret = 'L %d a %d b %d' % (L, a, b)
         if alpha < 1.0:
             ret += ' Alpha-%d' % val_255([alpha, ])[0]
     elif cs == COLOR_SPOT:
@@ -410,6 +411,7 @@ def get_profile_name(filepath):
     If file is not suitable profile or doesn't exist
     returns None.
     """
+    # noinspection PyBroadException
     try:
         profile = libcms.cms_open_profile_from_file(filepath)
         ret = libcms.cms_get_profile_name(profile)
@@ -423,6 +425,7 @@ def get_profile_info(filepath):
     If file is not suitable profile or doesn't exist
     returns None.
     """
+    # noinspection PyBroadException
     try:
         profile = libcms.cms_open_profile_from_file(filepath)
         ret = libcms.cms_get_profile_info(profile)
@@ -436,6 +439,7 @@ def get_profile_descr(filepath):
     If file is not suitable profile or doesn't exist
     returns None.
     """
+    # noinspection PyBroadException
     try:
         profile = libcms.cms_open_profile_from_file(filepath)
         ret = (libcms.cms_get_profile_name(profile),)

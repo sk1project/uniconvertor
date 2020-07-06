@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2011 by Igor E. Novikov
+#  Copyright (C) 2011-2020 by Igor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License
@@ -103,5 +103,6 @@ class UCConfig(SerializedConfig):
 
     def __init__(self): pass
 
-    def get_defaults(self):
+    @staticmethod
+    def get_defaults():
         return UCConfig.__dict__.copy()

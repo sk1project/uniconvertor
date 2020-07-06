@@ -76,10 +76,8 @@ def convert(appdata, files, options):
         return
 
     # File loading -----------------------------------------
-    doc = None
     try:
-        if loader_id in uc2const.PALETTE_LOADERS and \
-                saver_id in uc2const.PALETTE_SAVERS:
+        if loader_id in uc2const.PALETTE_LOADERS and saver_id in uc2const.PALETTE_SAVERS:
             doc = loader(appdata, files[0], convert=True, **options)
         else:
             doc = loader(appdata, files[0], **options)
@@ -173,6 +171,7 @@ def multiple_convert(appdata, files, options):
         filename = os.path.basename(filepath).split('.', 1)[0]
         out_filepath = os.path.join(dir_path, '%s.%s' % (filename, saver_ext))
         kw = copy.deepcopy(options)
+        # noinspection PyBroadException
         try:
             convert(appdata, (filepath, out_filepath), kw)
             if verbose:
@@ -206,6 +205,7 @@ def wildcard_convert(appdata, files, options):
             os.makedirs(dir_path)
         out_filepath = os.path.join(dir_path, '%s.%s' % (filename, saver_ext))
         kw = copy.deepcopy(options)
+        # noinspection PyBroadException
         try:
             convert(appdata, (filepath, out_filepath), kw)
             if verbose:
