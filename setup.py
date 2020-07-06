@@ -282,6 +282,7 @@ setup(
     packages=build.get_source_structure('src/uc2') + ['uc2'],
     package_dir={'uc2': 'src/uc2'},
     package_data=package_data,
+    install_requires=[line.strip() for line in open('requirements.txt', 'r').readlines()],
     data_files=data_files,
     scripts=scripts,
     ext_modules=modules)
