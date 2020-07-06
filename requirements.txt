@@ -1,1 +1,3 @@
 Pillow
+pycairo
+reportlab
