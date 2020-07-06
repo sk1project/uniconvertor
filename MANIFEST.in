@@ -1,4 +1,4 @@
-include LICENSE README.txt MANIFEST.in setup.cfg.in
+include LICENSE README.txt MANIFEST.in setup.cfg.in requirements.txt
 include src/script/uniconvertor.tmpl
 
 recursive-include utils *.py
