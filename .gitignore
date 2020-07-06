@@ -1,11 +1,25 @@
+# Byte-compiled / optimized / compiled artifacts
+__pycache__/
+*.py[cod]
+*$py.class
 *.com
 *.dll
 *.exe
 *.o
 *.so
-*.pyd
 *.pyc
 *.mo
-/.idea
+
+# IDE/env artifacts
+.vscode/
+.idea/
+/venv
+.env
 .vagrant
-/utils
+
+# Build artifacts
+build/
+dist/
+utils/
+*.egg-info/
+.pytest_cache/
