@@ -23,12 +23,12 @@ from uc2.utils.mixutils import echo
 HELP_TEMPLATE = '''
 %s
 
-Color palette translator
-copyright (C) 2018-%s sK1 Project Team (https://sk1project.net/color-picker/)
-For detailed help visit https://sk1project.net/color-picker/help/
+Universal vector graphics format translator
+copyright (C) 2007-%s sK1 Project Team (https://sk1project.net/uc2/)
+For detailed help visit https://sk1project.net/uc2/help/
 
-Usage: color-picker-cmd [OPTIONS] INPUT_FILE OUTPUT_FILE
-Example: color-picker-cmd drawing.cdr drawing.svg
+Usage: uniconvertor [OPTIONS] INPUT_FILE OUTPUT_FILE
+Example: uniconvertor drawing.cdr drawing.svg
 
  Available options:
  -h, --help      Display this help and exit
@@ -40,8 +40,8 @@ Example: color-picker-cmd drawing.cdr drawing.svg
  
 ---Bulk operations:---------------------------------
  
-Usage: color-picker-cmd [OPTIONS] FILE_PATTERN OUTPUT_DIRECTORY
-Example: color-picker-cmd --recursive --format=GPL ~/palettes/*.ase ~/palettes_gpl/
+Usage: uniconvertor [OPTIONS] FILE_PATTERN OUTPUT_DIRECTORY
+Example: uniconvertor --recursive --format=PDF ~/clipart/*.svg ~/clipart_pdf/
 
  Available options:
  -vs, --verbose-short    Show minimized internal logs
@@ -50,18 +50,32 @@ Example: color-picker-cmd --recursive --format=GPL ~/palettes/*.ase ~/palettes_g
  
 ---Configuring:-------------------------------------
 
-Usage: color-picker-cmd --configure [OPTIONS]
-Example: color-picker-cmd --configure --cms_use=yes
+Usage: uniconvertor --configure [OPTIONS]
+Example: uniconvertor --configure --cms_use=yes
 
  Available options:
- color-picker-cmd --show-config
+ uniconvertor --show-config
 
 ---INPUT FILE FORMATS-------------------------------
 
+ Supported input vector graphics file formats:
+   %s
+
+ Supported input palette file formats:
+   %s
+
+ Supported input image file formats:
    %s
 
 ---OUTPUT FILE FORMATS------------------------------
 
+ Supported output vector graphics file formats:
+   %s
+
+ Supported output palette file formats:
+   %s
+
+ Supported output image file formats:
    %s
 
 ----------------------------------------------------
@@ -93,7 +107,6 @@ def show_help(appdata):
 def show_short_help(msg):
     echo()
     echo(msg)
-    echo('USAGE: color-picker-cmd [OPTIONS] [INPUT FILE] [OUTPUT FILE]')
+    echo('USAGE: uniconvertor [OPTIONS] [INPUT FILE] [OUTPUT FILE]')
     echo('Use --help for more details.')
-    echo('For detailed help visit '
-         'https://sk1project.net/color-picker/help/' + '\n')
+    echo('For detailed help visit https://sk1project.net/uc2/help/' + '\n')

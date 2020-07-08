@@ -24,8 +24,8 @@ from uc2.utils import fsutils
 
 class UCData:
     app = None
-    app_name = 'Color Picker'
-    app_proc = 'color-picker-cmd'
+    app_name = 'UniConvertor'
+    app_proc = 'uniconvertor'
     app_org = 'sK1 Project'
     app_domain = 'sk1project.net'
     app_icon = None
