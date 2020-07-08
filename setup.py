@@ -176,8 +176,8 @@ package_data = {}
 # Preparing start script
 src_script = 'src/script/uniconvertor.tmpl'
 dst_script = 'src/script/uniconvertor'
-fileptr = open(src_script, 'rb')
-fileptr2 = open(dst_script, 'wb')
+fileptr = open(src_script, 'r')
+fileptr2 = open(dst_script, 'w')
 while True:
     line = fileptr.readline()
     if line == '':
@@ -194,9 +194,7 @@ shutil.copy(dst_script, 'src/script/uc2')
 ############################################################
 
 if len(sys.argv) == 1:
-    print('Please specify build options!')
-    print(__doc__)
-    sys.exit(0)
+    sys.argv.append('build_update')
 
 if len(sys.argv) > 1:
 
@@ -248,12 +246,12 @@ if len(sys.argv) > 1:
 # Preparing setup.cfg
 ############################################################
 
-with open('setup.cfg.in', 'rb') as fileptr:
+with open('setup.cfg.in', 'r') as fileptr:
     content = fileptr.read()
     if rpm_depends:
         content += '\nrequires = ' + rpm_depends
 
-with open('setup.cfg', 'wb') as fileptr:
+with open('setup.cfg', 'w') as fileptr:
     fileptr.write(content)
 
 ############################################################
@@ -282,7 +280,7 @@ setup(
     packages=build.get_source_structure('src/uc2') + ['uc2'],
     package_dir={'uc2': 'src/uc2'},
     package_data=package_data,
-    install_requires=[line.strip() for line in open('requirements.txt', 'r').readlines()],
+    # install_requires=[line.strip() for line in open('requirements.txt', 'r').readlines()],
     data_files=data_files,
     scripts=scripts,
     ext_modules=modules)
