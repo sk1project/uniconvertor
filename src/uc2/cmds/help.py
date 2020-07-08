@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2019 by Igor E. Novikov
+#  Copyright (C) 2019-2020 by Igor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License
@@ -23,7 +23,7 @@ from uc2.utils.mixutils import echo
 HELP_TEMPLATE = '''
 %s
 
-Universal vector graphics format translator
+Universal vector graphics file format translator
 copyright (C) 2007-%s sK1 Project Team (https://sk1project.net/uc2/)
 For detailed help visit https://sk1project.net/uc2/help/
 
