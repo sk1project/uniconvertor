@@ -743,7 +743,7 @@ class ColorManager(object):
         profilestr - embedded profile as a python string.
         Returns new image instance.
         """
-        custom_profile = libcms.cms_open_profile_from_string(profilestr)
+        custom_profile = libcms.cms_open_profile_from_bytes(profilestr)
         cs_in = cs_out = IMAGE_TO_COLOR[img.mode]
         out_profile = self.handles[cs_in]
         intent = self.rgb_intent
