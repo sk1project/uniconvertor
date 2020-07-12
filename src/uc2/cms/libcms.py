@@ -337,8 +337,7 @@ def cms_create_transform(in_profile: PyCapsule, in_mode: str,
     if intent not in INTENTS:
         raise CmsError('renderingIntent must be an integer between 0 and 3')
 
-    result = _lcms2.buildTransform(in_profile, in_mode, out_profile, out_mode,
-                                 intent, flags)
+    result = _lcms2.buildTransform(in_profile, in_mode, out_profile, out_mode, intent, flags)
 
     if result is None:
         msg = 'Cannot create requested transform'
@@ -374,9 +373,9 @@ def cms_create_proofing_transform(in_profile: PyCapsule, in_mode: str,
         raise CmsError('Proofing intent must be an integer between 0 and 3')
 
     result = _lcms2.buildProofingTransform(in_profile, in_mode,
-                                         out_profile, out_mode,
-                                         proof_profile, intent,
-                                         pintent, flags)
+                                           out_profile, out_mode,
+                                           proof_profile, intent,
+                                           pintent, flags)
 
     if result is None:
         msg = 'Cannot create requested proofing transform'
@@ -394,12 +393,7 @@ def cms_do_transform(transform: PyCapsule, inbuff: tp.List[int], outbuff: tp.Lis
     :param outbuff: (list) 4-member list. The members should be between 0 and 255
     """
     if isinstance(inbuff, list) and isinstance(outbuff, list):
-        ret = _lcms2.transformPixel(transform, *inbuff)
-        outbuff[0] = ret[0]
-        outbuff[1] = ret[1]
-        outbuff[2] = ret[2]
-        outbuff[3] = ret[3]
-        return
+        outbuff[:] = _lcms2.transformPixel(transform, *inbuff)
     else:
         msg = 'inbuff and outbuff must be Python 4-member list objects'
         raise CmsError(msg)
