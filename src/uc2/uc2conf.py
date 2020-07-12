@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2011-2020 by Igor E. Novikov
+#  Copyright (C) 2011-2020 by Ihor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License
@@ -16,93 +16,102 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import os
+import typing as tp
 
-from uc2 import uc2const
-from uc2.utils.sconfig import SerializedConfig
-from uc2.utils import fsutils
+from . import uc2const
+from .utils import fsutils
+from .utils.sconfig import SerializedConfig
+
+Application = tp.TypeVar('Application')
 
 
 class UCData:
-    app = None
-    app_name = 'UniConvertor'
-    app_proc = 'uniconvertor'
-    app_org = 'sK1 Project'
-    app_domain = 'sk1project.net'
+    app: Application
+    app_name: str = 'UniConvertor'
+    app_proc: str = 'uniconvertor'
+    app_org: str = 'sK1 Project'
+    app_domain: str = 'sk1project.net'
     app_icon = None
     doc_icon = None
-    version = uc2const.VERSION
-    revision = uc2const.REVISION
-    build = uc2const.BUILD
-    app_config = ''
-    app_config_dir = ''
-    app_color_profile_dir = ''
+    version: str = uc2const.VERSION
+    revision: str = uc2const.REVISION
+    build: str = uc2const.BUILD
+    app_config: str = ''
+    app_config_dir: str = ''
+    app_color_profile_dir: str = ''
 
-    def __init__(self, app, cfgdir='~', check=True):
+    def __init__(self, app: Application, cfgdir: str = '~', check: bool = True) -> None:
+        """Creates UC Data instance
 
+        :param app: (UCApplication) UniConvertor application handle
+        :param cfgdir: (str) parent directory for '.config' folder
+        :param check: (bool)
+        """
         self.app = app
         if not self.app_config_dir:
-            path = fsutils.expanduser(os.path.join(cfgdir, '.config',
-                                                   'color-picker-cmd'))
-            self.app_config_dir = path
+            self.app_config_dir = fsutils.expanduser(os.path.join(cfgdir, '.config', 'uc2-py3'))
         if check:
             self.check_config_dirs()
 
-    def check_config_dirs(self):
-
+    def check_config_dirs(self) -> None:
+        """Checks config directories structure. If wrong, fixes them.
+        """
         if not fsutils.exists(self.app_config_dir):
             fsutils.makedirs(self.app_config_dir)
 
         self.app_config = os.path.join(self.app_config_dir, 'preferences.cfg')
 
         # Check color profiles directory
-        self.app_color_profile_dir = os.path.join(self.app_config_dir,
-                                                  'profiles')
+        self.app_color_profile_dir = os.path.join(self.app_config_dir, 'profiles')
         if not fsutils.exists(self.app_color_profile_dir):
             fsutils.makedirs(self.app_color_profile_dir)
 
-        from uc2.cms import libcms
+        from .cms import libcms
 
         for item in uc2const.COLORSPACES + [uc2const.COLOR_DISPLAY, ]:
-            filename = 'built-in_%s.icm' % item
-            path = os.path.join(self.app_color_profile_dir, filename)
+            path = os.path.join(self.app_color_profile_dir, 'built-in_%s.icm' % item)
             if not fsutils.exists(path):
                 libcms.cms_save_default_profile(path, item)
 
 
 class UCConfig(SerializedConfig):
+    """Represents UCApplication config
+    """
     # ============== GENERIC SECTION ===================
-    log_level = 'INFO'
+    log_level: str = 'INFO'
 
     # ============== COLOR MANAGEMENT SECTION ===================
 
-    cms_use = True
-    cms_display_profiles = {}
-    cms_rgb_profiles = {}
-    cms_cmyk_profiles = {}
-    cms_lab_profiles = {}
-    cms_gray_profiles = {}
+    cms_use: bool = True
+    cms_display_profiles: tp.Dict = {}
+    cms_rgb_profiles: tp.Dict = {}
+    cms_cmyk_profiles: tp.Dict = {}
+    cms_lab_profiles: tp.Dict = {}
+    cms_gray_profiles: tp.Dict = {}
 
-    cms_rgb_profile = ''
-    cms_cmyk_profile = ''
-    cms_lab_profile = ''
-    cms_gray_profile = ''
-    cms_display_profile = ''
+    cms_rgb_profile: str = ''
+    cms_cmyk_profile: str = ''
+    cms_lab_profile: str = ''
+    cms_gray_profile: str = ''
+    cms_display_profile: str = ''
 
-    cms_use_display_profile = False
+    cms_use_display_profile: bool = False
 
-    cms_rgb_intent = uc2const.INTENT_RELATIVE_COLORIMETRIC
-    cms_cmyk_intent = uc2const.INTENT_PERCEPTUAL
+    cms_rgb_intent: int = uc2const.INTENT_RELATIVE_COLORIMETRIC
+    cms_cmyk_intent: int = uc2const.INTENT_PERCEPTUAL
 
-    cms_flags = uc2const.cmsFLAGS_NOTPRECALC
-    cms_proofing = False
-    cms_gamutcheck = False
-    cms_alarmcodes = (1.0, 0.0, 1.0)
-    cms_proof_for_spot = False
-    cms_bpc_flag = False
-    cms_bpt_flag = False
-
-    def __init__(self): pass
+    cms_flags: int = uc2const.cmsFLAGS_NOTPRECALC
+    cms_proofing: bool = False
+    cms_gamutcheck: bool = False
+    cms_alarmcodes: tp.List[float, float, float] = [1.0, 0.0, 1.0]
+    cms_proof_for_spot: bool = False
+    cms_bpc_flag: bool = False
+    cms_bpt_flag: bool = False
 
     @staticmethod
-    def get_defaults():
+    def get_defaults() -> tp.Dict:
+        """Returns default values of UCConfig class
+
+        :return: dict of default field values
+        """
         return UCConfig.__dict__.copy()

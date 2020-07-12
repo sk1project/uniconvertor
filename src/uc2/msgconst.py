@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2012 by Igor E. Novikov
+#  Copyright (C) 2012, 2020 by Ihor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License
@@ -15,15 +15,16 @@
 #  You should have received a copy of the GNU Affero General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import typing as tp
 
-JOB = 0
-OK = 1
-INFO = 2
-WARNING = 3
-ERROR = 4
-STOP = 5
+JOB: int = 0
+OK: int = 1
+INFO: int = 2
+WARNING: int = 3
+ERROR: int = 4
+STOP: int = 5
 
-MESSAGES = {
+MESSAGES: tp.Dict[int, str] = {
     JOB: 'JOB',
     OK: 'OK',
     INFO: 'INFO',

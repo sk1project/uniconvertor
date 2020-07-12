@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2011-2020 by Igor E. Novikov
+#  Copyright (C) 2011-2020 by Ihor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License
@@ -16,28 +16,29 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import os
+import typing as tp
 
-from uc2.utils import translator
+from .application import UCApplication
+from .utils import translator
 
 config = None
 appdata = None
 
+# Global message translator
 _ = translator.MsgTranslator()
 
 
-def uc2_init():
-    """UniConvertor initializing routine."""
-
+def uc2_init() -> UCApplication:
+    """UniConvertor initializing routine.
+    """
     _pkgdir = __path__[0]
-
-    from .application import UCApplication
-
     app = UCApplication(_pkgdir)
     return app
 
 
-def uc2_run(cwd=None):
-    """UniConvertor launch routine."""
+def uc2_run(cwd: tp.Union[str, None] = None) -> tp.NoReturn:
+    """UniConvertor launch routine.
 
-    app = uc2_init()
-    app.run(cwd or os.getcwd())
+    :param cwd: (str|None) application working directory
+    """
+    uc2_init()(cwd or os.getcwd())

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2011-2020 by Igor E. Novikov
+#  Copyright (C) 2011-2020 by Ihor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License
@@ -16,11 +16,13 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import logging
+import typing as tp
 
 LOG = logging.getLogger(__name__)
+ChannelType = tp.List[tp.Union[str, tp.Callable]]
 
 """
-This module provides Qt-like signal-slot functionality
+This module provides event-receiver functionality
 for internal events processing.
 
 Signal arguments:
@@ -34,44 +36,37 @@ MESSAGES          msg_type, msg - message type and message text
 
 CANCEL_OPERATION = False
 
-# Signal channels
+# Event channels
 
-CONFIG_MODIFIED = ['CONFIG_MODIFIED']
-FILTER_INFO = ['FILTER_INFO']
-MESSAGES = ['MESSAGES']
+CONFIG_MODIFIED: ChannelType = ['CONFIG_MODIFIED']
+FILTER_INFO: ChannelType = ['FILTER_INFO']
+MESSAGES: ChannelType = ['MESSAGES']
 
 
-def connect(channel, receiver):
-    """
-    Connects signal receive method
-    to provided channel.
+def connect(channel: ChannelType, receiver: tp.Callable) -> None:
+    """Connects signal receive method to provided channel.
     """
     if callable(receiver):
         # noinspection PyBroadException
         try:
             channel.append(receiver)
         except Exception:
-            msg = 'Cannot connect <%s> receiver to <%s> channel'
-            LOG.exception(msg, receiver, channel)
+            LOG.exception('Cannot connect <%s> receiver to <%s> channel', receiver, channel)
 
 
-def disconnect(channel, receiver):
+def disconnect(channel: ChannelType, receiver: tp.Callable) -> None:
+    """Disconnects signal receive method from provided channel.
     """
-    Disconnects signal receive method
-    from provided channel.
-    """
-    if callable(receiver):
+    if receiver in channel:
         # noinspection PyBroadException
         try:
             channel.remove(receiver)
         except Exception:
-            msg = 'Cannot disconnect <%s> receiver from <%s> channel'
-            LOG.exception(msg, receiver, channel)
+            LOG.exception('Cannot disconnect <%s> receiver from <%s> channel', receiver, channel)
 
 
-def emit(channel, *args):
-    """
-    Sends signal to all receivers in channel.
+def emit(channel: ChannelType, *args: tp.List[tp.Any]) -> None:
+    """Sends event to all receivers in channel.
     """
     for receiver in channel[1:]:
         # noinspection PyBroadException
@@ -79,23 +74,18 @@ def emit(channel, *args):
             if callable(receiver):
                 receiver(*args)
         except Exception:
-            msg = 'Error calling <%s> receiver with %s'
-            LOG.exception(msg, receiver, args)
+            LOG.exception('Error calling <%s> receiver with %s', receiver, args)
             continue
 
 
-def clean_channel(channel):
+def clean_channel(channel: ChannelType) -> None:
+    """Cleans channel queue.
     """
-    Cleans channel queue.
-    """
-    name = channel[0]
-    channel[:] = []
-    channel.append(name)
+    channel[:] = channel[:1]
 
 
-def clean_all_channels():
-    """
-    Cleans all channels.
+def clean_all_channels() -> None:
+    """Cleans all channels.
     """
     for item in (CONFIG_MODIFIED, MESSAGES, FILTER_INFO):
         clean_channel(item)

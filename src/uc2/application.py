@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2012-2020 by Igor E. Novikov
+#  Copyright (C) 2012-2020 by Ihor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License
@@ -18,18 +18,18 @@
 import logging
 import os
 import sys
+import typing as tp
 
 import uc2
-from uc2 import app_cms, cmds
-from uc2 import events, msgconst
-from uc2.app_palettes import PaletteManager
-from uc2.uc2conf import UCData, UCConfig
-from uc2.utils import fsutils
-from uc2.utils.mixutils import echo, config_logging
+from . import (app_cms, cmds, events, msgconst)
+from .app_palettes import PaletteManager
+from .uc2conf import (UCData, UCConfig)
+from .utils import fsutils
+from .utils.mixutils import (echo, config_logging)
 
 LOG = logging.getLogger(__name__)
 
-LOG_MAP = {
+LOG_MAP: tp.Dict[int, tp.Callable] = {
     msgconst.JOB: LOG.info,
     msgconst.INFO: LOG.info,
     msgconst.OK: LOG.info,
@@ -39,26 +39,40 @@ LOG_MAP = {
 }
 
 
-class UCApplication(object):
-    path = ''
-    config = None
-    appdata = None
-    default_cms = None
-    palettes = None
-    do_verbose = False
-    log_filepath = ''
+class UCApplication:
+    """ Represents UniConvertor application.
+    The object exists during translation process only.
+    """
+    path: str
+    config: UCConfig
+    appdata: UCData
+    default_cms:  app_cms.AppColorManager
+    palettes: PaletteManager
+    log_filepath: str
+    do_verbose: bool = False
 
-    def __init__(self, path='', cfgdir='~', check=True):
+    def __init__(self, path: str = '', cfgdir: str = '~', check: bool = True) -> None:
+        """Creates UniConvertor application instance.
+
+        :param path: (str) current application path
+        :param cfgdir: (str) path to '.config'
+        :param check: (bool) config directory check flag
+        """
         self.path = path
         cfgdir = fsutils.expanduser(cfgdir)
         self.config = UCConfig()
         self.config.app = self
         self.appdata = UCData(self, cfgdir, check=check)
         self.config.load(self.appdata.app_config)
+        self.log_filepath = os.path.join(self.appdata.app_config_dir, 'uc2.log')
         setattr(uc2, 'config', self.config)
         setattr(uc2, 'appdata', self.appdata)
 
-    def verbose(self, *args):
+    def verbose(self, *args: tp.Union[int, str]) -> None:
+        """Logging callable to write event message records
+
+        :param args: (list) event message args
+        """
         status = msgconst.MESSAGES[args[0]]
         LOG_MAP[args[0]](args[1])
         if self.do_verbose or args[0] in (msgconst.ERROR, msgconst.STOP):
@@ -67,42 +81,48 @@ class UCApplication(object):
         if args[0] == msgconst.STOP:
             echo('For details see logs: %s\n' % self.log_filepath)
 
-    def run(self, current_dir=None):
+    def check_sys_args(self, current_dir: tp.Union[str, None]) -> tp.Union[tp.NoReturn, None]:
+        """Checks system arguments before translation executed
+
+        :param current_dir: (str|None) directory path where UniConvertor command executed
+        """
         if len(sys.argv) == 1:
             dt = self.appdata
             mark = '' if not dt.build else ' build %s' % dt.build
             msg = '%s %s%s%s\n' % (dt.app_name, dt.version, dt.revision, mark)
             cmds.show_short_help(msg)
-            sys.exit(0)
         elif cmds.check_args(cmds.HELP_CMDS):
             cmds.show_help(self.appdata)
-            sys.exit(0)
         elif cmds.check_args(cmds.PARTS_CMDS):
             cmds.show_parts(self.appdata)
-            sys.exit(0)
         elif cmds.check_args(cmds.LOG_CMDS):
             log_filepath = os.path.join(self.appdata.app_config_dir, 'uc2.log')
             with open(log_filepath, 'rb') as fileptr:
                 echo(fileptr.read())
-            sys.exit(0)
         elif cmds.check_args(cmds.DIR_CMDS):
             echo(os.path.dirname(os.path.dirname(__file__)))
-            sys.exit(0)
         elif cmds.check_args(cmds.CFG_SHOW_CMDS):
             cmds.show_config()
-            sys.exit(0)
         elif cmds.check_args(cmds.CONFIG_CMDS):
             options = cmds.parse_cmd_args(current_dir)[1]
             cmds.normalize_options(options)
             cmds.change_config(options)
             self.config.save()
-            sys.exit(0)
         elif len(sys.argv) == 2:
             cmds.show_short_help('Not enough arguments!')
             sys.exit(1)
+        else:
+            return
+        sys.exit(0)
 
-        self.do_verbose = cmds.check_args(cmds.VERBOSE_CMDS)
-        current_dir = os.getcwdu() if current_dir is None else current_dir
+    @staticmethod
+    def get_translation_args(current_dir: tp.Union[str, None]) \
+            -> tp.Union[tp.NoReturn, tp.Tuple[tp.Callable, tp.List[str], tp.Dict]]:
+        """Prepares UniConvertor execution command, options, targets and destinations
+
+        :param current_dir: (str|None) directory path where UniConvertor command executed
+        """
+        current_dir = current_dir or os.getcwdu()
         files, options = cmds.parse_cmd_args(current_dir)
 
         if not files:
@@ -136,21 +156,32 @@ class UCApplication(object):
             cmds.show_short_help('Source file "%s" is not found!' % files[0])
             sys.exit(1)
 
+        return command, files, options
+
+    def __call__(self, current_dir: tp.Union[str, None] = None) -> tp.NoReturn:
+        """UniConvertor translation callable.
+
+        :param current_dir: (str|None) directory path where UniConvertor command executed
+        """
+        self.check_sys_args(current_dir=current_dir)
+
+        self.do_verbose = cmds.check_args(cmds.VERBOSE_CMDS)
+        command, files, options = self.get_translation_args(current_dir=current_dir)
+
         events.connect(events.MESSAGES, self.verbose)
-        log_level = options.get('log', self.config.log_level)
-        self.log_filepath = os.path.join(self.appdata.app_config_dir, 'uc2.log')
-        config_logging(self.log_filepath, log_level)
+        config_logging(filepath=self.log_filepath,
+                       level=options.get('log') or self.config.log_level)
 
         self.default_cms = app_cms.AppColorManager(self)
         self.palettes = PaletteManager(self)
 
-        # EXECUTION ----------------------------
+        # ------------ EXECUTION ----------------
         status = 0
+        # noinspection PyBroadException
         try:
             command(self.appdata, files, options)
         except Exception:
             status = 1
 
-        if self.do_verbose:
-            echo()
+        echo() if self.do_verbose else None
         sys.exit(status)

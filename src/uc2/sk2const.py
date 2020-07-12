@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2015-2019 by Igor E. Novikov
+#  Copyright (C) 2015-2020 by Ihor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License
@@ -15,7 +15,7 @@
 #  You should have received a copy of the GNU Affero General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from uc2 import uc2const
+from . import uc2const
 
 SK2DOC_ID = '##sK1 2 '
 SK2XML_ID = '<!-- sK1 2 '

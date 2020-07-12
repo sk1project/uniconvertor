@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2018 by Igor E. Novikov
+#  Copyright (C) 2018-2020 by Ihor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License
@@ -16,23 +16,32 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import os
+import typing as tp
 
-from uc2 import uc2const
-from uc2.uc2const import COLOR_DISPLAY
+from . import uc2const
+from .uc2const import COLOR_DISPLAY
 
-from uc2.cms import ColorManager, CS, libcms, val_255
+from .cms import (ColorManager, CS, libcms, val_255)
+
+Application = tp.TypeVar('Application')
 
 
 class AppColorManager(ColorManager):
-    app = None
+    """Represents full-featured Color Manager for UniConvertor application
+    """
+    app: Application
 
-    def __init__(self, app):
+    def __init__(self, app: Application) -> None:
+        """Creates AppColorManager object for provided application instance
+
+        :param app: (UCApplication) UniConvertor application handle
+        """
         self.app = app
         ColorManager.__init__(self)
 
-    def update(self):
-        self.handles = {}
-        self.clear_transforms()
+    def update_profiles(self) -> None:
+        """Profile update method
+        """
         config = self.app.config
         profiles = [config.cms_rgb_profile,
                     config.cms_cmyk_profile,
@@ -60,6 +69,11 @@ class AppColorManager(ColorManager):
                 path = os.path.join(profile_dir, filename)
                 self.handles[item] = libcms.cms_open_profile_from_file(path)
             index += 1
+
+    def _update_opts(self) -> None:
+        """Color management options update method
+        """
+        config = self.app.config
         self.use_cms = config.cms_use
         self.use_display_profile = config.cms_use_display_profile
         self.rgb_intent = config.cms_rgb_intent
@@ -72,10 +86,20 @@ class AppColorManager(ColorManager):
             libcms.cms_set_alarm_codes(*val_255(self.alarm_codes))
         self.proof_for_spot = config.cms_proof_for_spot
         if self.proofing:
-            self.flags = self.flags | uc2const.cmsFLAGS_SOFTPROOFING
+            self.flags |= uc2const.cmsFLAGS_SOFTPROOFING
         if self.gamutcheck:
-            self.flags = self.flags | uc2const.cmsFLAGS_GAMUTCHECK
+            self.flags |= uc2const.cmsFLAGS_GAMUTCHECK
         if config.cms_bpc_flag:
-            self.flags = self.flags | uc2const.cmsFLAGS_BLACKPOINTCOMPENSATION
+            self.flags |= uc2const.cmsFLAGS_BLACKPOINTCOMPENSATION
         if config.cms_bpt_flag:
-            self.flags = self.flags | uc2const.cmsFLAGS_PRESERVEBLACK
+            self.flags |= uc2const.cmsFLAGS_PRESERVEBLACK
+
+    def update(self, *_args) -> None:
+        """Event callable update method. Updates application color management after changes in preferences
+        """
+        self.handles = {}
+        self.clear_transforms()
+        self.update_profiles()
+        self._update_opts()
+
+

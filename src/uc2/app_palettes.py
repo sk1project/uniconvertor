@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2015 by Igor E. Novikov
+#  Copyright (C) 2015-2020 by Igor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License
@@ -15,12 +15,24 @@
 #  You should have received a copy of the GNU Affero General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>..
 
+import typing as tp
 
-class PaletteManager(object):
-    palettes = {}
+Application = tp.TypeVar('Application')
 
-    def __init__(self, app):
+
+class PaletteManager:
+    """Represents basic palette manager object
+    """
+    palettes: tp.Dict = {}
+
+    def __init__(self, app: Application) -> None:
+        """Creates PaletteManager object for provided application instance.
+
+        :param app: (UCApplication) UniConvertor application handle
+        """
         self.app = app
         self.scan_palettes()
 
-    def scan_palettes(self): pass
+    def scan_palettes(self) -> None:
+        """Not implemented interface for subclass palette scanning
+        """
