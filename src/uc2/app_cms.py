@@ -94,12 +94,10 @@ class AppColorManager(ColorManager):
         if config.cms_bpt_flag:
             self.flags |= uc2const.cmsFLAGS_PRESERVEBLACK
 
-    def update(self, *_args) -> None:
+    def update(self, *_args: tp.Any) -> None:
         """Event callable update method. Updates application color management after changes in preferences
         """
         self.handles = {}
         self.clear_transforms()
         self.update_profiles()
         self._update_opts()
-
-
