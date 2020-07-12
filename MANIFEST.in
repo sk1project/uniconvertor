@@ -6,5 +6,5 @@ recursive-include src/uc2/libcairo *.c
 recursive-include src/uc2/libcairo *.h
 recursive-include src/uc2/libimg *.c
 recursive-include src/uc2/libpango *.c
-recursive-include src/uc2/cms *.c
-recursive-include src/uc2/cms *.h
+recursive-include src/uc2/cms/lcms2 *.c
+recursive-include src/uc2/cms/lcms2 *.h
