@@ -554,6 +554,6 @@ static struct PyModuleDef moduledef = {
 #define INITERROR return NULL
 
 PyMODINIT_FUNC
-PyInit__cms(void) {
+PyInit__lcms2(void) {
     return PyModule_Create(&moduledef);
 }
