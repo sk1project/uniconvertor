@@ -70,7 +70,7 @@ getLCMStype (char* mode) {
 
 
 static PyObject *
-pycms_OpenProfile(PyObject *self, PyObject *args) {
+lcms2_OpenProfile(PyObject *self, PyObject *args) {
 
 	char *profile = NULL;
 	cmsHPROFILE hProfile;
@@ -91,7 +91,7 @@ pycms_OpenProfile(PyObject *self, PyObject *args) {
 }
 
 static PyObject *
-pycms_OpenProfileFromString(PyObject *self, PyObject *args) {
+lcms2_OpenProfileFromString(PyObject *self, PyObject *args) {
 
 	long size;
 	char *profile;
@@ -113,7 +113,7 @@ pycms_OpenProfileFromString(PyObject *self, PyObject *args) {
 }
 
 static PyObject *
-pycms_CreateRGBProfile(PyObject *self, PyObject *args) {
+lcms2_CreateRGBProfile(PyObject *self, PyObject *args) {
 
 	cmsHPROFILE hProfile;
 
@@ -128,7 +128,7 @@ pycms_CreateRGBProfile(PyObject *self, PyObject *args) {
 }
 
 static PyObject *
-pycms_CreateLabProfile(PyObject *self, PyObject *args) {
+lcms2_CreateLabProfile(PyObject *self, PyObject *args) {
 
 	cmsHPROFILE hProfile;
 
@@ -143,7 +143,7 @@ pycms_CreateLabProfile(PyObject *self, PyObject *args) {
 }
 
 static PyObject *
-pycms_CreateGrayProfile(PyObject *self, PyObject *args) {
+lcms2_CreateGrayProfile(PyObject *self, PyObject *args) {
 
 	cmsHPROFILE hProfile;
 	cmsToneCurve *tonecurve;
@@ -161,7 +161,7 @@ pycms_CreateGrayProfile(PyObject *self, PyObject *args) {
 }
 
 static PyObject *
-pycms_BuildTransform (PyObject *self, PyObject *args) {
+lcms2_BuildTransform (PyObject *self, PyObject *args) {
 
 	char *inMode;
 	char *outMode;
@@ -194,7 +194,7 @@ pycms_BuildTransform (PyObject *self, PyObject *args) {
 }
 
 static PyObject *
-pycms_BuildProofingTransform (PyObject *self, PyObject *args) {
+lcms2_BuildProofingTransform (PyObject *self, PyObject *args) {
 
 	char *inMode;
 	char *outMode;
@@ -232,7 +232,7 @@ pycms_BuildProofingTransform (PyObject *self, PyObject *args) {
 }
 
 static PyObject *
-pycms_SetAlarmCodes (PyObject *self, PyObject *args) {
+lcms2_SetAlarmCodes (PyObject *self, PyObject *args) {
 
 	int red, green, blue;
 	cmsUInt16Number alarm_codes[cmsMAXCHANNELS] = { 0, };
@@ -253,7 +253,7 @@ pycms_SetAlarmCodes (PyObject *self, PyObject *args) {
 }
 
 static PyObject *
-pycms_TransformPixel (PyObject *self, PyObject *args) {
+lcms2_TransformPixel (PyObject *self, PyObject *args) {
 
 	unsigned char *inbuf;
 	int channel1,channel2,channel3,channel4;
@@ -283,7 +283,7 @@ pycms_TransformPixel (PyObject *self, PyObject *args) {
 
 
 static PyObject *
-pycms_TransformPixel2 (PyObject *self, PyObject *args) {
+lcms2_TransformPixel2 (PyObject *self, PyObject *args) {
 
 	double channel1,channel2,channel3,channel4;
 	unsigned char *inbuf;
@@ -314,7 +314,7 @@ pycms_TransformPixel2 (PyObject *self, PyObject *args) {
 }
 
 static PyObject *
-pycms_TransformBitmap (PyObject *self, PyObject *args) {
+lcms2_TransformBitmap (PyObject *self, PyObject *args) {
 
 	ImagingObject* inImage;
 	ImagingObject* outImage;
@@ -344,7 +344,7 @@ pycms_TransformBitmap (PyObject *self, PyObject *args) {
 #define BUFFER_SIZE 1000
 
 static PyObject *
-pycms_GetProfileName (PyObject *self, PyObject *args) {
+lcms2_GetProfileName (PyObject *self, PyObject *args) {
 
 	void *profile;
 	cmsHPROFILE hProfile;
@@ -370,7 +370,7 @@ pycms_GetProfileName (PyObject *self, PyObject *args) {
 }
 
 static PyObject *
-pycms_GetProfileInfo (PyObject *self, PyObject *args) {
+lcms2_GetProfileInfo (PyObject *self, PyObject *args) {
 
 	void *profile;
 	cmsHPROFILE hProfile;
@@ -396,7 +396,7 @@ pycms_GetProfileInfo (PyObject *self, PyObject *args) {
 }
 
 static PyObject *
-pycms_GetProfileInfoCopyright (PyObject *self, PyObject *args) {
+lcms2_GetProfileInfoCopyright (PyObject *self, PyObject *args) {
 
 	void *profile;
 	cmsHPROFILE hProfile;
@@ -422,7 +422,7 @@ pycms_GetProfileInfoCopyright (PyObject *self, PyObject *args) {
 }
 
 static PyObject *
-pycms_GetPixelsFromImage (PyObject *self, PyObject *args) {
+lcms2_GetPixelsFromImage (PyObject *self, PyObject *args) {
 
 	int width, height, bytes_per_pixel, i;
 	unsigned char *pixbuf;
@@ -445,7 +445,7 @@ pycms_GetPixelsFromImage (PyObject *self, PyObject *args) {
 }
 
 static PyObject *
-pycms_SetImagePixels (PyObject *self, PyObject *args) {
+lcms2_SetImagePixels (PyObject *self, PyObject *args) {
 
 	int width, height, bytes_per_pixel, i;
 	void *pixels;
@@ -470,7 +470,7 @@ pycms_SetImagePixels (PyObject *self, PyObject *args) {
 }
 
 static PyObject *
-pycms_TransformPixels (PyObject *self, PyObject *args) {
+lcms2_TransformPixels (PyObject *self, PyObject *args) {
 
 	int width;
 	unsigned char *pixbuf;
@@ -494,32 +494,32 @@ pycms_TransformPixels (PyObject *self, PyObject *args) {
 }
 
 static PyObject *
-pycms_GetVersion (PyObject *self, PyObject *args) {
+lcms2_GetVersion (PyObject *self, PyObject *args) {
 	return Py_BuildValue("i",  LCMS_VERSION);
 }
 
 //============Module Initialization==============
 
 static
-PyMethodDef pycms_methods[] = {
-	{"getVersion", pycms_GetVersion, METH_VARARGS},
-	{"openProfile", pycms_OpenProfile, METH_VARARGS},
-	{"openProfileFromString", pycms_OpenProfileFromString, METH_VARARGS},
-	{"createRGBProfile", pycms_CreateRGBProfile, METH_VARARGS},
-	{"createLabProfile", pycms_CreateLabProfile, METH_VARARGS},
-	{"createGrayProfile", pycms_CreateGrayProfile, METH_VARARGS},
-	{"buildTransform", pycms_BuildTransform, METH_VARARGS},
-	{"buildProofingTransform", pycms_BuildProofingTransform, METH_VARARGS},
-	{"setAlarmCodes", pycms_SetAlarmCodes, METH_VARARGS},
-	{"transformPixel", pycms_TransformPixel, METH_VARARGS},
-	{"transformPixel2", pycms_TransformPixel2, METH_VARARGS},
-	{"transformBitmap", pycms_TransformBitmap, METH_VARARGS},
-	{"getProfileName", pycms_GetProfileName, METH_VARARGS},
-	{"getProfileInfo", pycms_GetProfileInfo, METH_VARARGS},
-	{"getProfileInfoCopyright", pycms_GetProfileInfoCopyright, METH_VARARGS},
-	{"getPixelsFromImage", pycms_GetPixelsFromImage, METH_VARARGS},
-	{"setImagePixels", pycms_SetImagePixels, METH_VARARGS},
-	{"transformPixels", pycms_TransformPixels, METH_VARARGS},
+PyMethodDef lcms2_methods[] = {
+	{"getVersion", lcms2_GetVersion, METH_VARARGS},
+	{"openProfile", lcms2_OpenProfile, METH_VARARGS},
+	{"openProfileFromString", lcms2_OpenProfileFromString, METH_VARARGS},
+	{"createRGBProfile", lcms2_CreateRGBProfile, METH_VARARGS},
+	{"createLabProfile", lcms2_CreateLabProfile, METH_VARARGS},
+	{"createGrayProfile", lcms2_CreateGrayProfile, METH_VARARGS},
+	{"buildTransform", lcms2_BuildTransform, METH_VARARGS},
+	{"buildProofingTransform", lcms2_BuildProofingTransform, METH_VARARGS},
+	{"setAlarmCodes", lcms2_SetAlarmCodes, METH_VARARGS},
+	{"transformPixel", lcms2_TransformPixel, METH_VARARGS},
+	{"transformPixel2", lcms2_TransformPixel2, METH_VARARGS},
+	{"transformBitmap", lcms2_TransformBitmap, METH_VARARGS},
+	{"getProfileName", lcms2_GetProfileName, METH_VARARGS},
+	{"getProfileInfo", lcms2_GetProfileInfo, METH_VARARGS},
+	{"getProfileInfoCopyright", lcms2_GetProfileInfoCopyright, METH_VARARGS},
+	{"getPixelsFromImage", lcms2_GetPixelsFromImage, METH_VARARGS},
+	{"setImagePixels", lcms2_SetImagePixels, METH_VARARGS},
+	{"transformPixels", lcms2_TransformPixels, METH_VARARGS},
 	{NULL, NULL}
 };
 
@@ -529,25 +529,25 @@ struct module_state {
 
 #define GETSTATE(m) ((struct module_state*)PyModule_GetState(m))
 
-static int pycms_traverse(PyObject *m, visitproc visit, void *arg) {
+static int lcms2_traverse(PyObject *m, visitproc visit, void *arg) {
     Py_VISIT(GETSTATE(m)->error);
     return 0;
 }
 
-static int pycms_clear(PyObject *m) {
+static int lcms2_clear(PyObject *m) {
     Py_CLEAR(GETSTATE(m)->error);
     return 0;
 }
 
 static struct PyModuleDef moduledef = {
     PyModuleDef_HEAD_INIT,
-    "_cms",
+    "_lcms2",
     NULL,
     sizeof(struct module_state),
-    pycms_methods,
+    lcms2_methods,
     NULL,
-    pycms_traverse,
-    pycms_clear,
+    lcms2_traverse,
+    lcms2_clear,
     NULL
 };
 
