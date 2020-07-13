@@ -65,7 +65,7 @@ def disconnect(channel: ChannelType, receiver: tp.Callable) -> None:
             LOG.exception('Cannot disconnect <%s> receiver from <%s> channel', receiver, channel)
 
 
-def emit(channel: ChannelType, *args: tp.List[tp.Any]) -> None:
+def emit(channel: ChannelType, *args: tp.Any) -> None:
     """Sends event to all receivers in channel.
     """
     for receiver in channel[1:]:
