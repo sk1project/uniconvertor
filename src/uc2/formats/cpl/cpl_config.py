@@ -15,10 +15,10 @@
 #  You should have received a copy of the GNU Affero General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from uc2.utils.config import XmlConfigParser
+from uc2.utils.sconfig import SerializedConfig
 
 
-class CPL_Config(XmlConfigParser):
+class CPL_Config(SerializedConfig):
     system_encoding = 'utf-8'
     filename = 'cpl_config.xml'
     default_name = 'CorelDRAW palette'

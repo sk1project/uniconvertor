@@ -15,11 +15,11 @@
 #  You should have received a copy of the GNU Affero General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from uc2.utils.config import XmlConfigParser
+from uc2.utils.sconfig import SerializedConfig
 from uc2.formats.gpl import gpl_const
 
 
-class GPL_Config(XmlConfigParser):
+class GPL_Config(SerializedConfig):
     system_encoding = 'utf-8'
     filename = 'gpl_config.xml'
     source = gpl_const.GIMP_SOURCE

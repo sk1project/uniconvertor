@@ -126,10 +126,10 @@ class AbstractBinaryLoader(AbstractLoader):
         return utils.pair_dword2py_int(self.fileptr.read(8))
 
     def readstr(self, size):
-        return utils.latin1_bytes_2str(self.fileptr.read(size))
+        return self.fileptr.read(size).decode('latin1')
 
     def readustr(self, size):
-        return utils.utf_16_le_bytes_2str(self.fileptr.read(size * 2))
+        return self.fileptr.read(size * 2).decode('utf-16')
 
 
 class AbstractXMLLoader(AbstractLoader, handler.ContentHandler):
