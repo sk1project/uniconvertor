@@ -1,3 +1,4 @@
 Pillow
 pycairo
 reportlab
+pytest
