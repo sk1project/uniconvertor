@@ -19,7 +19,6 @@ import os
 import typing as tp
 
 from .utils import translator
-from . import uc2const
 
 config = None
 appdata = None
@@ -27,8 +26,10 @@ appdata = None
 # Global message translator
 _ = translator.MsgTranslator()
 
+AppHandle = tp.TypeVar('AppHandle')
 
-def uc2_init() -> uc2const.AppHandle:
+
+def uc2_init() -> AppHandle:
     """UniConvertor initializing routine.
     """
     from .application import UCApplication
