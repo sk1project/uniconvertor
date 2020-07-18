@@ -18,8 +18,9 @@
 import logging
 import typing as tp
 
+from . import uc2const
+
 LOG = logging.getLogger(__name__)
-ChannelType = tp.List[tp.Union[str, tp.Callable]]
 
 """
 This module provides event-receiver functionality
@@ -38,12 +39,12 @@ CANCEL_OPERATION = False
 
 # Event channels
 
-CONFIG_MODIFIED: ChannelType = ['CONFIG_MODIFIED']
-FILTER_INFO: ChannelType = ['FILTER_INFO']
-MESSAGES: ChannelType = ['MESSAGES']
+CONFIG_MODIFIED: uc2const.ChannelType = ['CONFIG_MODIFIED']
+FILTER_INFO: uc2const.ChannelType = ['FILTER_INFO']
+MESSAGES: uc2const.ChannelType = ['MESSAGES']
 
 
-def connect(channel: ChannelType, receiver: tp.Callable) -> None:
+def connect(channel: uc2const.ChannelType, receiver: tp.Callable) -> None:
     """Connects signal receive method to provided channel.
     """
     if callable(receiver):
@@ -54,7 +55,7 @@ def connect(channel: ChannelType, receiver: tp.Callable) -> None:
             LOG.exception('Cannot connect <%s> receiver to <%s> channel', receiver, channel)
 
 
-def disconnect(channel: ChannelType, receiver: tp.Callable) -> None:
+def disconnect(channel: uc2const.ChannelType, receiver: tp.Callable) -> None:
     """Disconnects signal receive method from provided channel.
     """
     if receiver in channel:
@@ -65,7 +66,7 @@ def disconnect(channel: ChannelType, receiver: tp.Callable) -> None:
             LOG.exception('Cannot disconnect <%s> receiver from <%s> channel', receiver, channel)
 
 
-def emit(channel: ChannelType, *args: tp.Any) -> None:
+def emit(channel: uc2const.ChannelType, *args: tp.Any) -> None:
     """Sends event to all receivers in channel.
     """
     for receiver in channel[1:]:
@@ -78,7 +79,7 @@ def emit(channel: ChannelType, *args: tp.Any) -> None:
             continue
 
 
-def clean_channel(channel: ChannelType) -> None:
+def clean_channel(channel: uc2const.ChannelType) -> None:
     """Cleans channel queue.
     """
     channel[:] = channel[:1]

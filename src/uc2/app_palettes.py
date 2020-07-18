@@ -17,15 +17,16 @@
 
 import typing as tp
 
-Application = tp.TypeVar('Application')
+from uc2 import uc2const
 
 
 class PaletteManager:
     """Represents basic palette manager object
     """
+    app: uc2const.AppHandle
     palettes: tp.Dict = {}
 
-    def __init__(self, app: Application) -> None:
+    def __init__(self, app: uc2const.AppHandle) -> None:
         """Creates PaletteManager object for provided application instance.
 
         :param app: (UCApplication) UniConvertor application handle

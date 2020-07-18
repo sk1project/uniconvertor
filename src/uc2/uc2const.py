@@ -15,6 +15,8 @@
 #  You should have received a copy of the GNU Affero General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import typing as tp
+
 from uc2 import _
 
 """
@@ -24,6 +26,11 @@ The package provides generic application constants
 VERSION = '2.0'
 REVISION = 'rc5'
 BUILD = ''
+
+# Types
+PyCapsule = tp.TypeVar('PyCapsule')
+AppHandle = tp.TypeVar('AppHandle')
+ChannelType = tp.List[tp.Union[str, tp.Callable]]
 
 # Placement constants
 BEFORE = 0

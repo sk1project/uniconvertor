@@ -24,7 +24,6 @@ import uc2
 from . import (app_cms, cmds, events, msgconst)
 from .app_palettes import PaletteManager
 from .uc2conf import (UCData, UCConfig)
-from .utils import fsutils
 from .utils.mixutils import (echo, config_logging)
 
 LOG = logging.getLogger(__name__)
@@ -46,7 +45,7 @@ class UCApplication:
     path: str
     config: UCConfig
     appdata: UCData
-    default_cms:  app_cms.AppColorManager
+    default_cms: app_cms.AppColorManager
     palettes: PaletteManager
     log_filepath: str
     do_verbose: bool = False
@@ -59,7 +58,7 @@ class UCApplication:
         :param check: (bool) config directory check flag
         """
         self.path = path
-        cfgdir = fsutils.expanduser(cfgdir)
+        cfgdir = os.path.expanduser(cfgdir)
         self.config = UCConfig()
         self.config.app = self
         self.appdata = UCData(self, cfgdir, check=check)
@@ -97,8 +96,8 @@ class UCApplication:
             cmds.show_parts(self.appdata)
         elif cmds.check_args(cmds.LOG_CMDS):
             log_filepath = os.path.join(self.appdata.app_config_dir, 'uc2.log')
-            with open(log_filepath, 'rb') as fileptr:
-                echo(fileptr.read())
+            with open(log_filepath, 'r') as fp:
+                echo(fp.read())
         elif cmds.check_args(cmds.DIR_CMDS):
             echo(os.path.dirname(os.path.dirname(__file__)))
         elif cmds.check_args(cmds.CFG_SHOW_CMDS):
@@ -122,7 +121,7 @@ class UCApplication:
 
         :param current_dir: (str|None) directory path where UniConvertor command executed
         """
-        current_dir = current_dir or os.getcwdu()
+        current_dir = current_dir or os.getcwd()
         files, options = cmds.parse_cmd_args(current_dir)
 
         if not files:
@@ -152,7 +151,7 @@ class UCApplication:
                     sys.exit(1)
             else:
                 os.makedirs(files[-1])
-        elif not fsutils.exists(files[0]):
+        elif not os.path.exists(files[0]):
             cmds.show_short_help('Source file "%s" is not found!' % files[0])
             sys.exit(1)
 

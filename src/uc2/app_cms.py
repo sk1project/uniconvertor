@@ -21,23 +21,21 @@ import typing as tp
 from . import uc2const
 from .uc2const import COLOR_DISPLAY
 
-from .cms import (ColorManager, CS, libcms, val_255)
-
-Application = tp.TypeVar('Application')
+from .cms import (AbstractColorManager, CS, libcms, val_255)
 
 
-class AppColorManager(ColorManager):
+class AppColorManager(AbstractColorManager):
     """Represents full-featured Color Manager for UniConvertor application
     """
-    app: Application
+    app: uc2const.AppHandle
 
-    def __init__(self, app: Application) -> None:
+    def __init__(self, app: uc2const.AppHandle) -> None:
         """Creates AppColorManager object for provided application instance
 
         :param app: (UCApplication) UniConvertor application handle
         """
         self.app = app
-        ColorManager.__init__(self)
+        AbstractColorManager.__init__(self)
 
     def update_profiles(self) -> None:
         """Profile update method

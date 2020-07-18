@@ -19,14 +19,11 @@ import os
 import typing as tp
 
 from . import uc2const
-from .utils import fsutils
-from .utils.sconfig import SerializedConfig
-
-Application = tp.TypeVar('Application')
+from .utils import sconfig
 
 
 class UCData:
-    app: Application
+    app: uc2const.AppHandle
     app_name: str = 'UniConvertor'
     app_proc: str = 'uniconvertor'
     app_org: str = 'sK1 Project'
@@ -40,7 +37,7 @@ class UCData:
     app_config_dir: str = ''
     app_color_profile_dir: str = ''
 
-    def __init__(self, app: Application, cfgdir: str = '~', check: bool = True) -> None:
+    def __init__(self, app: uc2const.AppHandle, cfgdir: str = '~', check: bool = True) -> None:
         """Creates UC Data instance
 
         :param app: (UCApplication) UniConvertor application handle
@@ -48,33 +45,31 @@ class UCData:
         :param check: (bool)
         """
         self.app = app
-        if not self.app_config_dir:
-            self.app_config_dir = fsutils.expanduser(os.path.join(cfgdir, '.config', 'uc2-py3'))
-        if check:
-            self.check_config_dirs()
+        self.app_config_dir = os.path.expanduser(os.path.join(cfgdir, '.config', 'uc2-py3'))
+        self.check_config_dirs() if check else None
 
     def check_config_dirs(self) -> None:
         """Checks config directories structure. If wrong, fixes them.
         """
-        if not fsutils.exists(self.app_config_dir):
-            fsutils.makedirs(self.app_config_dir)
+        if not os.path.exists(self.app_config_dir):
+            os.makedirs(self.app_config_dir)
 
         self.app_config = os.path.join(self.app_config_dir, 'preferences.cfg')
 
         # Check color profiles directory
         self.app_color_profile_dir = os.path.join(self.app_config_dir, 'profiles')
-        if not fsutils.exists(self.app_color_profile_dir):
-            fsutils.makedirs(self.app_color_profile_dir)
+        if not os.path.exists(self.app_color_profile_dir):
+            os.makedirs(self.app_color_profile_dir)
 
         from .cms import libcms
 
         for item in uc2const.COLORSPACES + [uc2const.COLOR_DISPLAY, ]:
             path = os.path.join(self.app_color_profile_dir, 'built-in_%s.icm' % item)
-            if not fsutils.exists(path):
+            if not os.path.exists(path):
                 libcms.cms_save_default_profile(path, item)
 
 
-class UCConfig(SerializedConfig):
+class UCConfig(sconfig.SerializedConfig):
     """Represents UCApplication config
     """
     # ============== GENERIC SECTION ===================
