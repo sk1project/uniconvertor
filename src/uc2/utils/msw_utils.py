@@ -1,6 +1,5 @@
-# -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2019 by Igor E. Novikov
+#  Copyright (C) 2019 by Ihor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License
@@ -21,7 +20,7 @@ import ctypes
 from ctypes import wintypes
 
 
-def unicode_sys_argv():
+def unicode_sys_argv() -> None:
     """Uses shell32.GetCommandLineArgvW to fix sys.argv as a list of
     unicode strings.
     """

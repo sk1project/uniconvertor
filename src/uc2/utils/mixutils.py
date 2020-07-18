@@ -1,6 +1,5 @@
-# -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2017 by Igor E. Novikov
+#  Copyright (C) 2017, 2020 by Ihor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License
@@ -16,10 +15,18 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import logging
+import os
 import sys
+import typing as tp
 
 
-def merge_cnf(cnf=None, kw=None):
+def merge_cnf(cnf: tp.Union[tp.Dict, None] = None, kw: tp.Union[tp.Dict, None] = None) -> tp.Dict:
+    """Merges dicts checking them
+
+    :param cnf: (dict|None) target dict
+    :param kw: (dict|None) source dict
+    :return: merged dict
+    """
     cnf = cnf or {}
     if kw:
         cnf.update(kw)
@@ -36,7 +43,12 @@ LOGGING_MAP = {
 }
 
 
-def config_logging(filepath, level='INFO'):
+def config_logging(filepath: str, level: str = 'INFO') -> None:
+    """Wrapper for 'basicConfig' to simplify logging configuration
+
+    :param filepath: (str) path to log file
+    :param level: (str) logging level
+    """
     level = LOGGING_MAP.get(level.upper(), logging.INFO)
     logging.basicConfig(
         format=' %(levelname)-8s | %(asctime)s | %(name)s --> %(message)s',
@@ -57,16 +69,26 @@ BOLD = '\033[1m'
 UNDERLINE = '\033[4m'
 
 
-def echo(msg='', newline=True, flush=True, code=''):
-    msg = '%s\n' % msg if newline else msg
+def echo(msg: str = '', newline: bool = True, flush: bool = True, code: str = '') -> None:
+    """Prints escaped message into stdout
+
+    :param msg: (str) message to print
+    :param newline: (bool) flag for adding OS specific line separator
+    :param flush: (bool) flag to flush stdout buffer
+    :param code: (str) escape code (optional)
+    """
+    msg = '%s%s' % (msg, os.linesep) if newline else msg
     msg = '%s%s%s' % (code, msg, ENDC) if code else msg
     sys.stdout.write(msg)
-    if flush:
-        sys.stdout.flush()
+    sys.stdout.flush() if flush else None
 
 
 class Decomposable:
-    def destroy(self):
+    """Parent class to provide field clearing functionality for cross referenced objects
+    """
+    def destroy(self) -> None:
+        """Clears object fields allowing garbage collector to utilize it
+        """
         for key in self.__dict__.keys():
             obj = self.__dict__[key]
             self.__dict__[key] = None
@@ -75,9 +97,15 @@ class Decomposable:
 
 
 class DecomposableTreeObject:
-    childs = []
+    """Parent class to provide recursive field clearing functionality
+       for cross referenced tree-like objects
+    """
+    childs: tp.List[Decomposable]
 
-    def destroy(self):
+    def destroy(self) -> None:
+        """Clears object fields recursively. By this way method destroys object tree and
+           allows garbage collector to utilize tree components
+        """
         for child in self.childs:
             child.destroy()
         for item in self.__dict__.keys():

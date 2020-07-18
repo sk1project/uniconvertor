@@ -1,6 +1,5 @@
-# -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2018 by Igor E. Novikov
+#  Copyright (C) 2018, 2020 by Ihor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License
@@ -17,31 +16,55 @@
 
 import gettext
 import os
+import typing as tp
 
 SYS_LANG = 'system'
 
 
-class MsgTranslator(object):
-    translate = None
+class MsgTranslator:
+    """Represents message translator object,
+       Depending on initialization, it uses either gettex or dummy translator.
+    """
+    translate: tp.Callable
 
-    def __init__(self, textdomain=None, msgs_path=None, lang=SYS_LANG):
+    def __init__(self, textdomain: str = None, msgs_path: str = None, lang: str = SYS_LANG) -> None:
+        """Creates MsgTranslator object
+
+        :param textdomain: (str) application domain (usually application name)
+        :param msgs_path: (str) path to folder with translation messages
+        :param lang: (str) language identifier like 'pl', 'pt', 'es' etc.
+        """
+        self.translate = self.dummy_translate
         if textdomain and msgs_path:
             self.set_lang(textdomain, msgs_path, lang)
-        else:
-            self.translate = self.dummy_translate
 
     @staticmethod
-    def dummy_translate(msg):
+    def dummy_translate(msg: str) -> str:
+        """Stub for unknown or English locale
+
+        :param msg: (str) original message
+        :return: (str) the same original message
+        """
         return msg
 
-    def set_lang(self, textdomain, msgs_path, lang=SYS_LANG):
-        if lang == 'en' or not os.path.exists(msgs_path):
-            return
-        if lang != SYS_LANG:
-            os.environ['LANGUAGE'] = lang
-        gettext.bindtextdomain(textdomain, msgs_path)
-        gettext.textdomain(textdomain)
-        self.translate = gettext.gettext
+    def set_lang(self, textdomain: str = None, msgs_path: str = None, lang: str = SYS_LANG) -> None:
+        """Sets full featured gettext translator for MsgTranslator object
 
-    def __call__(self, msg):
+        :param textdomain: (str) application domain (usually application name)
+        :param msgs_path: (str) path to folder with translation messages
+        :param lang: (str) locale identifier like 'pl', 'pt', 'es' etc.
+        """
+        if lang != 'en' and os.path.exists(msgs_path):
+            if lang != SYS_LANG:
+                os.environ['LANGUAGE'] = lang
+            gettext.bindtextdomain(textdomain, msgs_path)
+            gettext.textdomain(textdomain)
+            self.translate = gettext.gettext
+
+    def __call__(self, msg: str) -> str:
+        """MsgTranslator object callable method
+
+        :param msg: (str) original message
+        :return: (str) translated message
+        """
         return self.translate(msg)

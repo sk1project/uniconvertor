@@ -1,6 +1,5 @@
-# -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2003-2011 by Igor E. Novikov
+#  Copyright (C) 2003-2020 by Ihor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License
@@ -19,12 +18,17 @@
 #  File system related functions used in various places...
 #
 
+import glob
 import os
+import typing as tp
 
 
-# Return directory list for provided path
+def get_dirs(path: str = '.') -> tp.List[str]:
+    """Returns directory list for provided path
 
-def get_dirs(path='.'):
+    :param path: (str) path to list dirs
+    :return: (list) list of found dirs
+    """
     lst = []
     names = []
     if path:
@@ -37,10 +41,15 @@ def get_dirs(path='.'):
         for name in names:
             if os.path.isdir(os.path.join(path, name)):
                 lst.append(name)
-        return lst
+    return lst
 
 
-def get_dirs_withpath(path='.'):
+def get_dirs_withpath(path: str = '.') -> tp.List[str]:
+    """Returns full path directory list for provided path
+
+    :param path: (str) path to list dirs
+    :return: (list) full path list of found dirs
+    """
     lst = []
     names = []
     if os.path.isdir(path):
@@ -55,8 +64,14 @@ def get_dirs_withpath(path='.'):
     return lst
 
 
-# Return file list for provided path
-def get_files(path='.', ext='*'):
+def get_files(path: str = '.', ext: str = '*') -> tp.List[str]:
+    """Returns file list for provided path
+
+    :param path: (str) path to list files
+    :param ext: (str) expected file extension or '*' for any extension
+    :return: (list) list of found files
+    """
+
     lst = []
     names = []
     if path:
@@ -70,14 +85,18 @@ def get_files(path='.', ext='*'):
             if not os.path.isdir(os.path.join(path, name)):
                 if ext == '*':
                     lst.append(name)
-                elif '.' + ext == name[-1 * (len(ext) + 1):]:
+                elif name.endswith('.' + ext):
                     lst.append(name)
     return lst
 
 
-# Return full file names list for provided path
-def get_files_withpath(path='.', ext='*'):
-    import glob
+def get_files_withpath(path: str = '.', ext: str = '*') -> tp.List[str]:
+    """Returns absolute path file list for provided path
+
+    :param path: (str) path to list files
+    :param ext: (str) expected file extension or '*' for any extension
+    :return: (list) list of found files with absolute path
+    """
     if ext:
         if ext == '*':
             lst = glob.glob(os.path.join(path, "*." + ext))
@@ -95,8 +114,12 @@ def get_files_withpath(path='.', ext='*'):
     return result
 
 
-# Return recursive directories list for provided path
-def get_dirs_tree(path='.'):
+def get_dirs_tree(path: str = '.') -> tp.List[str]:
+    """Return recursive directories list for provided path
+
+    :param path: (str) path to list directories
+    :return: (list) recursive directories list
+    """
     tree = get_dirs_withpath(path)
     res = [] + tree
     for node in tree:
@@ -105,8 +128,13 @@ def get_dirs_tree(path='.'):
     return res
 
 
-# Return recursive files list for provided path
 def get_files_tree(path='.', ext='*'):
+    """Return recursive files list for provided path
+
+    :param path: (str) path to list files
+    :param ext: (str) expected file extension or '*' for any extension
+    :return: (list) recursive list of found files with absolute path
+    """
     tree = []
     dirs = [path, ]
     dirs += get_dirs_tree(path)
@@ -121,34 +149,41 @@ def get_files_tree(path='.', ext='*'):
 # Filename manipulations
 #
 
-def find_in_path(paths, file):
-    """
-    The function finds a file FILE in one of the directories listed in PATHS.
-    If a file is found, return its full name, None otherwise.
+def find_in_path(paths: tp.List[str], filename: str) -> tp.Union[str, None]:
+    """Finds a file in one of the directories listed in 'paths'.
+       If a file is found, return it's full name, None otherwise.
+
+    :param paths: (list) list of directories
+    :param filename: (str) name of file needed to find
+    :return: (str|None) absolute file path or None
     """
     for path in paths:
-        fullname = os.path.join(path, file)
+        fullname = os.path.join(path, filename)
         if os.path.isfile(fullname):
             return fullname
 
 
-def find_files_in_path(paths, files):
-    """
-    The function finds one of the files listed in FILES in one of the
-    directories in PATHS. Return the name of the first one found,
-    None if no file is found.
+def find_files_in_path(paths: tp.List[str], filenames: tp.List[str]) -> tp.Union[str, None]:
+    """Finds one of the files listed in FILES in one of the
+       directories in PATHS. Return the name of the first one found,
+       None if no file is found.
+
+    :param paths: (list) list of directories
+    :param filenames: (list) list of file names
+    :return: (str|None) absolute file path or None
     """
     for path in paths:
-        for file in files:
-            fullname = os.path.join(path, file)
+        for filename in filenames:
+            fullname = os.path.join(path, filename)
             if os.path.isfile(fullname):
                 return fullname
 
 
-def xclear_dir(path):
-    """
-    Remove recursively all files and subdirectories from path.
-    path directory is not removed.
+def xclear_dir(path: str) -> None:
+    """Removes recursively all files and subdirectories from path.
+       Path directory is not removed.
+
+    :param path: (str) path to remove files and directories
     """
     files = get_files_tree(path)
     for file in files:
@@ -161,19 +196,20 @@ def xclear_dir(path):
             os.rmdir(item)
 
 
-def xremove_dir(path):
-    """
-    Remove recursively all files and subdirectories from path
-    including path directory.
+def xremove_dir(path: str) -> None:
+    """Removes recursively all files and subdirectories from path
+       including path directory.
+
+    :param path: (str) path to remove files and directories
     """
     xclear_dir(path)
     os.removedirs(path)
 
 
-def get_file_extension(path):
+def get_file_extension(filepath: str) -> str:
+    """Returns file extension without comma.
+
+    :param filepath: (str) path to file
     """
-    Returns file extension without comma.
-    """
-    ext = os.path.splitext(path)[1]
-    ext = ext.lower().replace('.', '')
-    return ext
+    ext = os.path.splitext(filepath)[1]
+    return ext.lower().replace('.', '')
