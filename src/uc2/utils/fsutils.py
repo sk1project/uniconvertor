@@ -63,7 +63,7 @@ def exists(path):
     return os.path.exists(path)
 
 
-def get_fileptr(path: str, writable: bool = False, binary: bool = True) -> tp.IO:
+def get_fileptr(path: str, writable: bool = False, binary: bool = True) -> tp.IO[tp.Union[str, bytes]]:
     """Returns file object for provided file path
 
     :param path: (str) file path

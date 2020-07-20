@@ -39,7 +39,7 @@ class SerializedConfig:
             if hasattr(self, key):
                 setattr(self, key, cnf[key])
 
-    def load_cfg(self, fp: tp.IO) -> None:
+    def load_cfg(self, fp: tp.IO[str]) -> None:
         """Loads config values from INI-like config file
 
         :param fp: (tp.IO) file-like object
@@ -57,7 +57,7 @@ class SerializedConfig:
             except Exception:
                 LOG.exception('Error in line: %s in %', line, self.filename)
 
-    def load_json(self, fp: tp.IO) -> None:
+    def load_json(self, fp: tp.IO[str]) -> None:
         """Loads config values from JSON config file
 
         :param fp: (tp.IO) file-like object
@@ -76,6 +76,7 @@ class SerializedConfig:
                 with fsutils.get_fileptr(filename, binary=False) as fp:
                     reader = self.load_json if fp.read(1) == '{' else self.load_cfg
                     fp.seek(0)
+                    # noinspection PyArgumentList
                     reader(fp)
             except Exception:
                 LOG.exception('Error reading config %s', filename)
