@@ -32,6 +32,8 @@ PyCapsule = tp.TypeVar('PyCapsule')
 AppHandle = tp.TypeVar('AppHandle')
 ChannelType = tp.List[tp.Union[str, tp.Callable]]
 
+ColorType = tp.List[tp.Union[str, tp.List[tp.Union[float, tp.List[float]]], float]]
+
 # Placement constants
 BEFORE = 0
 AFTER = 1
