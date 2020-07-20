@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 #
-#  cms - module which provides binding to LittleCMS2 library.
+#  libcms - provides binding to LittleCMS2 library.
 #
-#  Copyright (C) 2012-2018 by Ihor E. Novikov
+#  Copyright (C) 2012-2020 by Ihor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License
@@ -24,8 +24,6 @@ from PIL import Image
 
 from uc2 import uc2const
 from . import _lcms2
-
-PyCapsule = tp.TypeVar('PyCapsule')
 
 
 class CmsError(Exception):
@@ -57,7 +55,7 @@ def cms_set_alarm_codes(r: int, g: int, b: int) -> None:
         raise CmsError('r,g,b are expected as integers in range 0..255')
 
 
-def cms_open_profile_from_file(profile_path: str) -> PyCapsule:
+def cms_open_profile_from_file(profile_path: str) -> uc2const.PyCapsule:
     """Returns a handle to lcms profile wrapped as a Python object.
     The handle doesn't require to be closed after usage because
     on object delete operation Python calls native cms_close_profile()
@@ -78,7 +76,7 @@ def cms_open_profile_from_file(profile_path: str) -> PyCapsule:
     return result
 
 
-def cms_open_profile_from_bytes(profile_bytes: bytes) -> PyCapsule:
+def cms_open_profile_from_bytes(profile_bytes: bytes) -> uc2const.PyCapsule:
     """Returns a handle to lcms profile wrapped as a Python object.
     The handle doesn't require to be closed after usage because
     on object delete operation Python calls native cms_close_profile()
@@ -99,7 +97,7 @@ def cms_open_profile_from_bytes(profile_bytes: bytes) -> PyCapsule:
     return result
 
 
-def cms_create_srgb_profile() -> PyCapsule:
+def cms_create_srgb_profile() -> uc2const.PyCapsule:
     """Artificial functionality. The function emulates built-in sRGB
     profile reading profile resource attached to the package.
     Returns a handle to lcms built-in sRGB profile wrapped as a Python object.
@@ -132,7 +130,7 @@ def save_srgb_profile(path: str) -> None:
     srgb_profile_rc.save_resource(path)
 
 
-def cms_create_cmyk_profile() -> PyCapsule:
+def cms_create_cmyk_profile() -> uc2const.PyCapsule:
     """Artificial functionality. The function emulates built-in CMYK
     profile reading profile resource attached to the package.
     Returns a handle to lcms built-in CMYK profile wrapped as a Python object.
@@ -165,7 +163,7 @@ def save_cmyk_profile(path: str) -> None:
     cmyk_profile_rc.save_resource(path)
 
 
-def cms_create_display_profile() -> PyCapsule:
+def cms_create_display_profile() -> uc2const.PyCapsule:
     """Artificial functionality. The function emulates built-in display
     profile reading profile resource attached to the package.
     Returns a handle to lcms built-in display profile wrapped
@@ -200,7 +198,7 @@ def save_display_profile(path: str) -> None:
     display_profile_rc.save_resource(path)
 
 
-def cms_create_lab_profile() -> PyCapsule:
+def cms_create_lab_profile() -> uc2const.PyCapsule:
     """Artificial functionality. The function emulates built-in Lab
     profile reading profile resource attached to the package.
     Returns a handle to lcms built-in Lab profile wrapped as a Python object.
@@ -233,7 +231,7 @@ def save_lab_profile(path: str) -> None:
     lab_profile_rc.save_resource(path)
 
 
-def cms_create_gray_profile() -> PyCapsule:
+def cms_create_gray_profile() -> uc2const.PyCapsule:
     """Artificial functionality. The function emulates built-in Gray
     profile reading profile resource attached to the package.
     Returns a handle to lcms built-in Gray profile wrapped as a Python object.
@@ -266,7 +264,7 @@ def save_gray_profile(path: str) -> None:
     gray_profile_rc.save_resource(path)
 
 
-FUNC_MAP = {
+COLOR_FUNC_MAP = {
     uc2const.COLOR_RGB: (cms_create_srgb_profile, get_srgb_profile_resource, save_srgb_profile),
     uc2const.COLOR_CMYK: (cms_create_cmyk_profile, get_cmyk_profile_resource, save_cmyk_profile),
     uc2const.COLOR_LAB: (cms_create_lab_profile, get_lab_profile_resource, save_lab_profile),
@@ -275,7 +273,7 @@ FUNC_MAP = {
 }
 
 
-def cms_create_default_profile(colorspace: str) -> tp.Union[PyCapsule, None]:
+def cms_create_default_profile(colorspace: str) -> tp.Union[uc2const.PyCapsule, None]:
     """Artificial functionality. The function emulates built-in
     profile reading according profile resource attached to the package.
     Returns a handle to lcms built-in profile wrapped as a Python object.
@@ -286,7 +284,7 @@ def cms_create_default_profile(colorspace: str) -> tp.Union[PyCapsule, None]:
     :param colorspace: (str) colorspace constant
     :return: PyCapsule handle to lcms profile or None
     """
-    profile = FUNC_MAP.get(colorspace, None)
+    profile = COLOR_FUNC_MAP.get(colorspace, None)
     return None if profile is None else profile[0]()
 
 
@@ -297,7 +295,7 @@ def cms_get_default_profile_resource(colorspace: str) -> tp.Union[tp.IO, None]:
     :param colorspace: (str) colorspace constant
     :return: built-in profile file object or None
     """
-    profile = FUNC_MAP.get(colorspace, None)
+    profile = COLOR_FUNC_MAP.get(colorspace, None)
     return None if profile is None else profile[1]()
 
 
@@ -308,25 +306,28 @@ def cms_save_default_profile(path: str, colorspace: str):
     :param path: (str) profile path as a string
     :param colorspace: (str) colorspace constant
     """
-    profile = FUNC_MAP.get(colorspace, None)
+    profile = COLOR_FUNC_MAP.get(colorspace, None)
     if profile is not None:
         profile[2](path)
     else:
         raise CmsError('Unexpected colorspace requested %s' % str(colorspace))
 
 
-INTENTS = (0, 1, 2, 3)
+INTENTS: tp.List[int] = [uc2const.INTENT_PERCEPTUAL,
+                         uc2const.INTENT_RELATIVE_COLORIMETRIC,
+                         uc2const.INTENT_SATURATION,
+                         uc2const.INTENT_ABSOLUTE_COLORIMETRIC]
 
 
-def cms_create_transform(in_profile: PyCapsule, in_mode: str,
-                         out_profile: PyCapsule, out_mode: str,
+def cms_create_transform(in_profile: uc2const.PyCapsule, in_mode: str,
+                         out_profile: uc2const.PyCapsule, out_mode: str,
                          intent: int = uc2const.INTENT_PERCEPTUAL,
-                         flags: int = uc2const.cmsFLAGS_NOTPRECALC) -> PyCapsule:
+                         flags: int = uc2const.cmsFLAGS_NOTPRECALC) -> uc2const.PyCapsule:
     """Returns a handle to lcms transformation wrapped as a Python object.
 
-    :param in_profile: (PyCapsule) valid lcms profile handle
+    :param in_profile: (uc2const.PyCapsule) valid lcms profile handle
     :param in_mode: (str) valid lcms or PIL mode
-    :param out_profile: (PyCapsule) valid lcms profile handle
+    :param out_profile: (uc2const.PyCapsule) valid lcms profile handle
     :param out_mode: (str) valid lcms or PIL mode
     :param intent: (int) integer constant (0-3) of transform rendering intent
     :param flags: (int) lcms flags
@@ -346,19 +347,19 @@ def cms_create_transform(in_profile: PyCapsule, in_mode: str,
     return result
 
 
-def cms_create_proofing_transform(in_profile: PyCapsule, in_mode: str,
-                                  out_profile: PyCapsule, out_mode: str,
-                                  proof_profile: PyCapsule,
+def cms_create_proofing_transform(in_profile: uc2const.PyCapsule, in_mode: str,
+                                  out_profile: uc2const.PyCapsule, out_mode: str,
+                                  proof_profile: uc2const.PyCapsule,
                                   intent: int = uc2const.INTENT_PERCEPTUAL,
                                   pintent: int = uc2const.INTENT_RELATIVE_COLORIMETRIC,
-                                  flags: int = uc2const.cmsFLAGS_SOFTPROOFING) -> PyCapsule:
+                                  flags: int = uc2const.cmsFLAGS_SOFTPROOFING) -> uc2const.PyCapsule:
     """Returns a handle to lcms transformation wrapped as a Python object.
 
-    :param in_profile: (PyCapsule) valid lcms profile handle
+    :param in_profile: (uc2const.PyCapsule) valid lcms profile handle
     :param in_mode: (str) valid lcms or PIL mode
-    :param out_profile: (PyCapsule) valid lcms profile handle
+    :param out_profile: (uc2const.PyCapsule) valid lcms profile handle
     :param out_mode: (str) valid lcms or PIL mode
-    :param proof_profile: (PyCapsule) valid lcms profile handle
+    :param proof_profile: (uc2const.PyCapsule) valid lcms profile handle
     :param intent: (int) integer constant (0-3) of transform rendering intent
     :param pintent:  (int) integer constant (0-3) of transform proofing intent
     :param flags: (int) lcms flags
@@ -384,11 +385,11 @@ def cms_create_proofing_transform(in_profile: PyCapsule, in_mode: str,
     return result
 
 
-def cms_do_transform(transform: PyCapsule, inbuff: tp.List[int], outbuff: tp.List[int]) -> None:
+def cms_do_transform(transform: uc2const.PyCapsule, inbuff: tp.List[int], outbuff: tp.List[int]) -> None:
     """Transform color values from inputBuffer to outputBuffer using provided
     lcms transform handle.
 
-    :param transform: (PyCapsule) valid lcms transformation handle
+    :param transform: (uc2const.PyCapsule) valid lcms transformation handle
     :param inbuff: (list) 4-member list. The members should be between 0 and 255
     :param outbuff: (list) 4-member list. The members should be between 0 and 255
     """
@@ -399,12 +400,12 @@ def cms_do_transform(transform: PyCapsule, inbuff: tp.List[int], outbuff: tp.Lis
         raise CmsError(msg)
 
 
-def cms_do_bitmap_transform(transform: PyCapsule, image: Image.Image,
+def cms_do_bitmap_transform(transform: uc2const.PyCapsule, image: Image.Image,
                             in_mode: str, out_mode: str) -> Image.Image:
     """Provides PIL images support for color management.
     Currently supports L, RGB, CMYK and LAB modes only.
 
-    :param transform: (PyCapsule) valid lcms transformation handle
+    :param transform: (uc2const.PyCapsule) valid lcms transformation handle
     :param image: (Image.Image) valid PIL image object
     :param in_mode: (str) valid lcms or PIL mode
     :param out_mode: (str) valid lcms or PIL mode
@@ -430,28 +431,28 @@ def cms_do_bitmap_transform(transform: PyCapsule, image: Image.Image,
     return new_image
 
 
-def cms_get_profile_name(profile: PyCapsule) -> str:
+def cms_get_profile_name(profile: uc2const.PyCapsule) -> str:
     """Returns profile name
 
-    :param profile: (PyCapsule) valid lcms profile handle
+    :param profile: (uc2const.PyCapsule) valid lcms profile handle
     :return: profile name string
     """
     return _lcms2.getProfileName(profile).decode('cp1252').strip()
 
 
-def cms_get_profile_info(profile: PyCapsule) -> str:
+def cms_get_profile_info(profile: uc2const.PyCapsule) -> str:
     """Returns profile description info
 
-    :param profile: (PyCapsule) valid lcms profile handle
+    :param profile: (uc2const.PyCapsule) valid lcms profile handle
     :return: profile description info string
     """
     return _lcms2.getProfileInfo(profile).decode('cp1252').strip()
 
 
-def cms_get_profile_copyright(profile: PyCapsule) -> str:
+def cms_get_profile_copyright(profile: uc2const.PyCapsule) -> str:
     """Returns profile copyright info
 
-    :param profile: (PyCapsule) valid lcms profile handle
+    :param profile: (uc2const.PyCapsule) valid lcms profile handle
     :return: profile copyright info string
     """
     return _lcms2.getProfileInfoCopyright(profile).decode('cp1252').strip()
