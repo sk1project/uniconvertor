@@ -19,9 +19,8 @@ import os
 import typing as tp
 
 from . import uc2const
-from .uc2const import COLOR_DISPLAY
 
-from .cms import (AbstractColorManager, CS, libcms, val_255)
+from .cms import (AbstractColorManager, libcms, val_255)
 
 
 class AppColorManager(AbstractColorManager):
@@ -53,7 +52,7 @@ class AppColorManager(AbstractColorManager):
                          config.cms_display_profiles]
         index = 0
         profile_dir = self.app.appdata.app_color_profile_dir
-        for item in CS + [COLOR_DISPLAY, ]:
+        for item in uc2const.COLORSPACES + [uc2const.COLOR_DISPLAY, ]:
             path = None
             profile = profiles[index]
             if profile and profile in profile_dicts[index]:
