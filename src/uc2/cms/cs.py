@@ -22,11 +22,238 @@ from .lab import (rgb_to_lab, lab_to_rgb)
 from .utils import *
 
 
-def get_registration_black():
+def rgb_to_hexcolor(color_values: tp.List[float]) -> str:
+    """Converts list of RGB float values to hexadecimal color string.
+    For example: [1.0, 0.0, 1.0] => #ff00ff
+
+    :param color_values: (list) 3-member RGB color value list
+    :return: (str) hexadecimal color string
+    """
+    return '#%02x%02x%02x' % tuple(int(round(255 * x)) for x in color_values)
+
+
+def rgba_to_hexcolor(color_values: tp.List[float]) -> str:
+    """Converts list of RGBA float values to hex color string.
+    For example: [1.0, 0.0, 1.0, 1.0] => #ff00ffff
+
+    :param color_values: (list) 4-member RGBA color value list
+    :return: (str) hexadecimal color string
+    """
+    return '#%02x%02x%02x%02x' % tuple(int(round(255 * x)) for x in color_values)
+
+
+def cmyk_to_hexcolor(color_values: tp.List[float]) -> str:
+    """Converts list of CMYK float values to hex color string.
+    For example: [1.0, 0.0, 1.0, 1.0] => #ff00ffff
+
+    :param color_values: (list) 4-member CMYK color value list
+    :return: (str) hexadecimal color string
+    """
+    return rgba_to_hexcolor(color_values)
+
+
+def hexcolor_to_rgb(hexcolor: str) -> tp.List[float]:
+    """Converts hexadecimal color string as a list of float values.
+    For example: #ff00ff => [1.0, 0.0, 1.0]
+
+    :param hexcolor: (str) hexadecimal color string
+    :return: (list) 3-member RGB color value list
+    """
+    if not hexcolor.startswith('#'):
+        hexcolor = '#%s' % hexcolor
+    if len(hexcolor) == 4:
+        vals = (hexcolor[1] * 2, hexcolor[2] * 2, hexcolor[3] * 2)
+    else:
+        vals = (hexcolor[1:3], hexcolor[3:5], hexcolor[5:])
+    return [int(x, 0x10) / 255.0 for x in vals]
+
+
+def hexcolor_to_rgba(hexcolor: str) -> tp.List[float]:
+    """Converts hexadecimal color string as a list of float values.
+    For example: #ff00ffff => [1.0, 0.0, 1.0, 1.0]
+
+    :param hexcolor: (str) hexadecimal color string
+    :return: (list) 4-member RGBA color value list
+    """
+    vals = ('00', '00', '00', 'ff')
+    if len(hexcolor) == 7:
+        vals = (hexcolor[1:3], hexcolor[3:5], hexcolor[5:], 'ff')
+    elif len(hexcolor) == 9:
+        vals = (hexcolor[1:3], hexcolor[3:5], hexcolor[5:7], hexcolor[7:])
+    return [int(x, 0x10) / 255.0 for x in vals]
+
+
+def hexcolor_to_cmyk(hexcolor: str) -> tp.List[float]:
+    """Converts hexadecimal color string as a list of float values.
+    For example: #ff00ffff => [1.0, 0.0, 1.0, 1.0]
+
+    :param hexcolor: (str) hexadecimal color string
+    :return: (list) 4-member CMYK color value list
+    """
+    return hexcolor_to_rgba(hexcolor)
+
+
+def gdk_hexcolor_to_rgb(hexcolor: str) -> tp.List[float]:
+    """ Converts hex color string as a list of float values.
+    For example: #ffff0000ffff => [1.0, 0.0, 1.0]
+
+    :param hexcolor: (str) hexadecimal color string
+    :return: (list) 3-member RGB color value list
+    """
+    vals = (hexcolor[1:5], hexcolor[5:6], hexcolor[9:])
+    return [int(x, 0x10) / 65535.0 for x in vals]
+
+
+def rgb_to_gdk_hexcolor(color_values: tp.List[float]) -> str:
+    """Converts list of float values into hex color string.
+    For example: [1.0, 0.0, 1.0] => #ffff0000ffff
+
+    :param color_values: (list) 3-member list of float values
+    :return: (str) hexadecimal color string
+    """
+    return '#%04x%04x%04x' % tuple(x * 65535.0 for x in color_values)
+
+
+def cmyk_to_rgb(color_values: tp.List[float]) -> tp.List[float]:
+    """Converts list of CMYK values to RGB.
+
+    :param color_values: (list) 4-member CMYK color value list
+    :return: (list) 3-member RGB color value list
+    """
+    return [round(1.0 - min(1.0, x + color_values[3]), 3) for x in color_values[:3]]
+
+
+def rgb_to_cmyk(color_values: tp.List[float]) -> tp.List[float]:
+    """Converts list of RGB values to CMYK.
+
+    :param color_values: (list) 3-member RGB color value list
+    :return: (list) 4-member CMYK color value list
+    """
+    r, g, b = color_values
+    c = 1.0 - r
+    m = 1.0 - g
+    y = 1.0 - b
+    k = min(c, m, y)
+    return [c - k, m - k, y - k, k]
+
+
+def gray_to_cmyk(color_values: tp.List[float]) -> tp.List[float]:
+    """Converts Gray value to CMYK.
+
+    :param color_values: (list) 1-member Gray color value list
+    :return: (list) 4-member CMYK color value list
+    """
+    k = 1.0 - color_values[0]
+    return [0.0] * 3 + [k]
+
+
+def gray_to_rgb(color_values: tp.List[float]) -> tp.List[float]:
+    """Converts Gray value to RGB.
+
+    :param color_values: (list) 1-member Gray color value list
+    :return: (list) 3-member RGB color value list
+    """
+    return color_values * 3
+
+
+def rgb_to_gray(color_values: tp.List[float]) -> tp.List[float]:
+    """Converts RGB color values to Gray color value.
+
+    :param color_values: (list) 3-member RGB color value list
+    :return: (list) 1-member Gray color value list
+    """
+    return [sum(color_values) / 3.0]
+
+
+TRANSFORMS: tp.Dict[str, tp.Callable[[tp.List[float]], tp.List[float]]] = {
+    uc2const.COLOR_RGB + uc2const.COLOR_CMYK: rgb_to_cmyk,
+    uc2const.COLOR_RGB + uc2const.COLOR_GRAY: rgb_to_gray,
+    uc2const.COLOR_RGB + uc2const.COLOR_LAB: rgb_to_lab,
+
+    uc2const.COLOR_CMYK + uc2const.COLOR_RGB: cmyk_to_rgb,
+    uc2const.COLOR_CMYK + uc2const.COLOR_GRAY: lambda x: rgb_to_gray(cmyk_to_rgb(x)),
+    uc2const.COLOR_CMYK + uc2const.COLOR_LAB: lambda x: rgb_to_lab(cmyk_to_rgb(x)),
+
+    uc2const.COLOR_GRAY + uc2const.COLOR_RGB: gray_to_rgb,
+    uc2const.COLOR_GRAY + uc2const.COLOR_CMYK: gray_to_cmyk,
+    uc2const.COLOR_GRAY + uc2const.COLOR_LAB: lambda x: rgb_to_lab(gray_to_rgb(x)),
+
+    uc2const.COLOR_LAB + uc2const.COLOR_RGB: lab_to_rgb,
+    uc2const.COLOR_LAB + uc2const.COLOR_CMYK: lambda x: rgb_to_cmyk(lab_to_rgb(x)),
+    uc2const.COLOR_LAB + uc2const.COLOR_GRAY: lambda x: rgb_to_gray(lab_to_rgb(x)),
+}
+
+
+def do_simple_transform(color_values: tp.List[float], cs_in: str, cs_out: str) -> tp.List[float]:
+    """Emulates color management library transformation.
+    Transforms color values from one color space to another.
+
+    :param color_values: (list) incoming color values
+    :param cs_in: (str) incoming color space
+    :param cs_out: (str) outgoing color space
+    :return: (list) outgoing color values
+    """
+    return TRANSFORMS.get(cs_in + cs_out, copy.copy)(color_values)
+
+
+def colorb(color: tp.Union[uc2const.ColorType, None] = None, use_cmyk: bool = False) -> tp.List[int]:
+    """Emulates COLORB object from python-lcms.
+    Actually function returns regular 4-member list.
+
+    :param color: (uc2const.ColorType) incoming color values
+    :param use_cmyk: (bool) flag to use CMYK values for SPOT colors
+    :return: (list) 4-member COLORB list of integers
+    """
+    if not color:
+        return [0, 0, 0, 0]
+
+    cs = color[0]
+    values = color[1]
+    if cs == uc2const.COLOR_SPOT:
+        values = values[1] if use_cmyk else values[0]
+
+    if cs == uc2const.COLOR_LAB:
+        result = [int(round(values[0] * 100)),
+                  int(round(values[1] * 255)),
+                  int(round(values[2] * 255))]
+    else:
+        result = val_255(values)
+    return result + [0] * (4 - len(result))
+
+
+def decode_colorb(colorb_list: tp.List[int], cs: str) -> tp.List[float]:
+    """Decodes COLORB list into generic color values.
+
+    :param colorb_list: (list) incoming COLORB list
+    :param cs: (str) incoming color space
+    :return: (list) color values list
+    """
+    if cs == uc2const.COLOR_CMYK:
+        values = colorb_list
+    elif cs == uc2const.COLOR_GRAY:
+        values = colorb_list[:1]
+    else:
+        values = colorb_list[:3]
+
+    if cs == uc2const.COLOR_LAB:
+        return [values[0] / 100.0, values[1] / 255.0, values[2] / 255.0]
+    return val_255_to_dec(values)
+
+
+def get_registration_black() -> uc2const.ColorType:
+    """Returns newly created Registration color object
+
+    :return: (uc2const.ColorType) registration color
+    """
     return [uc2const.COLOR_SPOT, [[0.0, 0.0, 0.0], [1.0, 1.0, 1.0, 1.0]], 1.0, uc2const.COLOR_REG]
 
 
-def color_to_spot(color):
+def color_to_spot(color: tp.Union[uc2const.ColorType, None, tp.List] = None) -> uc2const.ColorType:
+    """Returns SPOT color created using provided color
+
+    :param color: (uc2const.ColorType) original color
+    :return: (uc2const.ColorType) new SPOT color
+    """
     if not color:
         return get_registration_black()
     if color[0] == uc2const.COLOR_SPOT:
@@ -45,228 +272,33 @@ def color_to_spot(color):
     return [uc2const.COLOR_SPOT, [rgb, cmyk], color[2], name]
 
 
-def rgb_to_hexcolor(color):
-    """Converts list of RGB float values to hex color string.
-    For example: [1.0, 0.0, 1.0] => #ff00ff
+def verbose_color(color: tp.Union[uc2const.ColorType, tp.List, None]) -> str:
+    """Returns pretty color description
+
+    :param color: (uc2const.ColorType) incoming color
+    :return: (str) color description
     """
-    return '#%02x%02x%02x' % tuple(int(round(255 * x)) for x in color)
-
-
-def rgba_to_hexcolor(color):
-    """Converts list of RGBA float values to hex color string.
-    For example: [1.0, 0.0, 1.0, 1.0] => #ff00ffff
-    """
-    return '#%02x%02x%02x%02x' % tuple(int(round(255 * x)) for x in color)
-
-
-def cmyk_to_hexcolor(color):
-    return rgba_to_hexcolor(color)
-
-
-def hexcolor_to_rgb(hexcolor):
-    """Converts hex color string as a list of float values.
-    For example: #ff00ff => [1.0, 0.0, 1.0]
-    """
-    if not hexcolor.startswith('#'):
-        hexcolor = '#%s' % hexcolor
-    if len(hexcolor) == 4:
-        vals = (hexcolor[1] * 2, hexcolor[2] * 2, hexcolor[3] * 2)
-    else:
-        vals = (hexcolor[1:3], hexcolor[3:5], hexcolor[5:])
-    return [int(x, 0x10) / 255.0 for x in vals]
-
-
-def hexcolor_to_rgba(hexcolor):
-    """Converts hex color string as a list of float values.
-    For example: #ff00ffff => [1.0, 0.0, 1.0, 1.0]
-    """
-    vals = ('00', '00', '00', 'ff')
-    if len(hexcolor) == 7:
-        vals = (hexcolor[1:3], hexcolor[3:5], hexcolor[5:], 'ff')
-    elif len(hexcolor) == 9:
-        vals = (hexcolor[1:3], hexcolor[3:5], hexcolor[5:7], hexcolor[7:])
-    return [int(x, 0x10) / 255.0 for x in vals]
-
-
-def hexcolor_to_cmyk(hexcolor):
-    return hexcolor_to_rgba(hexcolor)
-
-
-def gdk_hexcolor_to_rgb(hexcolor):
-    """ Converts hex color string as a list of float values.
-    For example: #ffff0000ffff => [1.0, 0.0, 1.0]
-    """
-    vals = (hexcolor[1:5], hexcolor[5:6], hexcolor[9:])
-    return [int(x, 0x10) / 65535.0 for x in vals]
-
-
-def rgb_to_gdk_hexcolor(color):
-    """Converts hex color string as a list of float values.
-    For example: #ffff0000ffff => [1.0, 0.0, 1.0]
-    """
-    return '#%04x%04x%04x' % tuple(x * 65535.0 for x in color)
-
-
-def cmyk_to_rgb(color):
-    """Converts list of CMYK values to RGB.
-    """
-    c, m, y, k = color
-    return [round(1.0 - min(1.0, x + k), 3) for x in (c, m, y)]
-
-
-def rgb_to_cmyk(color):
-    """Converts list of RGB values to CMYK.
-    """
-    r, g, b = color
-    c = 1.0 - r
-    m = 1.0 - g
-    y = 1.0 - b
-    k = min(c, m, y)
-    return [c - k, m - k, y - k, k]
-
-
-def gray_to_cmyk(color):
-    """Converts Gray value to CMYK.
-    """
-    k = 1.0 - color[0]
-    c = m = y = 0.0
-    return [c, m, y, k]
-
-
-def gray_to_rgb(color):
-    """Converts Gray value to RGB.
-    """
-    r = g = b = color[0]
-    return [r, g, b]
-
-
-def rgb_to_gray(color):
-    """Converts RGB value to Gray.
-    """
-    r, g, b = color
-    val = (r + g + b) / 3.0
-    return [val, ]
-
-
-def do_simple_transform(color, cs_in, cs_out):
-    """
-    Emulates color management library transformation
-    """
-    if cs_in == cs_out:
-        return copy.copy(color)
-
-    if cs_in == uc2const.COLOR_RGB:
-        if cs_out == uc2const.COLOR_CMYK:
-            return rgb_to_cmyk(color)
-        elif cs_out == uc2const.COLOR_GRAY:
-            return rgb_to_gray(color)
-        elif cs_out == uc2const.COLOR_LAB:
-            return rgb_to_lab(color)
-    elif cs_in == uc2const.COLOR_CMYK:
-        if cs_out == uc2const.COLOR_RGB:
-            return cmyk_to_rgb(color)
-        elif cs_out == uc2const.COLOR_GRAY:
-            return rgb_to_gray(cmyk_to_rgb(color))
-        elif cs_out == uc2const.COLOR_LAB:
-            return rgb_to_lab(cmyk_to_rgb(color))
-    elif cs_in == uc2const.COLOR_GRAY:
-        if cs_out == uc2const.COLOR_RGB:
-            return gray_to_rgb(color)
-        elif cs_out == uc2const.COLOR_CMYK:
-            return gray_to_cmyk(color)
-        elif cs_out == uc2const.COLOR_LAB:
-            return rgb_to_lab(gray_to_rgb(color))
-    elif cs_in == uc2const.COLOR_LAB:
-        if cs_out == uc2const.COLOR_RGB:
-            return lab_to_rgb(color)
-        elif cs_out == uc2const.COLOR_CMYK:
-            return rgb_to_cmyk(lab_to_rgb(color))
-        elif cs_out == uc2const.COLOR_GRAY:
-            return rgb_to_gray(lab_to_rgb(color))
-
-
-def colorb(color=None, cmyk=False):
-    """
-    Emulates COLORB object from python-lcms.
-    Actually function returns regular 4-member list.
-    """
-    if color is None:
-        return [0, 0, 0, 0]
-    if color[0] == uc2const.COLOR_SPOT:
-        if cmyk:
-            values = color[1][1]
-        else:
-            values = color[1][0]
-    else:
-        values = color[1]
-
-    result = []
-    if color[0] == uc2const.COLOR_LAB:
-        result.append(int(round(values[0] * 100)))
-        result.append(int(round(values[1] * 255)))
-        result.append(int(round(values[2] * 255)))
-    else:
-        for value in values:
-            result.append(int(round(value * 255)))
-
-    if len(result) == 1:
-        result += [0, 0, 0]
-    elif len(result) == 3:
-        result += [0]
-    return result
-
-
-def decode_colorb(colorb_list, color_type):
-    """
-    Decodes colorb list into generic color values.
-    """
-    result = []
-    if color_type == uc2const.COLOR_CMYK:
-        values = colorb_list
-    elif color_type == uc2const.COLOR_GRAY:
-        values = [colorb_list[0], ]
-    else:
-        values = colorb_list[:3]
-
-    if color_type == uc2const.COLOR_LAB:
-        result.append(values[0] / 100.0)
-        result.append(values[1] / 255.0)
-        result.append(values[2] / 255.0)
-    else:
-        for value in values:
-            result.append(value / 255.0)
-    return result
-
-
-def verbose_color(color):
     if not color:
         return 'No color'
     cs = color[0]
-    val = [] + color[1]
-    alpha = color[2]
+    color_values = color[1]
+    alpha = (color[2],) if color[2] < 1.0 else None
     if cs == uc2const.COLOR_CMYK:
-        c, m, y, k = val_100(val)
-        ret = 'C-%d%% M-%d%% Y-%d%% K-%d%%' % (c, m, y, k)
-        if alpha < 1.0:
-            ret += ' A-%d%%' % val_100([alpha, ])[0]
+        ret = 'C-%d%% M-%d%% Y-%d%% K-%d%%' % tuple(val_100(color_values))
+        ret += ' A-%d%%' % val_100(alpha)[0] if alpha else ''
     elif cs == uc2const.COLOR_RGB:
-        r, g, b = val_255(val)
-        ret = 'R-%d G-%d B-%d' % (r, g, b)
-        if alpha < 1.0:
-            ret += ' A-%d' % val_255([alpha, ])[0]
+        ret = 'R-%d G-%d B-%d' % tuple(val_255(color_values))
+        ret += ' A-%d' % val_255(alpha)[0] if alpha else ''
     elif cs == uc2const.COLOR_GRAY:
-        g = val_255(val)[0]
-        ret = 'Gray-%d' % g
-        if alpha < 1.0:
-            ret += ' Alpha-%d' % val_255([alpha, ])[0]
+        ret = 'Gray-%d' % val_255(color_values)[0]
+        ret += ' Alpha-%d' % val_255(alpha)[0] if alpha else ''
     elif cs == uc2const.COLOR_LAB:
-        l_, a, b = val
+        l_, a, b = color_values
         l_ = l_ * 100.0
         a = a * 255.0 - 128.0
         b = b * 255.0 - 128.0
         ret = 'L %d a %d b %d' % (l_, a, b)
-        if alpha < 1.0:
-            ret += ' Alpha-%d' % val_255([alpha, ])[0]
+        ret += ' Alpha-%d' % val_255(alpha)[0] if alpha else ''
     elif cs == uc2const.COLOR_SPOT:
         ret = color[3]
     else:
@@ -275,45 +307,48 @@ def verbose_color(color):
     return ret
 
 
-def get_profile_name(filepath):
-    """Returns profile name.
-    If file is not suitable profile or doesn't exist
-    returns None.
+def get_profile_name(filepath: str) -> tp.Union[str, None]:
+    """Returns profile name. If file is not suitable profile
+    or doesn't exist returns None.
+
+    :param filepath: (str) path to profile
+    :return: (str|None) profile name or None
     """
     # noinspection PyBroadException
     try:
         profile = libcms.cms_open_profile_from_file(filepath)
-        ret = libcms.cms_get_profile_name(profile)
+        return libcms.cms_get_profile_name(profile)
     except Exception:
-        ret = None
-    return ret
+        pass
 
 
-def get_profile_info(filepath):
-    """Returns profile info.
-    If file is not suitable profile or doesn't exist
-    returns None.
+def get_profile_info(filepath: str) -> tp.Union[str, None]:
+    """Returns profile info. If file is not suitable profile
+    or doesn't exist returns None.
+
+    :param filepath: (str) path to profile
+    :return: (str|None) profile info or None
     """
     # noinspection PyBroadException
     try:
         profile = libcms.cms_open_profile_from_file(filepath)
-        ret = libcms.cms_get_profile_info(profile)
+        return libcms.cms_get_profile_info(profile)
     except Exception:
-        ret = None
-    return ret
+        pass
 
 
-def get_profile_descr(filepath):
+def get_profile_descr(filepath: str) -> tp.Tuple[str, str, str]:
     """Returns profile description tuple (name, copyright, info).
-    If file is not suitable profile or doesn't exist
-    returns None.
+    If file is not suitable profile or doesn't exist returns None.
+
+    :param filepath: (str) path to profile
+    :return: (tuple) profile name, copyright and info
     """
     # noinspection PyBroadException
     try:
         profile = libcms.cms_open_profile_from_file(filepath)
-        ret = (libcms.cms_get_profile_name(profile),)
-        ret += (libcms.cms_get_profile_copyright(profile),)
-        ret += (libcms.cms_get_profile_info(profile),)
+        return (libcms.cms_get_profile_name(profile),
+                libcms.cms_get_profile_copyright(profile),
+                libcms.cms_get_profile_info(profile))
     except Exception:
-        ret = ('', '', '')
-    return ret
+        return '', '', ''
