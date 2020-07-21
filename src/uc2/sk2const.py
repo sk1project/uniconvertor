@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 #  Copyright (C) 2015-2020 by Ihor E. Novikov
 #
