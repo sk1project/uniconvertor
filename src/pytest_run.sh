@@ -1,4 +1,3 @@
 #!/bin/sh
-export PYTEST_ADDOPTS="-v"
 
-/usr/bin/python3 -m pytest tests
+/usr/bin/python3 -m pytest -s -v tests
