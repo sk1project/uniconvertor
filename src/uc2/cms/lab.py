@@ -25,7 +25,12 @@ def _linear_to_rgb(c: float) -> float:
     """
     if c > 0.0031308:
         return pow(c, 1.0 / 2.4) * 1.055 - 0.055
-    return c * 12.92
+    return abs(c * 12.92)
+
+
+def _normalize(x):
+    x = 0.0 if x <= 0.0 else x
+    return 1.0 if x > 1.0 else x
 
 
 def lab_to_rgb(color: tp.List[float]) -> tp.List[float]:
@@ -65,8 +70,7 @@ def lab_to_rgb(color: tp.List[float]) -> tp.List[float]:
     r = x * (1219569.0 / 395920.0) + y * (-608687.0 / 395920.0) + z * (-107481.0 / 197960.0)
     g = x * (-80960619.0 / 87888100.0) + y * (82435961.0 / 43944050.0) + z * (3976797.0 / 87888100.0)
     b = x * (93813.0 / 1774030.0) + y * (-180961.0 / 887015.0) + z * (107481.0 / 93370.0)
-
-    return [_linear_to_rgb(x) for x in (r, g, b)]
+    return [_normalize(_linear_to_rgb(x)) for x in (r, g, b)]
 
 
 def xyz_to_lab(c: float) -> float:
@@ -113,4 +117,4 @@ def rgb_to_lab(color: tp.List[float]) -> tp.List[float]:
     l_ = (y * 116.0 - 16.0) / 100.0
     a = ((x - y) * 500.0 + 128.0) / 255.0
     b = ((y - z) * 200.0 + 128.0) / 255.0
-    return [l_, a, b]
+    return [_normalize(x) for x in (l_, a, b)]
