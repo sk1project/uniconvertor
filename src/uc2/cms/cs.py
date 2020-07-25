@@ -100,7 +100,7 @@ def gdk_hexcolor_to_rgb(hexcolor: str) -> tp.List[float]:
     :param hexcolor: (str) hexadecimal color string
     :return: (list) 3-member RGB color value list
     """
-    vals = (hexcolor[1:5], hexcolor[5:6], hexcolor[9:])
+    vals = (hexcolor[1:5], hexcolor[5:9], hexcolor[9:])
     return [int(x, 0x10) / 65535.0 for x in vals]
 
 
@@ -111,7 +111,7 @@ def rgb_to_gdk_hexcolor(color_values: tp.List[float]) -> str:
     :param color_values: (list) 3-member list of float values
     :return: (str) hexadecimal color string
     """
-    return '#%04x%04x%04x' % tuple(x * 65535.0 for x in color_values)
+    return '#%04x%04x%04x' % tuple(int(round(x * 65535.0)) for x in color_values)
 
 
 def cmyk_to_rgb(color_values: tp.List[float]) -> tp.List[float]:
@@ -129,12 +129,20 @@ def rgb_to_cmyk(color_values: tp.List[float]) -> tp.List[float]:
     :param color_values: (list) 3-member RGB color value list
     :return: (list) 4-member CMYK color value list
     """
+    if color_values == [0.0, 0.0, 0.0]:
+        return [0.0, 0.0, 0.0, 1.0]
     r, g, b = color_values
     c = 1.0 - r
     m = 1.0 - g
     y = 1.0 - b
-    k = min(c, m, y)
-    return [c - k, m - k, y - k, k]
+
+    min_cmy = min(c, m, y)
+    c = (c - min_cmy) / (1 - min_cmy)
+    m = (m - min_cmy) / (1 - min_cmy)
+    y = (y - min_cmy) / (1 - min_cmy)
+    k = min_cmy
+
+    return [c, m, y, k]
 
 
 def gray_to_cmyk(color_values: tp.List[float]) -> tp.List[float]:
@@ -207,17 +215,11 @@ def colorb(color: tp.Union[uc2const.ColorType, None] = None, use_cmyk: bool = Fa
     if not color:
         return [0, 0, 0, 0]
 
-    cs = color[0]
     values = color[1]
-    if cs == uc2const.COLOR_SPOT:
+    if color[0] == uc2const.COLOR_SPOT:
         values = values[1] if use_cmyk else values[0]
 
-    if cs == uc2const.COLOR_LAB:
-        result = [int(round(values[0] * 100)),
-                  int(round(values[1] * 255)),
-                  int(round(values[2] * 255))]
-    else:
-        result = val_255(values)
+    result = val_255(values)
     return result + [0] * (4 - len(result))
 
 
@@ -235,8 +237,6 @@ def decode_colorb(colorb_list: tp.List[int], cs: str) -> tp.List[float]:
     else:
         values = colorb_list[:3]
 
-    if cs == uc2const.COLOR_LAB:
-        return [values[0] / 100.0, values[1] / 255.0, values[2] / 255.0]
     return val_255_to_dec(values)
 
 
