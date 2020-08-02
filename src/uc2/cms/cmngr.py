@@ -24,10 +24,10 @@ from . import cs
 from . import libcms
 
 
-class AbstractColorManager:
-    """The class provides abstract color manager.
+class DefaultColorManager:
+    """The class provides default color manager.
     On CM object instantiation default built-in profiles
-    are used to create internal stuff.
+    are used to create internal staff.
     """
 
     handles: tp.Dict[str, uc2const.PyCapsule]
@@ -122,7 +122,7 @@ class AbstractColorManager:
         """Does image proof transform. Returns new image instance.
 
         :param img: (Image) Pillow Image instance
-        :param mode: (str) Pillow Image mode
+        :param mode: (str) outgoing Pillow Image mode
         :param cs_out: (str) outgoing image color space
         :return: (Image) Transformed Pillow Image instance
         """
@@ -343,19 +343,23 @@ class AbstractColorManager:
         :param cs_out: (str) outgoing image color space or None
         :return: (Image) Transformed Pillow Image instance
         """
-        if img.mode == uc2const.IMAGE_MONO:
-            img = img.convert(uc2const.IMAGE_GRAY)
         if img.mode == outmode:
             return img.copy()
+
+        if img.mode == uc2const.IMAGE_MONO:
+            img = img.convert(uc2const.IMAGE_GRAY)
+            if outmode == uc2const.IMAGE_GRAY:
+                return img
+
         if outmode == uc2const.IMAGE_MONO:
             ret = self.do_bitmap_transform(img, uc2const.IMAGE_GRAY, cs_out)
             return ret.convert(uc2const.IMAGE_MONO)
+
         return self.do_bitmap_transform(img, outmode, cs_out)
 
     def adjust_image(self, img: Image, profile_bytes: bytes) -> Image:
         """Adjust image with embedded profile to similar color space defined by current profile.
         Returns new image instance.
-
 
         :param img: (Image) Pillow Image instance
         :param profile_bytes: (bytes) embedded profile as a python bytes sequence
