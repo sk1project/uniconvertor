@@ -1,2 +1,2 @@
-from .cmngr import AbstractColorManager
+from .cmngr import DefaultColorManager
 from .cs import *

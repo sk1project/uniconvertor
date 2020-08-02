@@ -19,10 +19,10 @@ import typing as tp
 
 from . import uc2const
 
-from .cms import (AbstractColorManager, libcms, val_255)
+from .cms import (DefaultColorManager, libcms, val_255)
 
 
-class AppColorManager(AbstractColorManager):
+class AppColorManager(DefaultColorManager):
     """Represents full-featured Color Manager for UniConvertor application
     """
     app: uc2const.AppHandle
@@ -33,7 +33,7 @@ class AppColorManager(AbstractColorManager):
         :param app: (UCApplication) UniConvertor application handle
         """
         self.app = app
-        AbstractColorManager.__init__(self)
+        DefaultColorManager.__init__(self)
 
     def update_profiles(self) -> None:
         """Profile update method
