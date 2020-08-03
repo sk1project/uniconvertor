@@ -18,7 +18,7 @@
 
 #include <Python.h>
 #include <lcms2.h>
-#include "Imaging.h"
+#include <Imaging.h>
 
 /* redefine the ImagingObject struct defined in _imagingmodule.c */
 typedef struct {
