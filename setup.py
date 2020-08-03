@@ -17,10 +17,8 @@
 # 	You should have received a copy of the GNU Affero General Public License
 # 	along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from __future__ import print_function
-
 """
-Usage: 
+Usage:
 --------------------------------------------------------------------------
  to build package:       python setup.py build
  to install package:     python setup.py install
@@ -52,8 +50,7 @@ if not os.path.exists('./utils'):
     else:
         if not os.path.exists('./subproj/build-utils/src/utils'):
             os.makedirs('./subproj')
-            os.system('cd subproj && git clone '
-                      'https://github.com/sk1project/build-utils && cd ..')
+            os.system('cd subproj && git clone https://github.com/sk1project/build-utils && cd ..')
         os.system('ln -s ./subproj/build-utils/src/utils utils')
     CLEAR_UTILS = True
 
@@ -160,7 +157,7 @@ os.environ["APP_INSTALL_PATH"] = "%s" % (install_path,)
 src_path = 'src'
 include_path = '/usr/include'
 modules = []
-scripts = ['src/script/uniconvertor', 'src/script/uc2',]
+scripts = ['src/script/uniconvertor', 'src/script/uc2']
 deb_scripts = []
 data_files = [
     (install_path, ['LICENSE', ]),
