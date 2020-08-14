@@ -68,6 +68,7 @@ TrafoType = tp.List[float]
 
 # BOUNDING BOX: [x0, y0, x1, y1]
 BboxType = tp.List[float]
+
 # -----------------------------------------------------
 #                Placement constants
 # -----------------------------------------------------
