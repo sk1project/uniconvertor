@@ -21,19 +21,56 @@ from uc2 import _
 """
 The package provides generic application constants
 """
-# Version
+# -----------------------------------------------------
+#                   Version
+# -----------------------------------------------------
 VERSION = '2.0'
 REVISION = 'rc5'
 BUILD = ''
 
-# Types
+# -----------------------------------------------------
+#                    Types
+# -----------------------------------------------------
 PyCapsule = tp.TypeVar('PyCapsule')
 AppHandle = tp.TypeVar('AppHandle')
 ChannelType = tp.List[tp.Union[str, tp.Callable]]
 
-ColorType = tp.List[tp.Union[str, tp.List[tp.Union[float, tp.List[float]]], float]]
+# Color pixel (0-255): [r, g, b]
+PixelType = tp.List[int]
 
-# Placement constants
+# Color value (0.0-1.0): [r, g, b] or [c, m, y, b]
+ColorValueType = tp.List[float]
+
+ColorType = tp.List[tp.Union[str, tp.Union[ColorValueType, tp.List[ColorValueType]], float]]
+
+# POINT: [x, y]
+PointType = tp.List[float]
+
+# SEGMENT: [Point, Point, Point, marker]
+# marker - NODE_CUSP = 0; NODE_SMOOTH = 1; NODE_SYMMETRICAL = 2
+SegmentType = tp.List[tp.Union[PointType, int]]
+
+# BEZIER POINT: Point | Segment
+BezierPointType = tp.Union[PointType, SegmentType]
+
+# BEZIER POINTS: [BezierPoint, BezierPoint, ...]
+BezierPointsType = tp.List[BezierPointType]
+
+# PATH: [Point, BezierPoints, end_marker]
+# end_marker - is closed CURVE_CLOSED = 1, if not CURVE_OPENED = 0
+PathType = tp.List[tp.Union[PointType, BezierPointsType, int]]
+
+# PATHS: [Path, Path, ...]
+PathsType = tp.List[PathType]
+
+# TRAFO: [x, y]
+TrafoType = tp.List[float]
+
+# BOUNDING BOX: [x0, y0, x1, y1]
+BboxType = tp.List[float]
+# -----------------------------------------------------
+#                Placement constants
+# -----------------------------------------------------
 BEFORE = 0
 AFTER = 1
 LOWER = 0
@@ -41,13 +78,17 @@ UPPER = 1
 HORIZONTAL = 0
 VERTICAL = 1
 
-# MODEL TYPES
+# -----------------------------------------------------
+#                    MODEL TYPES
+# -----------------------------------------------------
 GENERIC_MODEL = 0
 TAGGED_MODEL = 1
 TEXT_MODEL = 2
 BINARY_MODEL = 3
 
-# Formats enumeration
+# -----------------------------------------------------
+#                Formats enumerations
+# -----------------------------------------------------
 
 ALL_FORMATS = 0
 
@@ -333,8 +374,10 @@ MIMES = {
     'txt': 'text/plain',
 }
 
-# UNITS
 
+# -----------------------------------------------------
+#                        UNITS
+# -----------------------------------------------------
 SYSTEM_DPI = 72.0
 
 UNIT_PX = 'px'
@@ -415,6 +458,10 @@ unit_by_name = {
     _('millimeters'): UNIT_MM
 }
 
+
+# -----------------------------------------------------
+#                    Page formats
+# -----------------------------------------------------
 PAGE_FORMATS = {
     'Icon 16x16': (16 * px_to_pt, 16 * px_to_pt),
     'Icon 22x22': (22 * px_to_pt, 22 * px_to_pt),
@@ -532,8 +579,10 @@ LANDSCAPE = 1
 
 ORIENTS_NAMES = (_('Portrait'), _('Landscape'))
 
-# Color management constants
 
+# -----------------------------------------------------
+#              Color management constants
+# -----------------------------------------------------
 INTENT_PERCEPTUAL = 0
 INTENT_RELATIVE_COLORIMETRIC = 1
 INTENT_SATURATION = 2
