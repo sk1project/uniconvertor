@@ -16,6 +16,7 @@
  *	along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <stdio.h>
 #include <Python.h>
 #include <MagickWand/MagickWand.h>
 
@@ -61,6 +62,31 @@ im_LoadImage(PyObject *self, PyObject *args) {
 
 	magick_wand = (MagickWand *) PyCapsule_GetPointer(magick_pointer, NULL);
 	status = MagickReadImage(magick_wand, filepath);
+
+	if (status == MagickFalse){
+		return Py_BuildValue("i", 0);
+	}
+
+	return Py_BuildValue("i", 1);
+}
+
+static PyObject *
+im_LoadImageFile(PyObject *self, PyObject *args) {
+
+	void *magick_pointer;
+	int fd;
+	FILE *fobj;
+	MagickWand *magick_wand;
+	MagickBooleanType status;
+
+	if (!PyArg_ParseTuple(args, "Oi", &magick_pointer, &fd)){
+		return Py_BuildValue("i", 0);
+	}
+
+	magick_wand = (MagickWand *) PyCapsule_GetPointer(magick_pointer, NULL);
+	fobj = fdopen(fd, "rb");
+	status = MagickReadImageFile(magick_wand, fobj);
+	fclose(fobj);
 
 	if (status == MagickFalse){
 		return Py_BuildValue("i", 0);
@@ -532,6 +558,7 @@ PyMethodDef libimg_methods[] = {
 		{"terminate_magick", im_TerminateMagick, METH_VARARGS},
 		{"new_image", im_NewImage, METH_VARARGS},
 		{"load_image", im_LoadImage, METH_VARARGS},
+		{"load_image_file", im_LoadImageFile, METH_VARARGS},
 		{"load_image_blob", im_LoadImageBlob, METH_VARARGS},
 		{"merge_layers", im_MergeLayers, METH_VARARGS},
 		{"write_image", im_WriteImage, METH_VARARGS},
