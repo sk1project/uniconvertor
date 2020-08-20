@@ -156,7 +156,6 @@ install_path = '/usr/lib/%s-%s' % (NAME, VERSION)
 os.environ["APP_INSTALL_PATH"] = "%s" % (install_path,)
 src_path = 'src'
 include_path = '/usr/include'
-modules = []
 scripts = ['src/script/uniconvertor', 'src/script/uc2']
 deb_scripts = []
 data_files = [
@@ -255,7 +254,7 @@ with open('setup.cfg', 'w') as fileptr:
 # Native extensions
 ############################################################
 
-modules += make_modules(src_path, include_path)
+modules = make_modules(src_path, include_path)
 
 ############################################################
 # Setup routine
