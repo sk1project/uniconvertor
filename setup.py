@@ -1,6 +1,6 @@
-#!/usr/bin/python2
+#!/usr/bin/python3
 #
-#   Setup script for UniConvertor 2.x
+#   Setup script for UniConvertor 2.x (python3)
 #
 # 	Copyright (C) 2013-2020 by Ihor E. Novikov
 #
