@@ -1,10 +1,10 @@
-# UniConvertor 2.0
+# UniConvertor 2.0 (python3)
 
 ![build status](https://api.travis-ci.org/sk1project-build-bot/uniconvertor.svg?branch=master) ![platform](https://img.shields.io/badge/platform-Linux-blue.svg) ![platform](https://img.shields.io/badge/platform-Windows-blue.svg) ![platform](https://img.shields.io/badge/platform-Mac-blue.svg) [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 
 <center>
 
-![UniConvertor 2.0](./docs/images/uc2_0.png "UniConvertor 2.0")
+![UniConvertor 2.0](./docs/images/uc2_0.png "UniConvertor 2.0") 
 
 </center>
 
@@ -59,8 +59,8 @@ preview).
 
 ### Dependencies
 
-Please note that application uses Python 2.x version. So Python interpreter
-and python based dependencies should be for 2.x, but not 3.x
+Please note that application uses Python >=3.6 version. So Python interpreter
+and python based dependencies should be for >=3.6, but not older.
 
 For successful build either distutils or deb|rpm package you need installing
 some development packages. We describe dev-packages for Ubuntu|Debian, but for
@@ -71,13 +71,13 @@ libcairo2-dev
 liblcms2-dev
 libmagickwand-dev
 libpango1.0-dev
-python-dev
-python-cairo-dev
+python3-dev
+python3-cairo-dev
 ```
 
 To run application you need installing also:
 ```
-python-pil 
-python-reportlab
-python-cairo
+python3-pil 
+python3-reportlab
+python3-cairo
 ```

@@ -1,5 +1,5 @@
 
-UniConvertor 2.0
+UniConvertor 2.0 (python3)
 --------------------------------------------------------------------------
 UniConvertor 2.0 is a multiplatform universal vector graphics translator.
 Uses sK1 2.0 model to convert one format to another.
@@ -41,8 +41,8 @@ By installing the package you have full control over all the installed files
 and can easily remove them from the system (it's important for application
 preview).
 
-Please note that application uses Python 2.x branch. So Python interpreter
-and python based dependencies should be from 2.x branch, but not 3.x
+Please note that application uses Python >=3.6 version. So Python interpreter
+and python based dependencies should be for >=3.6, but not older.
 
 DEPENDENCIES
 
@@ -55,12 +55,12 @@ libcairo2-dev
 liblcms2-dev
 libmagickwand-dev
 libpango1.0-dev
-python-dev
-python-cairo-dev
+python3-dev
+python3-cairo-dev
 
 
 To run application you need installing also:
 
-python-pil
-python-reportlab
-python-cairo
+python3-pil
+python3-reportlab
+python3-cairo
