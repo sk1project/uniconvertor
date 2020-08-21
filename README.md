@@ -73,11 +73,11 @@ libmagickwand-dev
 libpango1.0-dev
 python3-dev
 python3-cairo-dev
+python3-pil 
 ```
 
 To run application you need installing also:
 ```
-python3-pil 
 python3-reportlab
 python3-cairo
 ```
