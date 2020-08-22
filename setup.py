@@ -328,7 +328,7 @@ if RPM_PACKAGE:
         maintainer='%s <%s>' % (AUTHOR, AUTHOR_EMAIL),
         summary=DESCRIPTION,
         description=LONG_DESCRIPTION,
-        license=LICENSE,
+        license_=LICENSE,
         url=URL,
         depends=rpm_depends.split(' '),
         build_script='setup.py',
