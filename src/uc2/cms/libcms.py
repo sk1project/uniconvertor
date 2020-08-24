@@ -273,7 +273,7 @@ COLOR_FUNC_MAP = {
 }
 
 
-def cms_create_default_profile(colorspace: str) -> tp.Union[uc2const.PyCapsule, None]:
+def cms_create_default_profile(colorspace: str) -> tp.Optional[uc2const.PyCapsule]:
     """Artificial functionality. The function emulates built-in
     profile reading according profile resource attached to the package.
     Returns a handle to lcms built-in profile wrapped as a Python object.
@@ -288,7 +288,7 @@ def cms_create_default_profile(colorspace: str) -> tp.Union[uc2const.PyCapsule, 
     return None if profile is None else profile[0]()
 
 
-def cms_get_default_profile_resource(colorspace: str) -> tp.Union[tp.IO, None]:
+def cms_get_default_profile_resource(colorspace: str) -> tp.Optional[tp.IO]:
     """Artificial functionality.
     Returns temporary named file object.
 

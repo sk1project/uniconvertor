@@ -37,7 +37,7 @@ def get_version() -> tp.Tuple[str, str]:
     return cairo.cairo_version_string(), '%d.%d.%d' % (v0, v1, v2)
 
 
-def create_cpath(paths: uc2const.PathsType, cmatrix: tp.Union[cairo.Matrix, None] = None) -> cairo.Path:
+def create_cpath(paths: uc2const.PathsType, cmatrix: tp.Optional[cairo.Matrix] = None) -> cairo.Path:
     """Transforms Bezier paths into cairo path.
 
     :param paths: (uc2const.PathsType) Bezier paths

@@ -79,7 +79,7 @@ class UCApplication:
         if args[0] == msgconst.STOP:
             echo('For details see logs: %s\n' % self.log_filepath)
 
-    def check_sys_args(self, current_dir: tp.Union[str, None]) -> tp.Union[tp.NoReturn, None]:
+    def check_sys_args(self, current_dir: tp.Optional[str]) -> tp.Optional[tp.NoReturn]:
         """Checks system arguments before translation executed
 
         :param current_dir: (str|None) directory path where UniConvertor command executed
@@ -114,7 +114,7 @@ class UCApplication:
         sys.exit(0)
 
     @staticmethod
-    def get_translation_args(current_dir: tp.Union[str, None]) \
+    def get_translation_args(current_dir: tp.Optional[str]) \
             -> tp.Union[tp.NoReturn, tp.Tuple[tp.Callable, tp.List[str], tp.Dict]]:
         """Prepares UniConvertor execution command, options, targets and destinations
 
@@ -156,7 +156,7 @@ class UCApplication:
 
         return command, files, options
 
-    def __call__(self, current_dir: tp.Union[str, None] = None) -> tp.NoReturn:
+    def __call__(self, current_dir: tp.Optional[str] = None) -> tp.NoReturn:
         """UniConvertor translation callable.
 
         :param current_dir: (str|None) directory path where UniConvertor command executed

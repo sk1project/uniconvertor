@@ -20,7 +20,7 @@ import sys
 import typing as tp
 
 
-def merge_cnf(cnf: tp.Union[tp.Dict, None] = None, kw: tp.Union[tp.Dict, None] = None) -> tp.Dict:
+def merge_cnf(cnf: tp.Optional[tp.Dict] = None, kw: tp.Optional[tp.Dict] = None) -> tp.Dict:
     """Merges dicts checking them
 
     :param cnf: (dict|None) target dict

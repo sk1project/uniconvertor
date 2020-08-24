@@ -29,7 +29,7 @@ class SerializedConfig:
     """
     filename: str = ''
 
-    def update(self, cnf: tp.Union[tp.Dict, None] = None) -> None:
+    def update(self, cnf: tp.Optional[tp.Dict] = None) -> None:
         """Updates existent config fields from provided dict
 
         :param cnf: (dict) dict of values for update
@@ -64,7 +64,7 @@ class SerializedConfig:
         """
         self.update(json.load(fp))
 
-    def load(self, filename: tp.Union[str, None] = None) -> None:
+    def load(self, filename: tp.Optional[str] = None) -> None:
         """Loads config values from provided config file
 
         :param filename: (str) path to config file
@@ -81,7 +81,7 @@ class SerializedConfig:
             except Exception:
                 LOG.exception('Error reading config %s', filename)
 
-    def save(self, filename: tp.Union[str, None] = None) -> None:
+    def save(self, filename: tp.Optional[str] = None) -> None:
         """Writes JSON config file by provided file path
 
         :param filename: (str) path to config file

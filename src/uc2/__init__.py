@@ -37,7 +37,7 @@ def uc2_init() -> AppHandle:
     return app
 
 
-def uc2_run(cwd: tp.Union[str, None] = None) -> tp.NoReturn:
+def uc2_run(cwd: tp.Optional[str] = None) -> tp.NoReturn:
     """UniConvertor launch routine.
 
     :param cwd: (str|None) application working directory

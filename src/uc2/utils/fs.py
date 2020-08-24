@@ -149,7 +149,7 @@ def get_files_tree(path='.', ext='*'):
 # Filename manipulations
 #
 
-def find_in_path(paths: tp.List[str], filename: str) -> tp.Union[str, None]:
+def find_in_path(paths: tp.List[str], filename: str) -> tp.Optional[str]:
     """Finds a file in one of the directories listed in 'paths'.
        If a file is found, return it's full name, None otherwise.
 
@@ -163,7 +163,7 @@ def find_in_path(paths: tp.List[str], filename: str) -> tp.Union[str, None]:
             return fullname
 
 
-def find_files_in_path(paths: tp.List[str], filenames: tp.List[str]) -> tp.Union[str, None]:
+def find_files_in_path(paths: tp.List[str], filenames: tp.List[str]) -> tp.Optional[str]:
     """Finds one of the files listed in FILES in one of the
        directories in PATHS. Return the name of the first one found,
        None if no file is found.

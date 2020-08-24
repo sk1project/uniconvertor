@@ -118,7 +118,7 @@ class DefaultColorManager:
         libcms.cms_do_transform(transform, in_color, out_color)
         return cs.decode_colorb(out_color, cs_out)
 
-    def do_bitmap_transform(self, img: Image, mode: str, cs_out: tp.Union[str, None] = None) -> Image:
+    def do_bitmap_transform(self, img: Image, mode: str, cs_out: tp.Optional[str] = None) -> Image:
         """Does image proof transform. Returns new image instance.
 
         :param img: (Image) Pillow Image instance
@@ -267,7 +267,7 @@ class DefaultColorManager:
 
     @staticmethod
     def mix_colors(color0: uc2const.ColorType,
-                   color1: uc2const.ColorType, coef: float = .5) -> tp.Union[uc2const.ColorType, None]:
+                   color1: uc2const.ColorType, coef: float = .5) -> tp.Optional[uc2const.ColorType]:
         """Mixes two color with identical color spaces.
 
         :param color0: (uc2const.ColorType) first color
@@ -335,7 +335,7 @@ class DefaultColorManager:
         """
         return cs.val_255(self.get_display_color(color))
 
-    def convert_image(self, img: Image, outmode: str, cs_out: tp.Union[str, None] = None) -> Image:
+    def convert_image(self, img: Image, outmode: str, cs_out: tp.Optional[str] = None) -> Image:
         """Converts image between color spaces and image modes. Returns new image instance.
 
         :param img: (Image) Pillow Image instance

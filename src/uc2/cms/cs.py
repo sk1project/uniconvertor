@@ -204,7 +204,7 @@ def do_simple_transform(color_values: tp.List[float], cs_in: str, cs_out: str) -
     return TRANSFORMS.get(cs_in + cs_out, copy.copy)(color_values)
 
 
-def colorb(color: tp.Union[uc2const.ColorType, None] = None, use_cmyk: bool = False) -> tp.List[int]:
+def colorb(color: tp.Optional[uc2const.ColorType] = None, use_cmyk: bool = False) -> tp.List[int]:
     """Emulates COLORB object from python-lcms.
     Actually function returns regular 4-member list.
 
@@ -307,7 +307,7 @@ def verbose_color(color: tp.Union[uc2const.ColorType, tp.List, None]) -> str:
     return ret
 
 
-def get_profile_name(filepath: str) -> tp.Union[str, None]:
+def get_profile_name(filepath: str) -> tp.Optional[str]:
     """Returns profile name. If file is not suitable profile
     or doesn't exist returns None.
 
@@ -322,7 +322,7 @@ def get_profile_name(filepath: str) -> tp.Union[str, None]:
         pass
 
 
-def get_profile_info(filepath: str) -> tp.Union[str, None]:
+def get_profile_info(filepath: str) -> tp.Optional[str]:
     """Returns profile info. If file is not suitable profile
     or doesn't exist returns None.
 
