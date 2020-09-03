@@ -1,4 +1,4 @@
-#!/usr/bin/python2
+#!/usr/bin/python3
 #
 #   BuildBox for sK1/UniConvertor 2.x
 #
@@ -38,6 +38,7 @@ To run build, just launch BuildBox:
 --------------------------------------------------------------------------
 """
 
+import logging
 import os
 import shutil
 import sys
@@ -45,9 +46,9 @@ from zipfile import ZIP_DEFLATED
 from zipfile import ZipFile
 
 from utils import bbox, build, pkg
-from utils.bbox import is_path, command, echo_msg, SYSFACTS, TIMESTAMP
-from utils.fsutils import get_files_tree
+from utils.bbox import is_path, SYSFACTS, TIMESTAMP, clear_files, shell
 
+LOG = logging.getLogger(__name__)
 CURRENT_PATH = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(1, os.path.join(CURRENT_PATH, 'src'))
 
@@ -56,16 +57,6 @@ import uc2.uc2const
 # options processing
 ARGV = {item.split('=')[0][2:]: item.split('=')[1]
         for item in sys.argv if item.startswith('--') and '=' in item}
-
-# Output colors
-STDOUT_MAGENTA = '\033[95m'
-STDOUT_BLUE = '\033[94m'
-STDOUT_GREEN = '\033[92m'
-STDOUT_YELLOW = '\033[93m'
-STDOUT_FAIL = '\033[91m'
-STDOUT_ENDC = '\033[0m'
-STDOUT_BOLD = '\033[1m'
-STDOUT_UNDERLINE = '\033[4m'
 
 UC2 = 'uc2'
 PROJECT = UC2  # change point
@@ -157,45 +148,31 @@ PUBLISH = True
 
 if DEBUG_MODE:
     IMAGES = LOCAL_IMAGES
+
+
 # -----------# -----------# -----------
 
 
 def clear_folders():
     # Clear build folders
     if is_path(BUILD_DIR):
-        command('rm -rf %s' % BUILD_DIR)
+        shell(f'rm -rf {BUILD_DIR}')
     if is_path(DIST_DIR):
-        command('rm -rf %s' % DIST_DIR)
+        shell(f'rm -rf {DIST_DIR}')
     if not is_path(RELEASE_DIR):
         os.makedirs(RELEASE_DIR)
-
-
-def clear_files(folder, ext=None):
-    ext = 'py' if ext is None else ext
-    exts = [ext] if not isinstance(ext, list) else ext
-    for ext in exts:
-        for path in get_files_tree(folder, ext):
-            if os.path.exists(path) and path.endswith(ext):
-                os.remove(path)
-
-
-def shell(cmd, times=1):
-    for _i in range(times):
-        if not os.system(cmd):
-            return 0
-    return 1
 
 
 def set_build_stamp():
     if not RELEASE:
         for filename in CONST_FILES:
-            with open(filename, 'rb') as fp:
+            with open(filename, 'r') as fp:
                 lines = fp.readlines()
-            with open(filename, 'wb') as fp:
+            with open(filename, 'w') as fp:
                 marked = False
                 for line in lines:
                     if not marked and line.startswith('BUILD = '):
-                        line = 'BUILD = \'%s\'\n' % bbox.TIMESTAMP
+                        line = f'BUILD = \'{bbox.TIMESTAMP}\'\n'
                         marked = True
                     fp.write(line)
 
@@ -207,80 +184,75 @@ def set_build_stamp():
 
 def pull_images():
     for image in IMAGES:
-        msg = 'Pulling %s%s image' % (IMAGE_PREFIX, image)
+        msg = f'Pulling {IMAGE_PREFIX}{image} image'
         msg += ' ' * (50 - len(msg)) + '...'
-        echo_msg(msg, newline=False)
-        if shell('docker pull %s%s 1> /dev/null' % (IMAGE_PREFIX, image), 3):
-            echo_msg('[ FAIL ]', code=STDOUT_FAIL)
+        if shell(f'docker pull {IMAGE_PREFIX}{image} 1> /dev/null', 3):
+            LOG.error(f'{msg}[ FAIL ]')
             sys.exit(1)
-        echo_msg('[  OK  ]', code=STDOUT_GREEN)
+        LOG.info(f'{msg}[  OK  ]')
 
 
 def remove_images():
     for image in IMAGES:
-        command('docker rmi %s%s' % (IMAGE_PREFIX, image))
+        shell(f'docker rmi {IMAGE_PREFIX}{image}')
 
 
 def rebuild_images():
-    command('docker rm $(docker ps -a -q)  2> /dev/null')
-    command('docker rmi $(docker images -a -q)  2> /dev/null')
+    shell('docker rm $(docker ps -a -q)  2> /dev/null')
+    shell('docker rmi $(docker images -a -q)  2> /dev/null')
     for image in IMAGES[:-1]:
-        echo_msg('Rebuilding %s%s image' % (IMAGE_PREFIX, image),
-                 code=STDOUT_MAGENTA)
+        LOG.info(f'Rebuilding {IMAGE_PREFIX}{image} image')
         dockerfile = os.path.join(PROJECT_DIR, 'infra', 'bbox', 'docker', image)
-        command('docker build -t %s%s %s' % (IMAGE_PREFIX, image, dockerfile))
-        if not command('docker push %s%s' % (IMAGE_PREFIX, image)):
-            command('docker rmi $(docker images -a -q)')
+        shell(f'docker build -t {IMAGE_PREFIX}{image} {dockerfile}')
+        if not shell(f'docker push {IMAGE_PREFIX}{image}'):
+            shell('docker rmi $(docker images -a -q)')
 
 
 def run_build(locally=False, stop_on_error=True):
-    echo_msg('Project %s build started' % PROJECT, code=STDOUT_MAGENTA)
-    echo_msg('=' * 35, code=STDOUT_MAGENTA)
+    LOG.info(f'Project {PROJECT} build started')
+    LOG.info('=' * 35)
     if not locally:
         set_build_stamp()
     if is_path(RELEASE_DIR):
-        command('sudo rm -rf %s' % RELEASE_DIR)
+        shell(f'sudo rm -rf {RELEASE_DIR}')
     if is_path(LOCALES_DIR):
-        command('sudo rm -rf %s' % LOCALES_DIR)
+        shell(f'sudo rm -rf {LOCALES_DIR}')
     for image in IMAGES if not locally else LOCAL_IMAGES:
         os_name = image.capitalize().replace('_', ' ')
-        msg = 'Build on %s' % os_name
-        echo_msg(msg + ' ' * (35 - len(msg)) + '...', newline=False)
+        msg = f'Build on {os_name}'
+        msg += ' ' * (35 - len(msg)) + '...'
         output = ' 1> /dev/null 2> /dev/null' if not DEBUG_MODE else ''
-        cmd = '/vagrant/bbox.py build_package --project=%s' % PROJECT
+        cmd = f'/vagrant/bbox.py build_package --project={PROJECT}'
         if image == 'packager':
-            cmd = '/vagrant/bbox.py packaging --project=%s' % PROJECT
+            cmd = f'/vagrant/bbox.py packaging --project={PROJECT}'
         if RELEASE:
             cmd += ' --release=1'
-        if shell('docker run --rm -v %s:%s %s%s %s %s' %
-                 (PROJECT_DIR, VAGRANT_DIR,
-                  IMAGE_PREFIX, image, cmd, output), 2):
-            echo_msg('[ FAIL ]', code=STDOUT_FAIL)
+        if shell(f'docker run --rm -v {PROJECT_DIR}:{VAGRANT_DIR} {IMAGE_PREFIX}{image} {cmd} {output}', 2):
+            LOG.error(f'{msg}[ FAIL ]')
             if stop_on_error or not locally:
                 sys.exit(1)
         else:
-            echo_msg('[  OK  ]', code=STDOUT_GREEN)
+            LOG.info(f'{msg}[  OK  ]')
 
     if not locally and PUBLISH:
         msg = 'Publishing result'
-        msg = msg + ' ' * (35 - len(msg)) + '...'
-        echo_msg(msg, newline=False)
+        msg += ' ' * (35 - len(msg)) + '...'
         folder = PROJECT + '-release' if RELEASE else PROJECT
-        if os.system('sshpass -e rsync -a --delete-after -e '
-                     '\'ssh  -o StrictHostKeyChecking=no -o '
-                     'UserKnownHostsFile=/dev/null -p 22\' '
-                     './release/ `echo $RHOST`%s/ '
-                     '1> /dev/null  2> /dev/null' % folder):
-            echo_msg('[ FAIL ]', code=STDOUT_FAIL)
+        if shell('sshpass -e rsync -a --delete-after -e '
+                 '\'ssh  -o StrictHostKeyChecking=no -o '
+                 'UserKnownHostsFile=/dev/null -p 22\' '
+                 f'./release/ `echo $RHOST`{folder}/ '
+                 '1> /dev/null  2> /dev/null'):
+            LOG.error(f'{msg}[ FAIL ]')
             sys.exit(1)
-        echo_msg('[  OK  ]', code=STDOUT_GREEN)
-    echo_msg('=' * 35, code=STDOUT_MAGENTA)
+        LOG.info(f'{msg}[  OK  ]')
+    LOG.info('=' * 35)
 
 
 def run_build_local():
     run_build(locally=True, stop_on_error=False)
-    command('chmod -R 777 %s' % RELEASE_DIR)
-    command('sudo rm -rf %s' % LOCALES_DIR)
+    shell(f'chmod -R 777 {RELEASE_DIR}')
+    shell(f'sudo rm -rf {LOCALES_DIR}')
 
 
 def build_package():
@@ -294,8 +266,8 @@ def build_package():
     clear_folders()
 
     if SYSFACTS.is_deb:
-        echo_msg('Building DEB package')
-        command('cd %s;python2 %s bdist_deb%s' % (PROJECT_DIR, SCRIPT, out))
+        LOG.info('Building DEB package')
+        shell(f'cd {PROJECT_DIR};python3 {SCRIPT} bdist_deb{out}')
 
         old_name = bbox.get_package_name(DIST_DIR)
         prefix, suffix = old_name.split('_')
@@ -323,8 +295,8 @@ def build_package():
                 copies.append((prefix + '_mx18_' + suffix, mx_folder))
 
     elif SYSFACTS.is_rpm:
-        echo_msg('Building RPM package')
-        command('cd %s;python2 %s bdist_rpm%s' % (PROJECT_DIR, SCRIPT, out))
+        LOG.info('Building RPM package')
+        shell(f'cd {PROJECT_DIR};python3 {SCRIPT} bdist_rpm{out}')
 
         old_name = bbox.get_package_name(DIST_DIR)
         items = old_name.split('.')
@@ -335,7 +307,7 @@ def build_package():
                 new_name = new_name.replace('x86_64', 'i686')
             copies.append((new_name, rhel_folder))
     else:
-        echo_msg('Unsupported distro!', code=STDOUT_FAIL)
+        LOG.error('Unsupported distro!')
         sys.exit(1)
 
     distro_folder = os.path.join(RELEASE_DIR, SYSFACTS.hmarker)
@@ -343,26 +315,26 @@ def build_package():
         os.makedirs(distro_folder)
     old_name = os.path.join(DIST_DIR, old_name)
     package_name = os.path.join(RELEASE_DIR, distro_folder, new_name)
-    command('cp %s %s' % (old_name, package_name))
+    shell(f'cp {old_name} {package_name}')
 
     # Package copies
     for name, folder in copies:
         if not is_path(folder):
             os.makedirs(folder)
         name = os.path.join(RELEASE_DIR, folder, name)
-        command('cp %s %s' % (old_name, name))
+        shell(f'cp {old_name} {name}')
 
     if SYSFACTS.is_src:
-        echo_msg('Creating source package')
+        LOG.info('Creating source package')
         if os.path.isdir(DIST_DIR):
             shutil.rmtree(DIST_DIR, True)
-        command('cd %s;python2 %s sdist %s' % (PROJECT_DIR, SCRIPT, out))
+        shell(f'cd {PROJECT_DIR};python3 {SCRIPT} sdist {out}')
         old_name = bbox.get_package_name(DIST_DIR)
-        marker = '_%s' % bbox.TIMESTAMP if not RELEASE else ''
-        new_name = old_name.replace('.tar.gz', '%s.tar.gz' % marker)
+        marker = f'_{bbox.TIMESTAMP}' if not RELEASE else ''
+        new_name = old_name.replace('.tar.gz', f'{marker}.tar.gz')
         old_name = os.path.join(DIST_DIR, old_name)
         package_name = os.path.join(RELEASE_DIR, new_name)
-        command('cp %s %s' % (old_name, package_name))
+        shell(f'cp {old_name} {package_name}')
 
         # ArchLinux PKGBUILD
         if os.path.isdir(PKGBUILD_DIR):
@@ -371,17 +343,17 @@ def build_package():
         os.chdir(PKGBUILD_DIR)
 
         tarball = os.path.join(PKGBUILD_DIR, new_name)
-        command('cp %s %s' % (package_name, tarball))
+        shell(f'cp {package_name} {tarball}')
 
         dest = 'PKGBUILD'
-        src = os.path.join(ARCH_DIR, '%s-%s' % (dest, APP_NAME))
-        command('cp %s %s' % (src, dest))
-        command("sed -i 's/VERSION/%s/g' %s" % (APP_VER, dest))
-        command("sed -i 's/TARBALL/%s/g' %s" % (new_name, dest))
+        src = os.path.join(ARCH_DIR, f'{dest}-{APP_NAME}')
+        shell(f'cp {src} {dest}')
+        shell(f"sed -i 's/VERSION/{APP_VER}/g' {dest}")
+        shell(f"sed -i 's/TARBALL/{new_name}/g' {dest}")
 
         dest = 'README'
-        src = os.path.join(ARCH_DIR, '%s-%s' % (dest, APP_NAME))
-        command('cp %s %s' % (src, dest))
+        src = os.path.join(ARCH_DIR, f'{dest}-{APP_NAME}')
+        shell(f'cp {src} {dest}')
 
         pkg_name = new_name.replace('.tar.gz', '.archlinux.pkgbuild.zip')
         arch_folder = os.path.join(RELEASE_DIR, 'ArchLinux')
@@ -406,16 +378,16 @@ EXTENSIONS = [
 ]
 
 MSI_APP_VERSION = APP_MAJOR_VER if RELEASE \
-    else '%s.%s %s' % (APP_MAJOR_VER, TIMESTAMP, APP_REVISION)
+    else f'{APP_MAJOR_VER}.{TIMESTAMP} {APP_REVISION}'
 
 MSI_DATA = {
     # Required
-    'Name': '%s %s' % (APP_FULL_NAME, APP_VER),
+    'Name': f'{APP_FULL_NAME} {APP_VER}',
     'UpgradeCode': '3AC4B4FF-10C4-4B8F-81AD-BAC3238BF695',
     'Version': MSI_APP_VERSION,
     'Manufacturer': 'sK1 Project',
     # Optional
-    'Description': '%s %s Installer' % (APP_FULL_NAME, APP_VER),
+    'Description': f'{APP_FULL_NAME} {APP_VER} Installer',
     'Comments': 'Licensed under AGPL v3',
     'Keywords': 'Vector graphics, Prepress',
 
@@ -423,14 +395,14 @@ MSI_DATA = {
     '_Icon': os.path.join(CACHE_DIR, 'common/uc2.ico'),
     '_OsCondition': '601',
     '_SourceDir': '',
-    '_InstallDir': '%s-%s' % (APP_FULL_NAME, APP_VER),
+    '_InstallDir': f'{APP_FULL_NAME}-{APP_VER}',
     '_OutputName': '',
     '_OutputDir': '',
     '_ProgramMenuFolder': 'sK1 Project',
     '_AddToPath': [''],
 
     '_Shortcuts': [
-        {'Name': 'UniConvertor %s readme' % APP_VER,
+        {'Name': f'UniConvertor {APP_VER} readme',
          'Description': 'ReadMe file',
          'Target': 'readme.txt',
          'Open': [],
@@ -447,11 +419,10 @@ def packaging():
 def build_macos_dmg():
     distro_folder = os.path.join(RELEASE_DIR, 'macOS')
     arch = 'macOS_10.9_Mavericks'
-    echo_msg('=== Build for %s ===' % arch)
-    pkg_name = '%s-%s-%s_and_newer' % (APP_NAME, APP_VER, arch)
+    LOG.info(f'=== Build for {arch} ===')
+    pkg_name = f'{APP_NAME}-{APP_VER}-{arch}_and_newer'
     if not RELEASE:
-        pkg_name = '%s-%s-%s-%s_and_newer' % \
-                   (APP_NAME, APP_VER, TIMESTAMP, arch)
+        pkg_name = f'{APP_NAME}-{APP_VER}-{TIMESTAMP}-{arch}_and_newer'
     pkg_folder = os.path.join(PROJECT_DIR, 'package')
     app_folder = os.path.join(pkg_folder, 'opt/uniconvertor')
     py_pkgs = os.path.join(pkg_folder, 'opt/uniconvertor/pkgs')
@@ -463,23 +434,23 @@ def build_macos_dmg():
         os.makedirs(distro_folder)
 
     # Package building
-    echo_msg('Creating macOS package')
+    LOG.info('Creating macOS package')
 
     pkg_common_dir = os.path.join(CACHE_DIR, 'common')
     pkg_cache_dir = os.path.join(CACHE_DIR, 'macos')
     pkg_cache = os.path.join(pkg_cache_dir, 'cache.zip')
 
-    echo_msg('Extracting portable files from %s' % pkg_cache)
+    LOG.info(f'Extracting portable files from {pkg_cache}')
     ZipFile(pkg_cache, 'r').extractall(pkg_folder)
 
     for item in PKGS:
         src = os.path.join(SRC_DIR, item)
-        echo_msg('Copying tree %s' % src)
+        LOG.info(f'Copying tree {src}')
         shutil.copytree(src, os.path.join(py_pkgs, item))
 
     build.compile_sources(py_pkgs)
     clear_files(py_pkgs, ['py', 'pyo'])
-    clear_files('%s/uc2' % py_pkgs, ['so'])
+    clear_files(f'{py_pkgs}/uc2', ['so'])
 
     for item in EXTENSIONS:
         item = item.replace('.pyd', '.so')
@@ -490,19 +461,19 @@ def build_macos_dmg():
 
     # Launcher
     src = os.path.join(CACHE_DIR, 'macos', 'uniconvertor')
-    dst = os.path.join('%s/bin' % app_folder, 'uniconvertor')
+    dst = os.path.join(f'{app_folder}/bin', 'uniconvertor')
     shutil.copy(src, dst)
     # Readme file
     readme = README_TEMPLATE % bbox.TIMESTAMP[:4]
     readme_path = os.path.join(app_folder, 'readme.txt')
-    with open(readme_path, 'wb') as fp:
-        mark = '' if RELEASE else ' build %s' % bbox.TIMESTAMP
-        fp.write('%s %s%s' % (APP_FULL_NAME, APP_VER, mark))
+    with open(readme_path, 'w') as fp:
+        mark = '' if RELEASE else f' build {bbox.TIMESTAMP}'
+        fp.write(f'{APP_FULL_NAME} {APP_VER}{mark}')
         fp.write('\n\n')
         fp.write(readme)
     # Uninstall.txt
     uninstall = os.path.join(app_folder, 'UNINSTALL.txt')
-    with open(uninstall, 'wb') as fp:
+    with open(uninstall, 'w') as fp:
         fp.write(MAC_UNINSTALL)
     # License file
     src = os.path.join(CACHE_DIR, 'common', 'agpl-3.0.rtf')
@@ -510,16 +481,16 @@ def build_macos_dmg():
     shutil.copy(src, dst)
 
     # PKG and DMG build
-    echo_msg('Creating DMG image')
+    LOG.info('Creating DMG image')
 
     pkg.PkgBuilder({
         'src_dir': pkg_folder,  # path to distribution folder
         'build_dir': './build_dir',  # path for build
         'install_dir': '/',  # where to install app
         'identifier': 'org.sK1Project.UniConvertor',  # domain.Publisher.AppName
-        'app_name': '%s %s' % (APP_FULL_NAME, APP_VER),  # pretty app name
+        'app_name': f'{APP_FULL_NAME} {APP_VER}',  # pretty app name
         'app_ver': APP_VER,  # app version
-        'pkg_name': '%s_%s.pkg' % (APP_FULL_NAME, APP_VER),  # package name
+        'pkg_name': f'{APP_FULL_NAME}_{APP_VER}.pkg',  # package name
         'preinstall': os.path.join(pkg_cache_dir, 'preinstall'),
         'postinstall': os.path.join(pkg_cache_dir, 'postinstall'),
         'license': os.path.join(pkg_common_dir, 'agpl-3.0.rtf'),
@@ -527,10 +498,9 @@ def build_macos_dmg():
         'background': os.path.join(pkg_cache_dir, 'background.png'),
         'check_version': '10.9',
         'dmg': {
-            'targets': ['./build_dir/%s_%s.pkg' % (APP_FULL_NAME, APP_VER),
-                        uninstall],
-            'dmg_filename': '%s.dmg' % pkg_name,
-            'volume_name': '%s %s' % (APP_FULL_NAME, APP_VER),
+            'targets': [f'./build_dir/{APP_FULL_NAME}_{APP_VER}.pkg', uninstall],
+            'dmg_filename': f'{pkg_name}.dmg',
+            'volume_name': f'{APP_FULL_NAME} {APP_VER}',
             'dist_dir': distro_folder,
         },
         'remove_build': True,
@@ -543,11 +513,10 @@ def build_msw_packages():
     distro_folder = os.path.join(RELEASE_DIR, 'MS_Windows')
 
     for arch in ['win32', 'win64']:
-        echo_msg('=== Arch %s ===' % arch)
-        portable_name = '%s-%s-%s-portable' % (APP_NAME, APP_VER, arch)
+        LOG.info(f'=== Arch {arch} ===')
+        portable_name = f'{APP_NAME}-{APP_VER}-{arch}-portable'
         if not RELEASE:
-            portable_name = '%s-%s-%s-%s-portable' % \
-                            (APP_NAME, APP_VER, TIMESTAMP, arch)
+            portable_name = f'{APP_NAME}-{APP_VER}-{TIMESTAMP}-{arch}-portable'
         portable_folder = os.path.join(PROJECT_DIR, portable_name)
         portable_libs = os.path.join(portable_folder, 'libs')
         if os.path.exists(portable_folder):
@@ -558,11 +527,11 @@ def build_msw_packages():
             os.makedirs(distro_folder)
 
         # Package building
-        echo_msg('Creating portable package')
+        LOG.info('Creating portable package')
 
         portable = os.path.join(CACHE_DIR, arch, 'portable.zip')
 
-        echo_msg('Extracting portable files from %s' % portable)
+        LOG.info(f'Extracting portable files from {portable}')
         ZipFile(portable, 'r').extractall(portable_folder)
 
         obsolete_folders = ['stdlib/test/', 'stdlib/lib2to3/tests/',
@@ -574,7 +543,7 @@ def build_msw_packages():
 
         for item in PKGS:
             src = os.path.join(SRC_DIR, item)
-            echo_msg('Copying tree %s' % src)
+            LOG.info(f'Copying tree {src}')
             shutil.copytree(src, os.path.join(portable_libs, item))
 
         build.compile_sources(portable_folder)
@@ -587,16 +556,16 @@ def build_msw_packages():
             shutil.copy(src, dst)
 
         # MSI build
-        echo_msg('Creating MSI package')
+        LOG.info('Creating MSI package')
 
         clear_files(portable_folder, ['exe'])
 
         # Readme file
         readme = README_TEMPLATE % bbox.TIMESTAMP[:4]
         readme_path = os.path.join(portable_folder, 'readme.txt')
-        with open(readme_path, 'wb') as fp:
-            mark = '' if RELEASE else ' build %s' % bbox.TIMESTAMP
-            fp.write('%s %s%s' % (APP_FULL_NAME, APP_VER, mark))
+        with open(readme_path, 'w') as fp:
+            mark = '' if RELEASE else f' build {bbox.TIMESTAMP}'
+            fp.write(f'{APP_FULL_NAME} {APP_VER}{mark}')
             fp.write('\r\n\r\n')
             fp.write(readme.replace('\n', '\r\n'))
         # License file
@@ -605,8 +574,8 @@ def build_msw_packages():
         shutil.copy(src, dst)
 
         # Exe files
-        nonportable = os.path.join(CACHE_DIR, arch, '%s.zip' % PROJECT)
-        echo_msg('Extracting non-portable executables from %s' % nonportable)
+        nonportable = os.path.join(CACHE_DIR, arch, f'{PROJECT}.zip')
+        LOG.info(f'Extracting non-portable executables from {nonportable}')
         ZipFile(nonportable, 'r').extractall(portable_folder)
 
         msi_name = portable_name.replace('-portable', '')
@@ -637,8 +606,7 @@ def build_msw_packages():
 # Main build procedure
 ############################################################
 
-option = sys.argv[1] if len(sys.argv) > 1 \
-                        and not sys.argv[1].startswith('--') else ''
+option = sys.argv[1] if len(sys.argv) > 1 and not sys.argv[1].startswith('--') else ''
 {
     'pull': pull_images,
     'rmi': remove_images,
