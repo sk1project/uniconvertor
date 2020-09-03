@@ -97,7 +97,7 @@ class UCConfig(sconfig.SerializedConfig):
     cms_flags: int = uc2const.cmsFLAGS_NOTPRECALC
     cms_proofing: bool = False
     cms_gamutcheck: bool = False
-    cms_alarmcodes: tp.List[float, float, float] = [1.0, 0.0, 1.0]
+    cms_alarmcodes: tp.List[float] = [1.0, 0.0, 1.0]
     cms_proof_for_spot: bool = False
     cms_bpc_flag: bool = False
     cms_bpt_flag: bool = False
