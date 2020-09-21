@@ -16,6 +16,8 @@
  *	along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#define PY_SSIZE_T_CLEAN
+
 #include <Python.h>
 #include <lcms2.h>
 #include <Imaging.h>
@@ -91,9 +93,9 @@ lcms2_OpenProfile(PyObject *self, PyObject *args) {
 }
 
 static PyObject *
-lcms2_OpenProfileFromString(PyObject *self, PyObject *args) {
+lcms2_OpenProfileFromBytes(PyObject *self, PyObject *args) {
 
-	long size;
+	Py_ssize_t size;
 	char *profile;
 	cmsHPROFILE hProfile;
 
@@ -504,7 +506,7 @@ static
 PyMethodDef lcms2_methods[] = {
 	{"getVersion", lcms2_GetVersion, METH_VARARGS},
 	{"openProfile", lcms2_OpenProfile, METH_VARARGS},
-	{"openProfileFromString", lcms2_OpenProfileFromString, METH_VARARGS},
+	{"openProfileFromBytes", lcms2_OpenProfileFromBytes, METH_VARARGS},
 	{"createRGBProfile", lcms2_CreateRGBProfile, METH_VARARGS},
 	{"createLabProfile", lcms2_CreateLabProfile, METH_VARARGS},
 	{"createGrayProfile", lcms2_CreateGrayProfile, METH_VARARGS},

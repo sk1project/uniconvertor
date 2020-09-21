@@ -89,7 +89,7 @@ def cms_open_profile_from_bytes(profile_bytes: bytes) -> uc2const.PyCapsule:
     if not profile_bytes:
         raise CmsError("Empty profile string provided")
 
-    result = _lcms2.openProfileFromString(profile_bytes)
+    result = _lcms2.openProfileFromBytes(profile_bytes)
 
     if result is None:
         raise CmsError('It seems provided profile string is invalid!')
