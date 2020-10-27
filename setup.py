@@ -286,6 +286,9 @@ setup(
     scripts=scripts,
     ext_modules=modules)
 
+if sys.argv[1] == 'build':
+    dependencies.install_uc2_pip_deps()
+
 ############################################################
 # .py source compiling
 ############################################################
