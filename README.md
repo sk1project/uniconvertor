@@ -67,6 +67,7 @@ some development packages. We describe dev-packages for Ubuntu|Debian, but for
 other distros they have similar names. So, you need:
 ```
 git
+curl
 libcairo2-dev
 liblcms2-dev
 libmagickwand-dev
