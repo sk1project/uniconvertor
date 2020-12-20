@@ -1,9 +1,9 @@
 COLOR LIST DEFINITION:
 
-[type, values, alpha, name]
+[type: str, values: List[float], alpha: float, name: str, palette: Optional[str]]
 
 type - 'CMYK', 'RGB' etc.
-values - list of according float values (0.0-1.0). 
+values - list of according float values (0.0-1.0).
 		CMYK example: [1.0, 1.0, 1.0, 0.0]
 alpha - opacity value (0.0-1.0)
 name - string color name
@@ -18,7 +18,7 @@ Spot color can be RGB or CMYK based:
 ['SPOT', [[0.0, 0.0, 0.0], []], 1.0, 'Black','palette']
 ['SPOT', [[], [0.0, 0.0, 0.0, 1.0]], 1.0, 'Black','palette']
 
-'palette' - this field is optional and used to identify palette
+'palette' - this field is optional and used to be palette identifier
 -------------------------------------------------------------------------------
 
 GRADIENT DEFINITION:
@@ -112,13 +112,13 @@ POINTS DEFINITION:
 [point0, point1,...]
 line point - [x,y]
 curve point - [[x1,y1],[x2,y2],[x3,y3], marker]
-marker - NODE_CUSP = 0; NODE_SMOOTH = 1; NODE_SYMMETRICAL = 2 
+marker - NODE_CUSP = 0; NODE_SMOOTH = 1; NODE_SYMMETRICAL = 2
 
 -------------------------------------------------------------------------------
 PAGE FORMAT
 [format name,(width, height),orientation]
 
-width, height - real page sizes 
+width, height - real page sizes
 orientation - just indicates page orientation
 -------------------------------------------------------------------------------
 LAYER PROPETIES
