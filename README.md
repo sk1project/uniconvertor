@@ -71,6 +71,7 @@ libcairo2-dev
 liblcms2-dev
 libmagickwand-dev
 libpango1.0-dev
+python3-distro
 python3-dev
 python3-cairo-dev
 python3-pil 
