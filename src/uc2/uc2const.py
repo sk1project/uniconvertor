@@ -45,6 +45,10 @@ ColorType = tp.List[tp.Union[str, tp.Union[ColorValueType, tp.List[ColorValueTyp
 
 # POINT: [x, y]
 PointType = tp.List[float]
+ScreenPointType = tp.Union[tp.Tuple[float, float], tp.Tuple[int, int], tp.List[int], tp.List[float]]
+
+# SIZE: [w,h] or (w,h)
+SizeType = tp.Union[tp.Tuple[float, float], tp.Tuple[int, int], tp.List[int], tp.List[float]]
 
 # SEGMENT: [Point, Point, Point, marker]
 # marker - NODE_CUSP = 0; NODE_SMOOTH = 1; NODE_SYMMETRICAL = 2
@@ -68,6 +72,12 @@ TrafoType = tp.List[float]
 
 # BOUNDING BOX: [x0, y0, x1, y1]
 BboxType = tp.List[float]
+ScreenBboxType = tp.Union[tp.Tuple[float, float, float, float],
+                          tp.Tuple[int, int, int, int],
+                          tp.List[int], tp.List[float]]
+
+TextRangeType = tp.Union[tp.Tuple[int, int], tp.List[int]]
+MarkupType = tp.List[tp.Tuple[str, tp.Tuple[int, int]]]
 
 # -----------------------------------------------------
 #                Placement constants
