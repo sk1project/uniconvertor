@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2003-2017 by Ihor E. Novikov
+#  Copyright (C) 2003-2021 by Ihor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License
@@ -30,7 +30,8 @@ LOG = logging.getLogger(__name__)
 IS_MSW = system.get_os_family() == system.WINDOWS
 IS_MAC = system.get_os_family() == system.MACOSX
 
-HOME = os.path.expanduser('~').decode(sys.getfilesystemencoding()).encode('utf-8')
+HOME = os.path.expanduser('~')\
+    .decode(sys.getfilesystemencoding()).encode('utf-8')
 
 
 def expanduser(path=''):
@@ -99,7 +100,7 @@ def normalize_sys_argv():
     """Converts sys.argv to unicode and translate relative paths as
     absolute ones.
     """
-    for item in range(1,len(sys.argv)):
+    for item in range(1, len(sys.argv)):
         if not sys.argv[item] or sys.argv[item].startswith('-'):
             continue
         if sys.argv[item].startswith('~'):
