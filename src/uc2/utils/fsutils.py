@@ -30,7 +30,7 @@ LOG = logging.getLogger(__name__)
 IS_MSW = system.get_os_family() == system.WINDOWS
 IS_MAC = system.get_os_family() == system.MACOSX
 
-HOME = os.path.expanduser(u'~')
+HOME = os.path.expanduser('~').decode(sys.getfilesystemencoding()).encode('utf-8')
 
 
 def expanduser(path=''):
