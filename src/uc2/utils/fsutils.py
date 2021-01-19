@@ -45,11 +45,15 @@ def normalize_path(path):
 
 
 def get_sys_path(path):
-    return path if isinstance(path, unicode) else path.decode('utf-8')
+    if not isinstance(path, unicode):
+        path = path.decode('utf-8')
+    return path.encode(sys.getfilesystemencoding())
 
 
 def get_utf8_path(path):
-    return path.encode('utf-8') if isinstance(path, unicode) else path
+    if not isinstance(path, unicode):
+        path = path.decode(sys.getfilesystemencoding())
+    return path.encode('utf-8')
 
 
 def isfile(path):
