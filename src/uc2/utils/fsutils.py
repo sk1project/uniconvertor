@@ -36,7 +36,7 @@ HOME = os.path.expanduser('~')\
 
 def expanduser(path=''):
     if path.startswith('~'):
-        path = path.replace('~', HOME)
+        path = HOME + path[1:]
     return path
 
 
