@@ -64,6 +64,12 @@ def isdir(path):
     return os.path.isdir(get_sys_path(path))
 
 
+def uopen(path, mode='rb'):
+    if not isinstance(path, unicode):
+        path = path.decode('utf8')
+    return open(path, mode)
+
+
 def get_fileptr(path, writable=False):
     if not path:
         msg = _('There is no file path')
