@@ -19,6 +19,7 @@
 import errno
 import logging
 import os
+import shutil
 import sys
 
 from uc2 import _, events, msgconst
@@ -103,11 +104,23 @@ def lexists(path):
 
 
 def exists(path):
-    return os.path.lexists(get_sys_path(path))
+    return os.path.exists(get_sys_path(path))
 
 
 def remove(path):
     os.remove(get_sys_path(path))
+
+
+def rename(oldpath, newpath):
+    os.rename(get_sys_path(oldpath), get_sys_path(newpath))
+
+
+def listdir(path):
+    return os.listdir(get_sys_path(path))
+
+
+def copy(src, dest):
+    shutil.copy(get_sys_path(src), get_sys_path(dest))
 
 
 def normalize_sys_argv():
