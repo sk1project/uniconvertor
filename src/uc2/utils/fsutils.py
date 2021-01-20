@@ -75,24 +75,14 @@ def get_fileptr(path, writable=False):
     if not path:
         msg = _('There is no file path')
         raise IOError(errno.ENODATA, msg, '')
-    path = path.decode('utf8')
-    if writable:
-        try:
-            fileptr = open(path, 'wb')
-        except Exception:
-            msg = _('Cannot open %s file for writing') % path
-            events.emit(events.MESSAGES, msgconst.ERROR, msg)
-            LOG.exception(msg)
-            raise
-    else:
-        try:
-            fileptr = open(path, 'rb')
-        except Exception:
-            msg = _('Cannot open %s file for reading') % path
-            events.emit(events.MESSAGES, msgconst.ERROR, msg)
-            LOG.exception(msg)
-            raise
-    return fileptr
+    try:
+        return uopen(path, 'wb' if writable else 'rb')
+    except Exception:
+        msg = _('Cannot open %s file for writing') % path \
+            if writable else _('Cannot open %s file for reading') % path
+        events.emit(events.MESSAGES, msgconst.ERROR, msg)
+        LOG.exception(msg)
+        raise
 
 
 def makedirs(path):
