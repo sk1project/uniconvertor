@@ -100,6 +100,10 @@ def exists(path):
     return os.path.lexists(get_sys_path(path))
 
 
+def remove(path):
+    os.remove(get_sys_path(path))
+
+
 def normalize_sys_argv():
     """Converts sys.argv to unicode and translate relative paths as
     absolute ones.
