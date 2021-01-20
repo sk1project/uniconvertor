@@ -68,7 +68,7 @@ def get_fileptr(path, writable=False):
     if not path:
         msg = _('There is no file path')
         raise IOError(errno.ENODATA, msg, '')
-    path = get_sys_path(path)
+    path = path.decode('utf8')
     if writable:
         try:
             fileptr = open(path, 'wb')
