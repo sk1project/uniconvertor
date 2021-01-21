@@ -16,15 +16,12 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import logging
-
 import xml.sax
 from xml.sax import handler
 from xml.sax.saxutils import XMLGenerator
 from xml.sax.xmlreader import InputSource
 
-from uc2.utils.fs import path_system, path_unicode
 from uc2.utils import fsutils
-from uc2.utils.fsutils import get_fileptr
 
 LOG = logging.getLogger(__name__)
 
@@ -69,7 +66,7 @@ class XmlConfigParser(object):
             entity_resolver = EntityResolver()
             dtd_handler = DTDHandler()
             try:
-                input_file = get_fileptr(filename)
+                input_file = fsutils.get_fileptr(filename)
                 input_source = InputSource()
                 input_source.setByteStream(input_file)
                 xml_reader = xml.sax.make_parser()
@@ -89,12 +86,12 @@ class XmlConfigParser(object):
             return
 
         try:
-            fileobj = get_fileptr(filename, True)
+            fileobj = fsutils.get_fileptr(filename, True)
         except Exception as e:
             LOG.error('Cannot write preferences into %s %s', filename, e)
             return
-
-        writer = XMLGenerator(out=fileobj, encoding=self.system_encoding)
+        encoding = self.__dict__.get('system_encoding', 'utf8')
+        writer = XMLGenerator(out=fileobj, encoding=encoding)
         writer.startDocument()
         defaults = XmlConfigParser.__dict__
         items = self.__dict__.items()
@@ -109,7 +106,7 @@ class XmlConfigParser(object):
             writer.characters('\t')
             writer.startElement('%s' % key, {})
 
-            str_value = path_unicode(value.__str__())
+            str_value = value.__str__()
             if isinstance(value, str):
                 str_value = "'%s'" % (escape_quote(str_value))
 
@@ -137,12 +134,12 @@ class XMLPrefReader(handler.ContentHandler):
     def endElement(self, name):
         if name != 'preferences':
             try:
-                line = path_system('self.value=' + self.value)
+                line = 'self.value=' + self.value
                 code = compile(line, '<string>', 'exec')
                 exec code
                 self.pref.__dict__[self.key] = self.value
             except Exception as e:
-                LOG.error('Error in "%s" %s', line, e)
+                LOG.error('Error in "%s" %s', self.value, e)
 
     def characters(self, data):
         self.value = data

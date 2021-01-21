@@ -16,14 +16,12 @@
 # 	along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import logging
-import os
 from importlib import import_module
 
 from fallback import fallback_check, im_loader
 from uc2 import events, msgconst
 from uc2 import uc2const
 from uc2.utils import fsutils
-from uc2.utils.fs import get_file_extension
 
 LOG = logging.getLogger(__name__)
 
@@ -97,7 +95,7 @@ def get_loader(path, experimental=False, return_id=False):
 
     ret_id = None
 
-    ext = get_file_extension(path)
+    ext = fsutils.get_file_extension(path)
     loader = None
     ld_formats = [] + uc2const.LOADER_FORMATS
 
@@ -159,7 +157,7 @@ def get_saver_by_id(pid):
 
 def get_saver(path, experimental=False, return_id=False):
     ret_id = None
-    ext = get_file_extension(path)
+    ext = fsutils.get_file_extension(path)
     saver = None
     sv_formats = [] + uc2const.SAVER_FORMATS
 

@@ -20,18 +20,17 @@ import gzip
 from uc2 import uc2const
 from uc2.formats.sk2.sk2_presenter import SK2_Presenter
 from uc2.formats.svg.svg_presenter import SVG_Presenter
+from uc2.utils.fsutils import get_fileptr, upath
 from uc2.utils.mixutils import merge_cnf
-from uc2.utils.fsutils import get_fileptr, get_sys_path
 
 SVGZ_HEADER = '\x1f\x8b\x08'
 
 
 def svgz_loader(appdata, filename=None, fileptr=None,
-               translate=True, cnf=None, **kw):
+                translate=True, cnf=None, **kw):
     cnf = merge_cnf(cnf, kw)
     svg_doc = SVG_Presenter(appdata, cnf)
-    path = get_sys_path(filename)
-    fileptr = gzip.open(path, 'rb')
+    fileptr = gzip.GzipFile(upath(filename), mode='rb', fileobj=fileptr)
     svg_doc.load(None, fileptr)
     if translate:
         sk2_doc = SK2_Presenter(appdata, cnf)
@@ -44,12 +43,11 @@ def svgz_loader(appdata, filename=None, fileptr=None,
 
 
 def svgz_saver(sk2_doc, filename=None, fileptr=None,
-              translate=True, cnf=None, **kw):
+               translate=True, cnf=None, **kw):
     cnf = merge_cnf(cnf, kw)
     if sk2_doc.cid == uc2const.SVG:
         translate = False
-    path = get_sys_path(filename)
-    fileptr = gzip.open(path, 'wb')
+    fileptr = gzip.GzipFile(upath(filename), mode='wb', fileobj=fileptr)
     if translate:
         svg_doc = SVG_Presenter(sk2_doc.appdata, cnf)
         svg_doc.translate_from_sk2(sk2_doc)

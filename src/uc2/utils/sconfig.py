@@ -16,9 +16,7 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import logging
-import os
 
-from uc2.utils.fs import path_system, path_unicode
 from uc2.utils import fsutils
 
 LOG = logging.getLogger(__name__)
@@ -51,7 +49,7 @@ class SerializedConfig(object):
                     break
                 if line.startswith('#'):
                     continue
-                line = path_system('self.%s' % line)
+                line = fsutils.get_utf8_path('self.%s' % line)
                 try:
                     code = compile(line, '<string>', 'exec')
                     exec code
@@ -78,6 +76,10 @@ class SerializedConfig(object):
                 continue
             if key in ['filename', 'app']:
                 continue
-            line = path_unicode('%s = %s\n' % (key, value.__repr__()))
+            try:
+                line = fsutils.get_sys_path('%s = %s\n' % (key, value.__repr__()))
+            except Exception as e:
+                LOG.error('ERROR>>> %s', e)
+                continue
             fileobj.write(line)
         fileobj.close()

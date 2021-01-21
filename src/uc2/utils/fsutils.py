@@ -31,7 +31,7 @@ LOG = logging.getLogger(__name__)
 IS_MSW = system.get_os_family() == system.WINDOWS
 IS_MAC = system.get_os_family() == system.MACOSX
 
-HOME = os.path.expanduser('~')\
+HOME = os.path.expanduser('~') \
     .decode(sys.getfilesystemencoding()).encode('utf-8')
 
 
@@ -119,6 +119,21 @@ def getsize(path):
 
 def rmtree(path):
     shutil.rmtree(upath(path))
+
+
+def get_file_extension(path):
+    """
+    Returns file extension without comma.
+    """
+    ext = os.path.splitext(path)[1]
+    ext = ext.lower().replace('.', '')
+    return ext
+
+
+def change_file_extension(path, ext):
+    filename = os.path.splitext(path)[0]
+    ext = ext.lower().replace('.', '')
+    return filename + '.' + ext
 
 
 def normalize_sys_argv():

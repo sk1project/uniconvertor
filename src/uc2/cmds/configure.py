@@ -106,8 +106,8 @@ def change_config(options):
             profile_dir = config.app.appdata.app_color_profile_dir
             dest_path = os.path.join(profile_dir, '%s.icc' % cs)
             if fsutils.exists(dest_path):
-                os.remove(dest_path)
-            shutil.copy(path, dest_path)
+                fsutils.remove(dest_path)
+            fsutils.copy(path, dest_path)
             profile_dict = PROFILE_DICTS[PROFILES.index(key)]
             config.__dict__[profile_dict] = {profile_name: dest_path}
             config.__dict__[key] = profile_name
