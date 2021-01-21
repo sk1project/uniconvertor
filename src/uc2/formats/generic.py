@@ -210,7 +210,7 @@ class ModelPresenter(object):
 
         if self.doc_dir and fsutils.exists(self.doc_dir):
             try:
-                fs.xremove_dir(fsutils.get_sys_path(self.doc_dir))
+                fsutils.rmtree(self.doc_dir)
                 self.send_ok(_('Cache is cleared for') + ' %s' % filename)
             except Exception as e:
                 msg = _('Cache clearing is unsuccessful')

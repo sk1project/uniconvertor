@@ -17,13 +17,12 @@
 
 import errno
 import logging
-import os
 import xml.sax
 from xml.sax import handler
 from xml.sax.xmlreader import InputSource
 
 from uc2 import _, events, msgconst, utils
-from uc2.utils.fsutils import get_fileptr, get_sys_path
+from uc2.utils.fsutils import get_fileptr, getsize
 
 LOG = logging.getLogger(__name__)
 
@@ -49,7 +48,7 @@ class AbstractLoader(object):
         self.config = self.presenter.config
         if path:
             self.filepath = path
-            self.file_size = os.path.getsize(get_sys_path(path))
+            self.file_size = getsize(path)
             self.fileptr = get_fileptr(path)
         elif fileptr:
             self.fileptr = fileptr
