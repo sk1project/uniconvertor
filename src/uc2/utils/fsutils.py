@@ -113,6 +113,14 @@ def copy(src, dest):
     shutil.copy(upath(src), upath(dest))
 
 
+def getsize(path):
+    return os.path.getsize(upath(path))
+
+
+def rmtree(path):
+    shutil.rmtree(upath(path))
+
+
 def normalize_sys_argv():
     """Converts sys.argv to unicode and translate relative paths as
     absolute ones.
