@@ -19,7 +19,7 @@ import logging
 
 from uc2 import _, uc2const
 from uc2 import events, msgconst
-from uc2.utils import fs, fsutils
+from uc2.utils import fsutils
 
 LOG = logging.getLogger(__name__)
 
@@ -231,16 +231,20 @@ class ModelPresenter(object):
         msg = _('Saving in progress...')
         self.send_progress_message(msg, val)
 
-    def send_progress_message(self, msg, val):
+    @staticmethod
+    def send_progress_message(msg, val):
         events.emit(events.FILTER_INFO, msg, val)
 
-    def send_ok(self, msg):
+    @staticmethod
+    def send_ok(msg):
         events.emit(events.MESSAGES, msgconst.OK, msg)
 
-    def send_info(self, msg):
+    @staticmethod
+    def send_info(msg):
         events.emit(events.MESSAGES, msgconst.INFO, msg)
 
-    def send_error(self, msg):
+    @staticmethod
+    def send_error(msg):
         events.emit(events.MESSAGES, msgconst.ERROR, msg)
 
 
