@@ -36,9 +36,7 @@ HOME = os.path.expanduser('~')\
 
 
 def expanduser(path=''):
-    if path.startswith('~'):
-        path = HOME + path[1:]
-    return path
+    return HOME + path[1:] if path.startswith('~') else path
 
 
 def normalize_path(path):
@@ -57,18 +55,20 @@ def get_utf8_path(path):
     return path.encode('utf-8')
 
 
+def upath(path):
+    return path.decode('utf8') if not isinstance(path, unicode) else path
+
+
 def isfile(path):
-    return os.path.isfile(get_sys_path(path))
+    return os.path.isfile(upath(path))
 
 
 def isdir(path):
-    return os.path.isdir(get_sys_path(path))
+    return os.path.isdir(upath(path))
 
 
 def uopen(path, mode='rb'):
-    if not isinstance(path, unicode):
-        path = path.decode('utf8')
-    return open(path, mode)
+    return open(upath(path), mode)
 
 
 def get_fileptr(path, writable=False):
@@ -86,31 +86,31 @@ def get_fileptr(path, writable=False):
 
 
 def makedirs(path):
-    os.makedirs(get_sys_path(path))
+    os.makedirs(upath(path))
 
 
 def lexists(path):
-    return os.path.lexists(get_sys_path(path))
+    return os.path.lexists(upath(path))
 
 
 def exists(path):
-    return os.path.exists(get_sys_path(path))
+    return os.path.exists(upath(path))
 
 
 def remove(path):
-    os.remove(get_sys_path(path))
+    os.remove(upath(path))
 
 
 def rename(oldpath, newpath):
-    os.rename(get_sys_path(oldpath), get_sys_path(newpath))
+    os.rename(upath(oldpath), upath(newpath))
 
 
 def listdir(path):
-    return os.listdir(get_sys_path(path))
+    return [pth.encode('utf8') for pth in os.listdir(upath(path))]
 
 
 def copy(src, dest):
-    shutil.copy(get_sys_path(src), get_sys_path(dest))
+    shutil.copy(upath(src), upath(dest))
 
 
 def normalize_sys_argv():
