@@ -210,9 +210,9 @@ class CGM_to_SK2_Translator(object):
     def set_page(self, extend):
         left, bottom = extend[0]
         right, top = extend[1]
-        width = right - left
-        height = top - bottom
-        scale = 841 / float(max(abs(width), abs(height)))
+        width = abs(right - left)
+        height = abs(top - bottom)
+        scale = 841 / float(max(width, height))
         if self.cgm['scale.mode'] == 1:
             scale = self.cgm['scale.metric'] * 72 / 25.4
         w, h = width * scale, height * scale
