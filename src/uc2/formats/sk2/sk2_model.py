@@ -1065,6 +1065,8 @@ class Text(PrimitiveObject):
                     libgeom.apply_trafo(item, self.trafos[index])
             index += 1
         self.update_bbox()
+        if self.style[0]:
+            self.style[0][0] = sk2const.FILL_NONZERO
 
     def update_bbox(self):
         self.cache_bbox = []
