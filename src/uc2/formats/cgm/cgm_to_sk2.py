@@ -54,6 +54,7 @@ class CGM_to_SK2_Translator(object):
                 break
             self.process_element(element)
 
+        self.sk2_model.do_update()
         self.sk2_doc = None
         self.sk2_model = None
         self.sk2_mtds = None

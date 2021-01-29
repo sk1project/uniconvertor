@@ -1011,8 +1011,6 @@ class Text(PrimitiveObject):
     def to_curve(self):
         group = Group(self.config)
         subgroup = Group(self.config, group)
-        if not self.cache_cpath:
-            self.update()
         for item in self.cache_cpath:
             paths = None
             if item:
