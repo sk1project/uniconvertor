@@ -35,7 +35,7 @@ class SK1Palette(TextModelObject):
 
     def __init__(self, name='', colors=None):
         self.colors = colors or []
-        self.name = name
+        self.name = name or 'Untitled palette'
         self.source = self.comments = ''
         self.columns = 1
 
