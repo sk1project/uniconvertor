@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2012 by Ihor E. Novikov
+#  Copyright (C) 2012, 2021 by Ihor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License
@@ -14,6 +14,8 @@
 #
 #  You should have received a copy of the GNU Affero General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+import json
 
 from uc2 import sk2const
 from uc2.formats.generic import TextModelObject
@@ -159,18 +161,18 @@ class PltJob(PltModelObject):
 
     def update(self):
         if self.string and not self.cache_path:
-            path = []
-            cmd = ''
-            cmd += self.string
-            cmd = cmd.replace(";", "],")
-            cmd = cmd.replace("PU", "[")
-            cmd = cmd.replace("PD", "[")
-            cmd = 'path=[%s]' % cmd
-            code = compile(cmd, '<string>', 'exec')
-            exec code
+            cmd = self.string.replace(";", "],").replace("PU", "[").replace("PD", "[")
+            path = json.loads('[%s]' % cmd.strip(','))
+
             self.cache_path = []
             self.cache_path.append(path[0])
-            self.cache_path.append(path[1:])
+            points = []
+            for point in path[1:]:
+                if len(point) > 2:
+                    points.extend([point[i:i + 2] for i in range(0, len(point), 2)])
+                elif len(point) == 2:
+                    points.append(point)
+            self.cache_path.append(points)
             self.cache_path.append(sk2const.CURVE_OPENED)
 
         elif self.cache_path and not self.string:
