@@ -197,6 +197,29 @@ class SK2_Methods:
         if index < len(pages):
             pages.remove(pages[index])
 
+    def fit_page_to_image(self, page, objs=None):
+        if not objs:
+            objs = []
+            for layer in page.childs:
+                objs.extend(layer.childs)
+
+        bbox = [] + objs[0].cache_bbox
+        for obj in objs[1:]:
+            bbox = libgeom.sum_bbox(bbox, obj.cache_bbox)
+        x, y, w, h = libgeom.bbox_to_rect(bbox)
+        trafo = [1.0, 0.0, 0.0, 1.0, -x - w / 2.0, -y - h / 2.0]
+
+        for obj in objs:
+            obj.apply_trafo(trafo)
+
+        orient = uc2const.PORTRAIT if h > w else uc2const.LANDSCAPE
+        self.set_page_format(page, ['Custom', (w, h), orient])
+        page.do_update()
+
+    def fit_pages_to_image(self):
+        for page in self.get_pages():
+            self.fit_page_to_image(page)
+
     # ---LAYERS
 
     def add_layer(self, page, layer_name=''):

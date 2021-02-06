@@ -19,25 +19,30 @@ import copy
 import glob
 import logging
 import os
+import sys
 
 from uc2 import events, uc2const, msgconst
 from uc2.formats import get_loader, get_saver, get_saver_by_id
 from uc2.utils.mixutils import echo
 
+from . import const
+
 LOG = logging.getLogger(__name__)
-SAVER_IDS = uc2const.PALETTE_SAVERS + uc2const.MODEL_SAVERS \
-            + uc2const.BITMAP_SAVERS
+
+ACTIONS = [cmd.split('=')[0] for cmd in sys.argv[1:]
+           if cmd.split('=')[0] in const.SK2_ACTIONS]
 
 
 def normalize_options(options):
-    for key in ('verbose', 'format', 'recursive', 'dry-run'):
+    for key in const.ALL_CMDS:
+        key = key.lstrip('-')
         if key in options:
             options.pop(key)
 
     keys = options.keys()
     for key in keys:
         if '-' in key:
-            options.pop(key)
+            options[key.replace('-', '_')] = options.pop(key)
 
 
 def convert(appdata, files, options):
@@ -49,7 +54,7 @@ def convert(appdata, files, options):
 
     # Define saver -----------------------------------------
     sid = options.get('format', '').lower()
-    if sid and sid in SAVER_IDS:
+    if sid and sid in const.SAVER_IDS:
         saver_id = sid
         saver = get_saver_by_id(saver_id)
     else:
@@ -76,7 +81,6 @@ def convert(appdata, files, options):
         return
 
     # File loading -----------------------------------------
-    doc = None
     try:
         if loader_id in uc2const.PALETTE_LOADERS and \
                 saver_id in uc2const.PALETTE_SAVERS:
@@ -93,13 +97,21 @@ def convert(appdata, files, options):
         events.emit(events.MESSAGES, msgconst.STOP, msg)
         raise
 
+    # Model transforming ----------------------------------
+    if doc and doc.cid == uc2const.SK2:
+        for action in ACTIONS:
+            if action == const.FIT_PAGE_TO_IMAGE:
+                msg = 'ACTION: Fit page to image'
+                LOG.info(msg)
+                events.emit(events.MESSAGES, msgconst.JOB, msg)
+                doc.methods.fit_pages_to_image()
+
     # File saving -----------------------------------------
     if doc is not None:
         try:
             if loader_id in uc2const.PALETTE_LOADERS and \
                     saver_id in uc2const.PALETTE_SAVERS:
-                saver(doc, files[1], translate=False, convert=True,
-                      **options)
+                saver(doc, files[1], translate=False, convert=True, **options)
             else:
                 saver(doc, files[1], **options)
         except Exception:
@@ -133,7 +145,7 @@ def _get_saver_extension(options):
         raise Exception(msg)
 
     sid = options.get('format', '').lower()
-    if sid not in SAVER_IDS:
+    if sid not in const.SAVER_IDS:
         msg = 'Output file format is not supported.'
         events.emit(events.MESSAGES, msgconst.ERROR, msg)
 
