@@ -48,6 +48,12 @@ Example: uniconvertor --recursive --format=PDF ~/clipart/*.svg ~/clipart_pdf/
  --dry-run               Execute command without translation
  --recursive             Recursive scanning
  
+---Editing operations:---------------------------------
+
+ --fit-page-to-image     Adjust page to drawing size
+ --image-scale           Scale output image (PNG export)
+ --image-antialiasing=   On/off antialiasing. Default 1 (PNG export) 
+ 
 ---Configuring:-------------------------------------
 
 Usage: uniconvertor --configure [OPTIONS]
