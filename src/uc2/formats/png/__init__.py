@@ -25,18 +25,16 @@ from uc2.utils.mixutils import merge_cnf
 PNG_ID = '\x89\x50\x4e\x47'
 
 
-def png_loader(appdata, filename=None, fileptr=None, translate=True, cnf=None,
-               **kw):
+def png_loader(appdata, filename=None, fileptr=None, translate=True, cnf=None, **kw):
     return im_loader(appdata, filename, fileptr, translate, cnf, **kw)
 
 
-def png_saver(sk2_doc, filename=None, fileptr=None, translate=True, cnf=None,
-              **kw):
+def png_saver(sk2_doc, filename=None, fileptr=None, translate=True, cnf=None, **kw):
     cnf = merge_cnf(cnf, kw)
     if filename and not fileptr:
         fileptr = get_fileptr(filename, True)
     page = sk2_doc.methods.get_page()
-    scale = abs(float(cnf.get('scale', 1.0))) or 1.0
+    scale = abs(float(cnf.get('image_scale', 1.0))) or 1.0
     w, h = [scale * item for item in page.page_format[1]]
     trafo = (scale, 0, 0, -scale, w / 2.0, h / 2.0)
 
@@ -44,8 +42,8 @@ def png_saver(sk2_doc, filename=None, fileptr=None, translate=True, cnf=None,
     surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, int(w), int(h))
     ctx = cairo.Context(surface)
     ctx.set_matrix(canvas_matrix)
-    
-    antialias_flag = not cnf.get('antialiasing') in (False, 0)
+
+    antialias_flag = not cnf.get('image_antialiasing') in (False, 0)
     layers = sk2_doc.methods.get_visible_layers(page)
     rend = CairoRenderer(sk2_doc.cms)
 
