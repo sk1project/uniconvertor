@@ -29,8 +29,8 @@ from . import const
 
 LOG = logging.getLogger(__name__)
 
-ACTIONS = [cmd.split('=')[0] for cmd in sys.argv[1:]
-           if cmd.split('=')[0] in const.SK2_ACTIONS]
+CLI_ACTIONS = [cmd.split('=')[0] for cmd in sys.argv[1:]
+               if cmd.split('=')[0] in const.SK2_ACTIONS]
 
 
 def normalize_options(options):
@@ -99,12 +99,17 @@ def convert(appdata, files, options):
 
     # Model transforming ----------------------------------
     if doc and doc.cid == uc2const.SK2:
-        for action in ACTIONS:
+        for action in CLI_ACTIONS:
             if action == const.FIT_PAGE_TO_IMAGE:
                 msg = 'ACTION: Fit page to image'
                 LOG.info(msg)
                 events.emit(events.MESSAGES, msgconst.JOB, msg)
                 doc.methods.fit_pages_to_image()
+            elif action == const.FIT_TO_PAGE:
+                msg = 'ACTION: Fit drawing to page'
+                LOG.info(msg)
+                events.emit(events.MESSAGES, msgconst.JOB, msg)
+                doc.methods.fit_to_pages()
 
     # File saving -----------------------------------------
     if doc is not None:

@@ -197,29 +197,6 @@ class SK2_Methods:
         if index < len(pages):
             pages.remove(pages[index])
 
-    def fit_page_to_image(self, page, objs=None):
-        if not objs:
-            objs = []
-            for layer in page.childs:
-                objs.extend(layer.childs)
-
-        bbox = [] + objs[0].cache_bbox
-        for obj in objs[1:]:
-            bbox = libgeom.sum_bbox(bbox, obj.cache_bbox)
-        x, y, w, h = libgeom.bbox_to_rect(bbox)
-        trafo = [1.0, 0.0, 0.0, 1.0, -x - w / 2.0, -y - h / 2.0]
-
-        for obj in objs:
-            obj.apply_trafo(trafo)
-
-        orient = uc2const.PORTRAIT if h > w else uc2const.LANDSCAPE
-        self.set_page_format(page, ['Custom', (w, h), orient])
-        page.do_update()
-
-    def fit_pages_to_image(self):
-        for page in self.get_pages():
-            self.fit_page_to_image(page)
-
     # ---LAYERS
 
     def add_layer(self, page, layer_name=''):
@@ -408,3 +385,52 @@ class SK2_Methods:
             elif obj.childs:
                 bbox = libgeom.sum_bbox(bbox, self.count_bbox(obj.childs))
         return bbox
+
+    # ---UC2 CLI API
+
+    @staticmethod
+    def select_all_objects(page):
+        objs = []
+        for layer in page.childs:
+            objs.extend(layer.childs)
+        return objs
+
+    def fit_page_to_image(self, page, objs=None):
+        objs = objs or self.select_all_objects(page)
+        if objs:
+            bbox = self.count_bbox(objs)
+            x, y, w, h = libgeom.bbox_to_rect(bbox)
+            trafo = [1.0, 0.0, 0.0, 1.0, -x - w / 2.0, -y - h / 2.0]
+
+            [obj.apply_trafo(trafo) for obj in objs]
+
+            orient = uc2const.PORTRAIT if h > w else uc2const.LANDSCAPE
+            self.set_page_format(page, ['Custom', (w, h), orient])
+            page.do_update()
+
+    def fit_pages_to_image(self):
+        for page in self.get_pages():
+            self.fit_page_to_image(page)
+
+    def fit_to_page(self, page, objs=None):
+        objs = objs or self.select_all_objects(page)
+        if objs:
+            symmetrical = self.config.get('fit_to_page', False)
+            bbox = self.count_bbox(objs)
+            x, y, w, h = libgeom.bbox_to_rect(bbox)
+            pw, ph = self.get_page_size(page)
+
+            trafo = [1.0, 0.0, 0.0, 1.0, -x - w / 2.0, -y - h / 2.0]
+            [obj.apply_trafo(trafo) for obj in objs]
+
+            if symmetrical:
+                coef = min(pw / w, ph / h)
+                trafo = [coef, 0.0, 0.0, coef, 0.0, 0.0]
+            else:
+                trafo = [pw / w, 0.0, 0.0, ph / h, 0.0, 0.0]
+
+            [obj.apply_trafo(trafo) for obj in objs]
+
+    def fit_to_pages(self):
+        for page in self.get_pages():
+            self.fit_to_page(page)

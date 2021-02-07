@@ -51,12 +51,13 @@ class XmlConfigParser(object):
     """
     filename = ''
 
+    def get(self, name, subst=None):
+        return self.__dict__[name] if name in self.__dict__ else subst
+
     def update(self, cnf=None):
         cnf = cnf or {}
-        if cnf:
-            for key in cnf.keys():
-                if hasattr(self, key):
-                    setattr(self, key, cnf[key])
+        for key in cnf.keys():
+            setattr(self, key, cnf[key])
 
     def load(self, filename=None):
         self.filename = filename

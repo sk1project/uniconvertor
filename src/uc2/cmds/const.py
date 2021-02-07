@@ -34,6 +34,7 @@ ALL_CMDS = HELP_CMDS + DIR_CMDS + LOG_CMDS + VERBOSE_CMDS + VS_CMDS + \
 IMAGE_ACTIONS = ('--image-scale', '--image-antialiasing')
 
 FIT_PAGE_TO_IMAGE = '--fit-page-to-image'
-SK2_ACTIONS = (FIT_PAGE_TO_IMAGE,)
+FIT_TO_PAGE = '--fit-to-page'
+SK2_ACTIONS = (FIT_PAGE_TO_IMAGE, FIT_TO_PAGE)
 
 SAVER_IDS = uc2const.PALETTE_SAVERS + uc2const.MODEL_SAVERS + uc2const.BITMAP_SAVERS
