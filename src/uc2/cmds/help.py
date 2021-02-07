@@ -52,7 +52,7 @@ Example: uniconvertor --recursive --format=PDF ~/clipart/*.svg ~/clipart_pdf/
 
  --fit-page-to-image     Adjust page to drawing size
  --fit-to-page=          Adjust drawing size to page. Default "yes" (keep ratio)
- --image-scale           Scale output image (PNG export)
+ --image-scale=          Scale output image by decimal coefficient (PNG export)
  --image-antialiasing=   On/off antialiasing. Default "yes" (PNG export) 
  
 ---Configuring:-------------------------------------
