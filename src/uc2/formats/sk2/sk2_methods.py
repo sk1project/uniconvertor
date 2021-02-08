@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-#  Copyright (C) 2011-2015 by Ihor E. Novikov
+#  Copyright (C) 2011-2021 by Ihor E. Novikov
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU Affero General Public License
@@ -415,7 +415,7 @@ class SK2_Methods:
     def fit_to_page(self, page, objs=None):
         objs = objs or self.select_all_objects(page)
         if objs:
-            symmetrical = self.config.get('fit_to_page', False)
+            keep_ratio = self.config.get('fit_to_page', False)
             bbox = self.count_bbox(objs)
             x, y, w, h = libgeom.bbox_to_rect(bbox)
             pw, ph = self.get_page_size(page)
@@ -423,7 +423,7 @@ class SK2_Methods:
             trafo = [1.0, 0.0, 0.0, 1.0, -x - w / 2.0, -y - h / 2.0]
             [obj.apply_trafo(trafo) for obj in objs]
 
-            if symmetrical:
+            if keep_ratio:
                 coef = min(pw / w, ph / h)
                 trafo = [coef, 0.0, 0.0, coef, 0.0, 0.0]
             else:
