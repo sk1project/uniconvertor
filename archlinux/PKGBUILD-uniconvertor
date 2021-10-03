@@ -16,7 +16,7 @@ source=('./TARBALL')
 md5sums=('SKIP')
 
 build() {
-  chmod -R 644 "${srcdir}/$pkgname-$pkgver"
+  chmod -R u+rw,g+r,o+r "${srcdir}/$pkgname-$pkgver"
   cd "${srcdir}/$pkgname-$pkgver"
   LANG=en_US.UTF-8 python2 setup.py build
 }
