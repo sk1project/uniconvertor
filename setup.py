@@ -39,7 +39,7 @@ import datetime
 import os
 import shutil
 import sys
-from distutils.core import setup
+from setuptools import setup
 
 ############################################################
 # Subprojects resolving
